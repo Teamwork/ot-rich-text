@@ -1,1 +1,3 @@
-module.exports = require('./lib/type')
+module.exports = {
+    type: require('./lib/type')
+}

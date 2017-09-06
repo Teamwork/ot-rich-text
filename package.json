@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon",
     "test": "tap test/**/*.js",
-    "tdd": "nodemon ./node_modules/.bin/tap test/**/*.js",
+    "tdd": "nodemon ./node_modules/.bin/tap test/*.js",
     "test-coverage": "npm test -- --cov --coverage-report=lcov"
   },
   "author": "",
