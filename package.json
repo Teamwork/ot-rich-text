@@ -1,0 +1,24 @@
+{
+  "name": "ot-rich-text",
+  "version": "0.0.1",
+  "description": "Format for representing rich-text documents and changes.",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon",
+    "test": "tap test/**/*.js",
+    "tdd": "nodemon ./node_modules/.bin/tap test/**/*.js",
+    "test-coverage": "npm test -- --cov --coverage-report=lcov"
+  },
+  "author": "",
+  "license": "UNLICENSED",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Teamwork/ot-rich-text.git"
+  },
+  "devDependencies": {
+    "nodemon": "^1.12.0",
+    "ot-fuzzer": "^1.0.0",
+    "tap": "^10.7.2"
+  }
+}
