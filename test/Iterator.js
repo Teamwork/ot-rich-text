@@ -1,7 +1,7 @@
 const tap = require('tap')
 const Iterator = require('../lib/Iterator')
 const {
-    createInsertText, createInsertObject, createRetain, createDelete
+    createInsertText, createInsertEmbed, createRetain, createDelete
 } = require('../lib/Operation')
 const objectContent = '\uE000DIV'
 
@@ -34,7 +34,7 @@ tap.test('empty insert text operation at the start', t => {
 })
 
 tap.test('empty insert object operation at the start', t => {
-    const operations = [ createInsertObject() ]
+    const operations = [ createInsertEmbed() ]
     const i = new Iterator(operations)
 
     t.equal(i.operations, operations)
@@ -75,8 +75,8 @@ tap.test('empty retain operation at the start', t => {
     t.end()
 })
 
-tap.test('unknown operation at the start', t => {
-    const operations = [ [ 12345, 12345 ] ]
+tap.test('invalid operation at the start', t => {
+    const operations = [ [ 0, 12345 ] ]
     const i = new Iterator(operations)
 
     t.equal(i.operations, operations)
@@ -101,7 +101,7 @@ tap.test('insert text operation', t => {
 })
 
 tap.test('insert object operation', t => {
-    const operation = createInsertObject(objectContent)
+    const operation = createInsertEmbed(objectContent)
     const i = new Iterator([ operation ])
 
     t.equal(i.hasOperation, true)
@@ -133,7 +133,7 @@ tap.test('delete operation', t => {
 })
 
 tap.test('move within operation', t => {
-    const operation0 = createInsertObject(objectContent)
+    const operation0 = createInsertEmbed(objectContent)
     const operation1 = createInsertText('1234')
     const operation2 = createRetain(10)
     const operation3 = createDelete(15)
