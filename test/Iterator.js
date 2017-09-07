@@ -15,6 +15,7 @@ tap.test('no operations', t => {
     t.equal(i.operation, null)
     t.equal(i.operationLength, 0)
     t.equal(i.offset, 0)
+    t.equal(i.remaining, 0)
     t.end()
 })
 
@@ -28,6 +29,7 @@ tap.test('empty insert text operation at the start', t => {
     t.equal(i.operation, null)
     t.equal(i.operationLength, 0)
     t.equal(i.offset, 0)
+    t.equal(i.remaining, 0)
     t.end()
 })
 
@@ -41,6 +43,7 @@ tap.test('empty insert object operation at the start', t => {
     t.equal(i.operation, null)
     t.equal(i.operationLength, 0)
     t.equal(i.offset, 0)
+    t.equal(i.remaining, 0)
     t.end()
 })
 
@@ -54,6 +57,7 @@ tap.test('empty delete operation at the start', t => {
     t.equal(i.operation, null)
     t.equal(i.operationLength, 0)
     t.equal(i.offset, 0)
+    t.equal(i.remaining, 0)
     t.end()
 })
 
@@ -67,6 +71,7 @@ tap.test('empty retain operation at the start', t => {
     t.equal(i.operation, null)
     t.equal(i.operationLength, 0)
     t.equal(i.offset, 0)
+    t.equal(i.remaining, 0)
     t.end()
 })
 
@@ -80,6 +85,7 @@ tap.test('unknown operation at the start', t => {
     t.equal(i.operation, null)
     t.equal(i.operationLength, 0)
     t.equal(i.offset, 0)
+    t.equal(i.remaining, 0)
     t.end()
 })
 
@@ -138,36 +144,43 @@ tap.test('move within operation', t => {
     t.equal(i.operation, operation0)
     t.equal(i.index, 0)
     t.equal(i.offset, 0)
+    t.equal(i.remaining, 1)
 
     i.next(1)
     t.equal(i.operation, operation1)
     t.equal(i.index, 1)
     t.equal(i.offset, 0)
+    t.equal(i.remaining, 4)
 
     i.next(1)
     t.equal(i.operation, operation1)
     t.equal(i.index, 1)
     t.equal(i.offset, 1)
+    t.equal(i.remaining, 3)
 
     i.next(2)
     t.equal(i.operation, operation1)
     t.equal(i.index, 1)
     t.equal(i.offset, 3)
+    t.equal(i.remaining, 1)
 
     i.next(2)
     t.equal(i.operation, operation2)
     t.equal(i.index, 2)
     t.equal(i.offset, 1)
+    t.equal(i.remaining, 9)
 
     i.next(25)
     t.equal(i.operation, operation4)
     t.equal(i.index, 4)
     t.equal(i.offset, 1)
+    t.equal(i.remaining, 19)
 
     i.next(Infinity)
     t.equal(i.operation, null)
     t.equal(i.index, 5)
     t.equal(i.offset, 0)
+    t.equal(i.remaining, 0)
 
     t.end()
 })
