@@ -11,6 +11,7 @@ tap.test('no operations', t => {
 
     t.equal(i.operations, operations)
     t.equal(i.index, 0)
+    t.equal(i.hasOperation, false)
     t.equal(i.operation, null)
     t.equal(i.operationLength, 0)
     t.equal(i.offset, 0)
@@ -23,6 +24,7 @@ tap.test('empty insert text operation at the start', t => {
 
     t.equal(i.operations, operations)
     t.equal(i.index, 1)
+    t.equal(i.hasOperation, false)
     t.equal(i.operation, null)
     t.equal(i.operationLength, 0)
     t.equal(i.offset, 0)
@@ -35,6 +37,7 @@ tap.test('empty insert object operation at the start', t => {
 
     t.equal(i.operations, operations)
     t.equal(i.index, 1)
+    t.equal(i.hasOperation, false)
     t.equal(i.operation, null)
     t.equal(i.operationLength, 0)
     t.equal(i.offset, 0)
@@ -47,6 +50,7 @@ tap.test('empty delete operation at the start', t => {
 
     t.equal(i.operations, operations)
     t.equal(i.index, 1)
+    t.equal(i.hasOperation, false)
     t.equal(i.operation, null)
     t.equal(i.operationLength, 0)
     t.equal(i.offset, 0)
@@ -59,6 +63,7 @@ tap.test('empty retain operation at the start', t => {
 
     t.equal(i.operations, operations)
     t.equal(i.index, 1)
+    t.equal(i.hasOperation, false)
     t.equal(i.operation, null)
     t.equal(i.operationLength, 0)
     t.equal(i.offset, 0)
@@ -71,39 +76,52 @@ tap.test('unknown operation at the start', t => {
 
     t.equal(i.operations, operations)
     t.equal(i.index, 1)
+    t.equal(i.hasOperation, false)
     t.equal(i.operation, null)
     t.equal(i.operationLength, 0)
     t.equal(i.offset, 0)
     t.end()
 })
 
-tap.test('insert text operation length', t => {
+tap.test('insert text operation', t => {
     const text = 'asese fesfsefsd fsdhjb hbj \u{101EE}'
-    const i = new Iterator([ [ACTION_INSERT_TEXT, text] ])
+    const operation = [ACTION_INSERT_TEXT, text]
+    const i = new Iterator([ operation ])
 
+    t.equal(i.hasOperation, true)
+    t.equal(i.operation, operation)
     t.equal(i.operationLength, text.length)
     t.end()
 })
 
-tap.test('insert object operation length', t => {
-    const i = new Iterator([ [ACTION_INSERT_OBJECT, '\uE000DIV'] ])
+tap.test('insert object operation', t => {
+    const operation = [ACTION_INSERT_OBJECT, '\uE000DIV']
+    const i = new Iterator([ operation ])
 
+    t.equal(i.hasOperation, true)
+    t.equal(i.operation, operation)
     t.equal(i.operationLength, 1)
     t.end()
 })
 
-tap.test('retain operation length', t => {
+tap.test('retain operation', t => {
     const count = 123
-    const i = new Iterator([ [ACTION_RETAIN, count] ])
+    const operation = [ACTION_RETAIN, count]
+    const i = new Iterator([ operation ])
 
+    t.equal(i.hasOperation, true)
+    t.equal(i.operation, operation)
     t.equal(i.operationLength, count)
     t.end()
 })
 
-tap.test('delete operation length', t => {
+tap.test('delete operation', t => {
     const count = 123
-    const i = new Iterator([ [ACTION_DELETE, count] ])
+    const operation = [ACTION_DELETE, count]
+    const i = new Iterator([ operation ])
 
+    t.equal(i.hasOperation, true)
+    t.equal(i.operation, operation)
     t.equal(i.operationLength, count)
     t.end()
 })
