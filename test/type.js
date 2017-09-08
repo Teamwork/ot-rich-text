@@ -134,15 +134,32 @@ tap.test('apply', t => {
 })
 
 tap.test('compose', t => {
+    const insertText1 = createInsertText('hello', 1, 'user', 'key', 'value')
+    const insertText2 = createInsertText(' world', 1, 'user', 'key', 'value')
+    const insertText3 = createInsertText('hello world', 1, 'user', 'key', 'value')
+    const insertEmbed1 = createInsertEmbed(objectContent, 2, 'user')
+    const insertEmbed2 = createInsertEmbed(objectContent, 3, 'another user')
+    const retain1 = createRetain(5)
+    const retain2 = createRetain(8)
+    const delete1 = createDelete(6, 3, 'user')
+    const delete2 = createDelete(3, 3 ,'user')
+    const delete3 = createDelete(9, 3 ,'user')
+
     t.test('left empty, right insert', t => {
-        const insertText1 = createInsertText('hello')
-        const insertObject1 = createInsertEmbed(objectContent)
-        const insertText2 = createInsertText('world')
-        const insertObject2 = createInsertEmbed(objectContent)
+        const left = []
+        const right = [ insertText1, insertEmbed1, insertText2, insertEmbed2 ]
+        const expected = [ insertText1, insertEmbed1, insertText2, insertEmbed2 ]
 
-        const operations = type.compose([], [ insertText1, insertObject1, insertText2, insertObject2 ])
+        t.strictSame(type.compose(left, right), expected)
+        t.end()
+    })
 
-        t.strictSame(operations, [ insertText1, insertObject1, insertText2, insertObject2 ])
+    t.test('left delete, right insert', t => {
+        const left = [ delete1, delete2 ]
+        const right = [ insertText1, insertText2 ]
+        const expected = [ insertText3, delete3 ]
+
+        t.strictSame(type.compose(left, right), expected)
         t.end()
     })
 
