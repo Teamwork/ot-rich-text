@@ -75,12 +75,55 @@ tap.test('append', t => {
         t.end()
     })
 
-    // t.test('left delete, right delete', t => {
-    //     const operations = [ createDelete(5) ]
-    //     t.equal(type.append(operations, createDelete(7), 1, 2), operations)
-    //     t.strictSame(operations, [ createInsertText('el') ])
-    //     t.end()
-    // })
+    t.test('left retain, right retain', t => {
+        const operations = [ createRetain(5) ]
+        t.equal(type.append(operations, createRetain(7)), operations)
+        t.strictSame(operations, [ createRetain(12) ])
+        t.end()
+    })
+
+    t.test('left delete, right delete', t => {
+        const operations = [ createDelete(5, 1, 'user') ]
+        t.equal(type.append(operations, createDelete(7, 1, 'user')), operations)
+        t.strictSame(operations, [ createDelete(12, 1, 'user') ])
+        t.end()
+    })
+
+    t.test('left insert text, right insert text', t => {
+        const operations = [ createInsertText('Hello', 1, 'user', 'key', 'value') ]
+        t.equal(type.append(operations, createInsertText(' World', 1, 'user', 'key', 'value')), operations)
+        t.strictSame(operations, [ createInsertText('Hello World', 1, 'user', 'key', 'value') ])
+        t.end()
+    })
+
+    t.test('left insert embed, right insert embed', t => {
+        const operations = [ createInsertEmbed(objectContent, 1, 'user', 'key', 'value') ]
+        t.equal(type.append(operations, createInsertEmbed(objectContent, 1, 'user', 'key', 'value')), operations)
+        t.strictSame(operations, [
+            createInsertEmbed(objectContent, 1, 'user', 'key', 'value'),
+            createInsertEmbed(objectContent, 1, 'user', 'key', 'value')
+        ])
+        t.end()
+    })
+
+    t.test('many', t => {
+        const operations = []
+        t.equal(type.append(operations, createInsertEmbed(objectContent, 1, 'user', 'key', 'value')), operations)
+        t.equal(type.append(operations, createInsertText('Hello', 1, 'user', 'key', 'value')), operations)
+        t.equal(type.append(operations, createInsertText(' World', 1, 'user', 'key', 'value')), operations)
+        t.equal(type.append(operations, createInsertText('!!!', 2, 'user', 'key', 'value')), operations)
+        t.equal(type.append(operations, createRetain(5)), operations)
+        t.equal(type.append(operations, createDelete(3, 5, 'user')), operations)
+        t.equal(type.append(operations, createDelete(4, 5, 'user')), operations)
+        t.strictSame(operations, [
+            createInsertEmbed(objectContent, 1, 'user', 'key', 'value'),
+            createInsertText('Hello World', 1, 'user', 'key', 'value'),
+            createInsertText('!!!', 2, 'user', 'key', 'value'),
+            createRetain(5),
+            createDelete(7, 5, 'user')
+        ])
+        t.end()
+    })
 
     t.end()
 })
