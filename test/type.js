@@ -1,8 +1,7 @@
 const tap = require('tap')
 const type = require('../lib/type')
 const {
-    createInsertText, createInsertOpen, createInsertClose, createInsertEmbed, createRetain, createDelete,
-    INVALID_OPERATION
+    createInsertText, createInsertOpen, createInsertClose, createInsertEmbed, createRetain, createDelete
 } = require('../lib/Operation')
 const objectContent = '\uE000DIV'
 
@@ -61,12 +60,6 @@ tap.test('append', t => {
         t.strictSame(operations, [ createDelete(5) ])
         t.end()
     })
-    t.test('left empty, right invalid', t => {
-        const operations = []
-        t.equal(type.append(operations, INVALID_OPERATION), operations)
-        t.strictSame(operations, [])
-        t.end()
-    })
 
     t.test('left empty, right insert (empty)', t => {
         const operations = []
@@ -90,35 +83,35 @@ tap.test('append', t => {
     })
 
     t.test('left insert text, right insert text', t => {
-        const operations = [ createInsertText('Hello', 1, 'user', 'key', 'value') ]
-        t.equal(type.append(operations, createInsertText(' World', 1, 'user', 'key', 'value')), operations)
-        t.strictSame(operations, [ createInsertText('Hello World', 1, 'user', 'key', 'value') ])
+        const operations = [ createInsertText('Hello', 1, 'user', ['key', 'value']) ]
+        t.equal(type.append(operations, createInsertText(' World', 1, 'user', ['key', 'value'])), operations)
+        t.strictSame(operations, [ createInsertText('Hello World', 1, 'user', ['key', 'value']) ])
         t.end()
     })
 
     t.test('left insert embed, right insert embed', t => {
-        const operations = [ createInsertEmbed(objectContent, 1, 'user', 'key', 'value') ]
-        t.equal(type.append(operations, createInsertEmbed(objectContent, 1, 'user', 'key', 'value')), operations)
+        const operations = [ createInsertEmbed(objectContent, 1, 'user', ['key', 'value']) ]
+        t.equal(type.append(operations, createInsertEmbed(objectContent, 1, 'user', ['key', 'value'])), operations)
         t.strictSame(operations, [
-            createInsertEmbed(objectContent, 1, 'user', 'key', 'value'),
-            createInsertEmbed(objectContent, 1, 'user', 'key', 'value')
+            createInsertEmbed(objectContent, 1, 'user', ['key', 'value']),
+            createInsertEmbed(objectContent, 1, 'user', ['key', 'value'])
         ])
         t.end()
     })
 
     t.test('many', t => {
         const operations = []
-        t.equal(type.append(operations, createInsertEmbed(objectContent, 1, 'user', 'key', 'value')), operations)
-        t.equal(type.append(operations, createInsertText('Hello', 1, 'user', 'key', 'value')), operations)
-        t.equal(type.append(operations, createInsertText(' World', 1, 'user', 'key', 'value')), operations)
-        t.equal(type.append(operations, createInsertText('!!!', 2, 'user', 'key', 'value')), operations)
+        t.equal(type.append(operations, createInsertEmbed(objectContent, 1, 'user', ['key', 'value'])), operations)
+        t.equal(type.append(operations, createInsertText('Hello', 1, 'user', ['key', 'value'])), operations)
+        t.equal(type.append(operations, createInsertText(' World', 1, 'user', ['key', 'value'])), operations)
+        t.equal(type.append(operations, createInsertText('!!!', 2, 'user', ['key', 'value'])), operations)
         t.equal(type.append(operations, createRetain(5)), operations)
         t.equal(type.append(operations, createDelete(3, 5, 'user')), operations)
         t.equal(type.append(operations, createDelete(4, 5, 'user')), operations)
         t.strictSame(operations, [
-            createInsertEmbed(objectContent, 1, 'user', 'key', 'value'),
-            createInsertText('Hello World', 1, 'user', 'key', 'value'),
-            createInsertText('!!!', 2, 'user', 'key', 'value'),
+            createInsertEmbed(objectContent, 1, 'user', ['key', 'value']),
+            createInsertText('Hello World', 1, 'user', ['key', 'value']),
+            createInsertText('!!!', 2, 'user', ['key', 'value']),
             createRetain(5),
             createDelete(7, 5, 'user')
         ])
@@ -134,9 +127,9 @@ tap.test('apply', t => {
 })
 
 tap.test('compose', t => {
-    const insertText1 = createInsertText('hello', 1, 'user', 'key', 'value')
-    const insertText2 = createInsertText(' world', 1, 'user', 'key', 'value')
-    const insertText3 = createInsertText('hello world', 1, 'user', 'key', 'value')
+    const insertText1 = createInsertText('hello', 1, 'user', ['key', 'value'])
+    const insertText2 = createInsertText(' world', 1, 'user', ['key', 'value'])
+    const insertText3 = createInsertText('hello world', 1, 'user', ['key', 'value'])
     const insertEmbed1 = createInsertEmbed(objectContent, 2, 'user')
     const insertEmbed2 = createInsertEmbed(objectContent, 3, 'another user')
     const retain1 = createRetain(5)

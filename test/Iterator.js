@@ -75,20 +75,6 @@ tap.test('empty retain operation at the start', t => {
     t.end()
 })
 
-tap.test('invalid operation at the start', t => {
-    const operations = [ [ 0, 12345 ] ]
-    const i = new Iterator(operations)
-
-    t.equal(i.operations, operations)
-    t.equal(i.index, 1)
-    t.equal(i.hasOperation, false)
-    t.equal(i.operation, null)
-    t.equal(i.operationLength, 0)
-    t.equal(i.offset, 0)
-    t.equal(i.remaining, 0)
-    t.end()
-})
-
 tap.test('insert text operation', t => {
     const text = 'asese fesfsefsd fsdhjb hbj \u{101EE}'
     const operation = createInsertText(text)
