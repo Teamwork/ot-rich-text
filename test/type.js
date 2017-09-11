@@ -99,6 +99,37 @@ tap.test('append', t => {
         t.end()
     })
 
+    t.test('left delete, right insert text', t => {
+        const operations = [ createDelete(5) ]
+        t.equal(type.append(operations, createInsertText('hello', 1, 'user', ['key', 'value'])), operations)
+        t.strictSame(operations, [
+            createInsertText('hello', 1, 'user', ['key', 'value']),
+            createDelete(5)
+        ])
+        t.end()
+    })
+
+    t.test('left insert text and delete, right insert text', t => {
+        const operations = [ createInsertText('hello', 1, 'user', ['key', 'value']), createDelete(5) ]
+        t.equal(type.append(operations, createInsertText(' world', 1, 'user', ['key', 'value'])), operations)
+        t.strictSame(operations, [
+            createInsertText('hello world', 1, 'user', ['key', 'value']),
+            createDelete(5)
+        ])
+        t.end()
+    })
+
+    t.test('left insert text and delete, right insert embed', t => {
+        const operations = [ createInsertText('hello', 1, 'user', ['key', 'value']), createDelete(5) ]
+        t.equal(type.append(operations, createInsertEmbed(objectContent, 1, 'user', ['key', 'value'])), operations)
+        t.strictSame(operations, [
+            createInsertText('hello', 1, 'user', ['key', 'value']),
+            createInsertEmbed(objectContent, 1, 'user', ['key', 'value']),
+            createDelete(5)
+        ])
+        t.end()
+    })
+
     t.test('many', t => {
         const operations = []
         t.equal(type.append(operations, createInsertEmbed(objectContent, 1, 'user', ['key', 'value'])), operations)
