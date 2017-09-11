@@ -143,16 +143,18 @@ tap.test('append', t => {
 })
 
 tap.test('compose', t => {
+    // TODO compose 2 longer deltas
+
     const insertText1 = createInsertText('hello', ['key', 'value'])
     const insertText2 = createInsertText(' world', ['key', 'value'])
     const insertText3 = createInsertText('hello world', ['key', 'value'])
-    const insertEmbed1 = createInsertEmbed(objectContent, 2, 'user')
-    const insertEmbed2 = createInsertEmbed(objectContent, 3, 'another user')
+    const insertEmbed1 = createInsertEmbed(objectContent)
+    const insertEmbed2 = createInsertEmbed(objectContent)
     const retain1 = createRetain(5)
     const retain2 = createRetain(8)
-    const delete1 = createDelete(6, 3, 'user')
-    const delete2 = createDelete(3, 3 ,'user')
-    const delete3 = createDelete(9, 3 ,'user')
+    const delete1 = createDelete(6)
+    const delete2 = createDelete(3)
+    const delete3 = createDelete(9)
 
     t.test('left empty, right insert', t => {
         const left = []
