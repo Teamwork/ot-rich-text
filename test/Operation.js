@@ -2,7 +2,7 @@ const tap = require('tap')
 const {
     createInsertText, createInsertOpen, createInsertClose, createInsertEmbed, createRetain, createDelete,
     isInsert, isInsertText, isInsertOpen, isInsertClose, isInsertEmbed, isRetain, isDelete,
-    getContent, getVersion, getAuthor,
+    getContent,
     getLength,
     slice,
     merge
@@ -13,10 +13,10 @@ const validObjectContent = '\uE000DIV'
 tap.test('basic tests', t => {
     const retain = createRetain(1)
     const del = createDelete(2)
-    const insertText = createInsertText('hello', 5, 'user')
-    const insertOpen = createInsertOpen(validObjectContent, 6, 'user')
-    const insertClose = createInsertClose(validObjectContent, 7, 'user')
-    const insertEmbed = createInsertEmbed(validObjectContent, 8, 'user')
+    const insertText = createInsertText('hello')
+    const insertOpen = createInsertOpen(validObjectContent)
+    const insertClose = createInsertClose(validObjectContent)
+    const insertEmbed = createInsertEmbed(validObjectContent)
 
     t.equal(getContent(retain), 1)
     t.equal(getContent(del), 2)
@@ -24,20 +24,6 @@ tap.test('basic tests', t => {
     t.equal(getContent(insertOpen), validObjectContent)
     t.equal(getContent(insertClose), validObjectContent)
     t.equal(getContent(insertEmbed), validObjectContent)
-
-    t.equal(getVersion(retain), 0)
-    t.equal(getVersion(del), 0)
-    t.equal(getVersion(insertText), 5)
-    t.equal(getVersion(insertOpen), 6)
-    t.equal(getVersion(insertClose), 7)
-    t.equal(getVersion(insertEmbed), 8)
-
-    t.equal(getAuthor(retain), '')
-    t.equal(getAuthor(del), '')
-    t.equal(getAuthor(insertText), 'user')
-    t.equal(getAuthor(insertOpen), 'user')
-    t.equal(getAuthor(insertClose), 'user')
-    t.equal(getAuthor(insertEmbed), 'user')
 
     t.equal(isRetain(retain), true)
     t.equal(isRetain(del), false)
@@ -119,15 +105,15 @@ tap.test('merge', t => {
     t.strictSame(merge(createRetain(2), createRetain(5)), createRetain(7))
     t.strictSame(merge(createRetain(0), createRetain(0)), createRetain(0))
     t.strictSame(merge(createDelete(3), createDelete(8)), createDelete(11))
-    t.strictSame(merge(createDelete(3, 5, 'user'), createDelete(8, 5, 'user')), createDelete(11, 5, 'user'))
+    t.strictSame(merge(createDelete(3), createDelete(8)), createDelete(11, 5, 'user'))
     t.strictSame(merge(
-        createInsertText('Hello', 5, 'user'),
-        createInsertText(' World', 5, 'user')),
-        createInsertText('Hello World', 5, 'user'))
+        createInsertText('Hello'),
+        createInsertText(' World')),
+        createInsertText('Hello World'))
     t.strictSame(merge(
-        createInsertText('Hello', 5, 'user', ['attributeName', 'attributeValue']),
-        createInsertText(' World', 5, 'user', ['attributeName', 'attributeValue'])),
-        createInsertText('Hello World', 5, 'user', ['attributeName', 'attributeValue']))
+        createInsertText('Hello', ['attributeName', 'attributeValue']),
+        createInsertText(' World', ['attributeName', 'attributeValue'])),
+        createInsertText('Hello World', ['attributeName', 'attributeValue']))
 
     t.equal(merge(createRetain(1), createDelete(1)), null, 'Different actions')
     t.equal(merge(createInsertOpen(validObjectContent), createInsertClose(validObjectContent)), null, 'Different insert actions')
@@ -136,15 +122,15 @@ tap.test('merge', t => {
     t.equal(merge(createInsertEmbed(validObjectContent), createInsertEmbed(validObjectContent)), null, 'Insert embed')
     t.equal(
         merge(
-            createInsertText('hello', 1, 'user', ['attributeName', 'attributeValue']),
-            createInsertText('hello', 1, 'user')
+            createInsertText('hello', ['attributeName', 'attributeValue']),
+            createInsertText('hello')
         ),
         null,
         'Different attribute lengths')
     t.equal(
         merge(
-            createInsertText('hello', 1, 'user', ['attributeName', 'attributeValue1']),
-            createInsertText('hello', 1, 'user', ['attributeName', 'attributeValue2'])
+            createInsertText('hello', ['attributeName', 'attributeValue1']),
+            createInsertText('hello', ['attributeName', 'attributeValue2'])
         ),
         null,
         'Different attributes')
@@ -211,88 +197,88 @@ tap.test('slice', t => {
 
     t.test('insert text', t => {
         t.strictSame(
-            slice(createInsertText('hello', 1, 'user', ['key', 'value'])),
-            createInsertText('hello', 1, 'user', ['key', 'value']),
+            slice(createInsertText('hello', ['key', 'value'])),
+            createInsertText('hello', ['key', 'value']),
             'no params')
         t.strictSame(
-            slice(createInsertText('hello', 1, 'user', ['key', 'value']), -1),
-            createInsertText('hello', 1, 'user', ['key', 'value']),
+            slice(createInsertText('hello', ['key', 'value']), -1),
+            createInsertText('hello', ['key', 'value']),
             'negative offset')
         t.strictSame(
-            slice(createInsertText('hello', 1, 'user', ['key', 'value']), 1),
-            createInsertText('ello', 1, 'user', ['key', 'value']),
+            slice(createInsertText('hello', ['key', 'value']), 1),
+            createInsertText('ello', ['key', 'value']),
             'positive offset')
         t.strictSame(
-            slice(createInsertText('hello', 1, 'user', ['key', 'value']), 1, -1),
-            createInsertText('', 1, 'user', ['key', 'value']),
+            slice(createInsertText('hello', ['key', 'value']), 1, -1),
+            createInsertText('', ['key', 'value']),
             'positive offset and negative count')
         t.strictSame(
-            slice(createInsertText('hello', 1, 'user', ['key', 'value']), 1, 2),
-            createInsertText('el', 1, 'user', ['key', 'value']),
+            slice(createInsertText('hello', ['key', 'value']), 1, 2),
+            createInsertText('el', ['key', 'value']),
             'positive offset and small count')
         t.strictSame(
-            slice(createInsertText('hello', 1, 'user', ['key', 'value']), 5),
-            createInsertText('', 1, 'user', ['key', 'value']),
+            slice(createInsertText('hello', ['key', 'value']), 5),
+            createInsertText('', ['key', 'value']),
             'too big offset')
         t.end()
     })
 
     t.test('insert open', t => {
         t.strictSame(
-            slice(createInsertOpen(validObjectContent, 1, 'user', ['key', 'value'])),
-            createInsertOpen(validObjectContent, 1, 'user', ['key', 'value']),
+            slice(createInsertOpen(validObjectContent, ['key', 'value'])),
+            createInsertOpen(validObjectContent, ['key', 'value']),
             'no params')
         t.strictSame(
-            slice(createInsertOpen(validObjectContent, 1, 'user', ['key', 'value']), -1),
-            createInsertOpen(validObjectContent, 1, 'user', ['key', 'value']),
+            slice(createInsertOpen(validObjectContent, ['key', 'value']), -1),
+            createInsertOpen(validObjectContent, ['key', 'value']),
             'negative offset')
         t.strictSame(
-            slice(createInsertOpen(validObjectContent, 1, 'user', ['key', 'value']), 1),
-            createInsertOpen('', 1, 'user', ['key', 'value']),
+            slice(createInsertOpen(validObjectContent, ['key', 'value']), 1),
+            createInsertOpen('', ['key', 'value']),
             'too big offset')
         t.strictSame(
-            slice(createInsertOpen(validObjectContent, 1, 'user', ['key', 'value']), 0, 0),
-            createInsertOpen('', 1, 'user', ['key', 'value']),
+            slice(createInsertOpen(validObjectContent, ['key', 'value']), 0, 0),
+            createInsertOpen('', ['key', 'value']),
             'zero count')
         t.end()
     })
 
     t.test('insert close', t => {
         t.strictSame(
-            slice(createInsertClose(validObjectContent, 1, 'user', ['key', 'value'])),
-            createInsertClose(validObjectContent, 1, 'user', ['key', 'value']),
+            slice(createInsertClose(validObjectContent, ['key', 'value'])),
+            createInsertClose(validObjectContent, ['key', 'value']),
             'no params')
         t.strictSame(
-            slice(createInsertClose(validObjectContent, 1, 'user', ['key', 'value']), -1),
-            createInsertClose(validObjectContent, 1, 'user', ['key', 'value']),
+            slice(createInsertClose(validObjectContent, ['key', 'value']), -1),
+            createInsertClose(validObjectContent, ['key', 'value']),
             'negative offset')
         t.strictSame(
-            slice(createInsertClose(validObjectContent, 1, 'user', ['key', 'value']), 1),
-            createInsertClose('', 1, 'user', ['key', 'value']),
+            slice(createInsertClose(validObjectContent, ['key', 'value']), 1),
+            createInsertClose('', ['key', 'value']),
             'too big offset')
         t.strictSame(
-            slice(createInsertClose(validObjectContent, 1, 'user', ['key', 'value']), 0, 0),
-            createInsertClose('', 1, 'user', ['key', 'value']),
+            slice(createInsertClose(validObjectContent, ['key', 'value']), 0, 0),
+            createInsertClose('', ['key', 'value']),
             'zero count')
         t.end()
     })
 
     t.test('insert embed', t => {
         t.strictSame(
-            slice(createInsertEmbed(validObjectContent, 1, 'user', ['key', 'value'])),
-            createInsertEmbed(validObjectContent, 1, 'user', ['key', 'value']),
+            slice(createInsertEmbed(validObjectContent, ['key', 'value'])),
+            createInsertEmbed(validObjectContent, ['key', 'value']),
             'no params')
         t.strictSame(
-            slice(createInsertEmbed(validObjectContent, 1, 'user', ['key', 'value']), -1),
-            createInsertEmbed(validObjectContent, 1, 'user', ['key', 'value']),
+            slice(createInsertEmbed(validObjectContent, ['key', 'value']), -1),
+            createInsertEmbed(validObjectContent, ['key', 'value']),
             'negative offset')
         t.strictSame(
-            slice(createInsertEmbed(validObjectContent, 1, 'user', ['key', 'value']), 1),
-            createInsertEmbed('', 1, 'user', ['key', 'value']),
+            slice(createInsertEmbed(validObjectContent, ['key', 'value']), 1),
+            createInsertEmbed('', ['key', 'value']),
             'too big offset')
         t.strictSame(
-            slice(createInsertEmbed(validObjectContent, 1, 'user', ['key', 'value']), 0, 0),
-            createInsertEmbed('', 1, 'user', ['key', 'value']),
+            slice(createInsertEmbed(validObjectContent, ['key', 'value']), 0, 0),
+            createInsertEmbed('', ['key', 'value']),
             'zero count')
         t.end()
     })
