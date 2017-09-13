@@ -3,7 +3,7 @@ const Delta = require('../lib/Delta')
 const {
     createInsertText, createInsertOpen, createInsertClose, createInsertEmbed, createRetain, createDelete
 } = require('../lib/Operation')
-const objectContent = '\uE000DIV'
+const nodeContent = '\uE000'
 
 tap.test('create', t => {
     const snapshot = []
@@ -16,26 +16,26 @@ tap.test('create', t => {
 tap.test('append', t => {
     t.test('left empty, right insert (text)', t => {
         const operations = []
-        t.equal(Delta.append(operations, createInsertText('hello')), operations)
-        t.strictSame(operations, [ createInsertText('hello') ])
+        t.equal(Delta.append(operations, createInsertText('hello', 1, 'user')), operations)
+        t.strictSame(operations, [ createInsertText('hello', 1, 'user') ])
         t.end()
     })
     t.test('left empty, right insert (open)', t => {
         const operations = []
-        t.equal(Delta.append(operations, createInsertOpen(objectContent)), operations)
-        t.strictSame(operations, [ createInsertOpen(objectContent) ])
+        t.equal(Delta.append(operations, createInsertOpen(nodeContent, 1, 'user', 'DIV')), operations)
+        t.strictSame(operations, [ createInsertOpen(nodeContent, 1, 'user', 'DIV') ])
         t.end()
     })
     t.test('left empty, right insert (close)', t => {
         const operations = []
-        t.equal(Delta.append(operations, createInsertClose(objectContent)), operations)
-        t.strictSame(operations, [ createInsertClose(objectContent) ])
+        t.equal(Delta.append(operations, createInsertClose(nodeContent, 1, 'user', 'DIV')), operations)
+        t.strictSame(operations, [ createInsertClose(nodeContent, 1, 'user', 'DIV') ])
         t.end()
     })
     t.test('left empty, right insert (embed)', t => {
         const operations = []
-        t.equal(Delta.append(operations, createInsertEmbed(objectContent)), operations)
-        t.strictSame(operations, [ createInsertEmbed(objectContent) ])
+        t.equal(Delta.append(operations, createInsertEmbed(nodeContent, 1, 'user', 'DIV')), operations)
+        t.strictSame(operations, [ createInsertEmbed(nodeContent, 1, 'user', 'DIV') ])
         t.end()
     })
     t.test('left empty, right retain', t => {
@@ -53,7 +53,7 @@ tap.test('append', t => {
 
     t.test('left empty, right insert (empty)', t => {
         const operations = []
-        t.equal(Delta.append(operations, createInsertText()), operations)
+        t.equal(Delta.append(operations, createInsertText('', 1, 'user')), operations)
         t.strictSame(operations, [])
         t.end()
     })
@@ -80,11 +80,11 @@ tap.test('append', t => {
     })
 
     t.test('left insert embed, right insert embed', t => {
-        const operations = [ createInsertEmbed(objectContent, ['key', 'value']) ]
-        t.equal(Delta.append(operations, createInsertEmbed(objectContent, ['key', 'value'])), operations)
+        const operations = [ createInsertEmbed(nodeContent, 1, 'user', 'DIV', ['key', 'value']) ]
+        t.equal(Delta.append(operations, createInsertEmbed(nodeContent, 1, 'user', 'DIV', ['key', 'value'])), operations)
         t.strictSame(operations, [
-            createInsertEmbed(objectContent, ['key', 'value']),
-            createInsertEmbed(objectContent, ['key', 'value'])
+            createInsertEmbed(nodeContent, 1, 'user', 'DIV', ['key', 'value']),
+            createInsertEmbed(nodeContent, 1, 'user', 'DIV', ['key', 'value'])
         ])
         t.end()
     })
@@ -111,10 +111,10 @@ tap.test('append', t => {
 
     t.test('left insert text and delete, right insert embed', t => {
         const operations = [ createInsertText('hello', 1, 'user', ['key', 'value']), createDelete(5) ]
-        t.equal(Delta.append(operations, createInsertEmbed(objectContent, ['key', 'value'])), operations)
+        t.equal(Delta.append(operations, createInsertEmbed(nodeContent, 1, 'user', 'DIV', ['key', 'value'])), operations)
         t.strictSame(operations, [
             createInsertText('hello', 1, 'user', ['key', 'value']),
-            createInsertEmbed(objectContent, ['key', 'value']),
+            createInsertEmbed(nodeContent, 1, 'user', 'DIV', ['key', 'value']),
             createDelete(5)
         ])
         t.end()
@@ -122,7 +122,7 @@ tap.test('append', t => {
 
     t.test('many', t => {
         const operations = []
-        t.equal(Delta.append(operations, createInsertEmbed(objectContent, ['key', 'value'])), operations)
+        t.equal(Delta.append(operations, createInsertEmbed(nodeContent, 1, 'user', 'DIV', ['key', 'value'])), operations)
         t.equal(Delta.append(operations, createInsertText('Hello', 1, 'user', ['key', 'value'])), operations)
         t.equal(Delta.append(operations, createInsertText(' World', 1, 'user', ['key', 'value'])), operations)
         t.equal(Delta.append(operations, createInsertText('!!!', 1, 'user', ['key', 'value2'])), operations)
@@ -130,7 +130,7 @@ tap.test('append', t => {
         t.equal(Delta.append(operations, createDelete(3)), operations)
         t.equal(Delta.append(operations, createDelete(4)), operations)
         t.strictSame(operations, [
-            createInsertEmbed(objectContent, ['key', 'value']),
+            createInsertEmbed(nodeContent, 1, 'user', 'DIV', ['key', 'value']),
             createInsertText('Hello World', 1, 'user', ['key', 'value']),
             createInsertText('!!!', 1, 'user', ['key', 'value2']),
             createRetain(5),
@@ -148,8 +148,8 @@ tap.test('compose', t => {
     const insertText1 = createInsertText('hello', 1, 'user', ['key', 'value'])
     const insertText2 = createInsertText(' world', 1, 'user', ['key', 'value'])
     const insertText3 = createInsertText('hello world', 1, 'user', ['key', 'value'])
-    const insertEmbed1 = createInsertEmbed(objectContent)
-    const insertEmbed2 = createInsertEmbed(objectContent)
+    const insertEmbed1 = createInsertEmbed(nodeContent, 1, 'user', 'DIV')
+    const insertEmbed2 = createInsertEmbed(nodeContent, 1, 'user', 'DIV')
     const retain1 = createRetain(5)
     const retain2 = createRetain(8)
     const delete1 = createDelete(6)

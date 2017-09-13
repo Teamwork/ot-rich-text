@@ -7,25 +7,24 @@ const {
     slice, merge, composeIterators
 } = require('../lib/Operation')
 const Iterator = require('../lib/Iterator')
-const invalidObjectContent = '\uE000'
-const validObjectContent = '\uE000DIV'
+const invalidNodeContent = '\uE000DIV'
 const nodeContent1 = '\uE001'
 const nodeContent2 = '\uE002'
 
 tap.test('basic tests', t => {
     const retain = createRetain(1)
     const del = createDelete(2)
-    const insertText = createInsertText('hello')
-    const insertOpen = createInsertOpen(validObjectContent)
-    const insertClose = createInsertClose(validObjectContent)
-    const insertEmbed = createInsertEmbed(validObjectContent)
+    const insertText = createInsertText('hello', 1, 'user')
+    const insertOpen = createInsertOpen(nodeContent1, 1, 'user', 'DIV')
+    const insertClose = createInsertClose(nodeContent1, 1, 'user', 'DIV')
+    const insertEmbed = createInsertEmbed(nodeContent1, 1, 'user', 'DIV')
 
     t.equal(getContent(retain), 1)
     t.equal(getContent(del), 2)
     t.equal(getContent(insertText), 'hello')
-    t.equal(getContent(insertOpen), validObjectContent)
-    t.equal(getContent(insertClose), validObjectContent)
-    t.equal(getContent(insertEmbed), validObjectContent)
+    t.equal(getContent(insertOpen), nodeContent1)
+    t.equal(getContent(insertClose), nodeContent1)
+    t.equal(getContent(insertEmbed), nodeContent1)
 
     t.equal(isRetain(retain), true)
     t.equal(isRetain(del), false)
@@ -85,14 +84,14 @@ tap.test('copyOperation', t => {
             createInsertText('hello', 1, 'user', ['key', 'value'])),
             createInsertText('hello', 1, 'user', ['key', 'value']))
         t.strictSame(copyOperation(
-            createInsertOpen(nodeContent1, ['key', 'value'])),
-            createInsertOpen(nodeContent1, ['key', 'value']))
+            createInsertOpen(nodeContent1, 1, 'user', 'DIV', ['key', 'value'])),
+            createInsertOpen(nodeContent1, 1, 'user', 'DIV', ['key', 'value']))
         t.strictSame(copyOperation(
-            createInsertClose(nodeContent1, ['key', 'value'])),
-            createInsertClose(nodeContent1, ['key', 'value']))
+            createInsertClose(nodeContent1, 1, 'user', 'DIV', ['key', 'value'])),
+            createInsertClose(nodeContent1, 1, 'user', 'DIV', ['key', 'value']))
         t.strictSame(copyOperation(
-            createInsertEmbed(nodeContent1, ['key', 'value'])),
-            createInsertEmbed(nodeContent1, ['key', 'value']))
+            createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key', 'value'])),
+            createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key', 'value']))
         t.strictSame(copyOperation(
             createRetain(5, ['key', 'value'])),
             createRetain(5, ['key', 'value']))
@@ -107,14 +106,14 @@ tap.test('copyOperation', t => {
             createInsertText('hello', 1, 'user', ['key', 'value']), true),
             createInsertText('hello', 1, 'user'))
         t.strictSame(copyOperation(
-            createInsertOpen(nodeContent1, ['key', 'value']), true),
-            createInsertOpen(nodeContent1))
+            createInsertOpen(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), true),
+            createInsertOpen(nodeContent1, 1, 'user', 'DIV'))
         t.strictSame(copyOperation(
-            createInsertClose(nodeContent1, ['key', 'value']), true),
-            createInsertClose(nodeContent1))
+            createInsertClose(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), true),
+            createInsertClose(nodeContent1, 1, 'user', 'DIV'))
         t.strictSame(copyOperation(
-            createInsertEmbed(nodeContent1, ['key', 'value']), true),
-            createInsertEmbed(nodeContent1))
+            createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), true),
+            createInsertEmbed(nodeContent1, 1, 'user', 'DIV'))
         t.strictSame(copyOperation(
             createRetain(5, ['key', 'value']), true),
             createRetain(5))
@@ -130,8 +129,8 @@ tap.test('copyOperation', t => {
 tap.test('areAttributesEqual', t => {
     t.test('insertText', t => {
         t.equal(areAttributesEqual(
-            createInsertText('a'),
-            createInsertText('b')
+            createInsertText('a', 1, 'user'),
+            createInsertText('b', 1, 'user')
         ), true)
         t.equal(areAttributesEqual(
             createInsertText('a', 1, 'user', ['key', 'value']),
@@ -143,10 +142,10 @@ tap.test('areAttributesEqual', t => {
         ), true)
         t.equal(areAttributesEqual(
             createInsertText('a', 1, 'user', ['key', 'value']),
-            createInsertText('b')
+            createInsertText('b', 1, 'user')
         ), false)
         t.equal(areAttributesEqual(
-            createInsertText('a'),
+            createInsertText('a', 1, 'user'),
             createInsertText('b', 1, 'user', ['key', 'value'])
         ), false)
         t.equal(areAttributesEqual(
@@ -192,39 +191,39 @@ tap.test('areAttributesEqual', t => {
     })
     t.test('insertEmbed', t => {
         t.equal(areAttributesEqual(
-            createInsertEmbed(nodeContent1),
-            createInsertEmbed(nodeContent2)
+            createInsertEmbed(nodeContent1, 1, 'user', 'DIV'),
+            createInsertEmbed(nodeContent2, 1, 'user', 'DIV')
         ), true)
         t.equal(areAttributesEqual(
-            createInsertEmbed(nodeContent1, ['key', 'value']),
-            createInsertEmbed(nodeContent2, ['key', 'value'])
+            createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key', 'value']),
+            createInsertEmbed(nodeContent2, 1, 'user', 'DIV', ['key', 'value'])
         ), true)
         t.equal(areAttributesEqual(
-            createInsertEmbed(nodeContent1, ['key', 'value', 'key2', null]),
-            createInsertEmbed(nodeContent2, ['key', 'value', 'key2', null])
+            createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key', 'value', 'key2', null]),
+            createInsertEmbed(nodeContent2, 1, 'user', 'DIV', ['key', 'value', 'key2', null])
         ), true)
         t.equal(areAttributesEqual(
-            createInsertEmbed(nodeContent1, ['key', 'value']),
-            createInsertEmbed(nodeContent2)
+            createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key', 'value']),
+            createInsertEmbed(nodeContent2, 1, 'user', 'DIV')
         ), false)
         t.equal(areAttributesEqual(
-            createInsertEmbed(nodeContent1),
-            createInsertEmbed(nodeContent2, ['key', 'value'])
+            createInsertEmbed(nodeContent1, 1, 'user', 'DIV'),
+            createInsertEmbed(nodeContent2, 1, 'user', 'DIV', ['key', 'value'])
         ), false)
         t.equal(areAttributesEqual(
-            createInsertEmbed(nodeContent1, ['key', 'value1']),
-            createInsertEmbed(nodeContent2, ['key', 'value2'])
+            createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key', 'value1']),
+            createInsertEmbed(nodeContent2, 1, 'user', 'DIV', ['key', 'value2'])
         ), false)
         t.equal(areAttributesEqual(
-            createInsertEmbed(nodeContent1, ['key1', 'value']),
-            createInsertEmbed(nodeContent2, ['key2', 'value'])
+            createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key1', 'value']),
+            createInsertEmbed(nodeContent2, 1, 'user', 'DIV', ['key2', 'value'])
         ), false)
         t.end()
     })
     t.test('mix', t => {
         t.equal(areAttributesEqual(
             createInsertText('hello', 1, 'user', ['key1', 'value']),
-            createInsertEmbed(nodeContent2, ['key1', 'value'])
+            createInsertEmbed(nodeContent2, 1, 'user', 'DIV', ['key1', 'value'])
         ), true)
         t.equal(areAttributesEqual(
             createInsertText('hello', 1, 'user', ['key1', 'value']),
@@ -232,11 +231,11 @@ tap.test('areAttributesEqual', t => {
         ), true)
         t.equal(areAttributesEqual(
             createRetain(5, ['key1', 'value']),
-            createInsertEmbed(nodeContent2, ['key1', 'value'])
+            createInsertEmbed(nodeContent2, 1, 'user', 'DIV', ['key1', 'value'])
         ), true)
         t.equal(areAttributesEqual(
             createInsertText('hello', 1, 'user', ['key1', 'value1']),
-            createInsertEmbed(nodeContent2, ['key1', 'value2'])
+            createInsertEmbed(nodeContent2, 1, 'user', 'DIV', ['key1', 'value2'])
         ), false)
         t.equal(areAttributesEqual(
             createInsertText('hello', 1, 'user', ['key1', 'value1']),
@@ -244,7 +243,7 @@ tap.test('areAttributesEqual', t => {
         ), false)
         t.equal(areAttributesEqual(
             createRetain(5, ['key1', 'value1']),
-            createInsertEmbed(nodeContent2, ['key1', 'value2'])
+            createInsertEmbed(nodeContent2, 1, 'user', 'DIV', ['key1', 'value2'])
         ), false)
         t.end()
     })
@@ -252,24 +251,24 @@ tap.test('areAttributesEqual', t => {
 })
 
 tap.test('getLength', t => {
-    t.equal(getLength(createInsertText('hello')), 5)
-    t.equal(getLength(createInsertOpen(validObjectContent)), 1)
-    t.equal(getLength(createInsertClose(validObjectContent)), 1)
-    t.equal(getLength(createInsertEmbed(validObjectContent)), 1)
+    t.equal(getLength(createInsertText('hello', 1, 'user')), 5)
+    t.equal(getLength(createInsertOpen(nodeContent1, 1, 'user', 'DIV')), 1)
+    t.equal(getLength(createInsertClose(nodeContent1, 1, 'user', 'DIV')), 1)
+    t.equal(getLength(createInsertEmbed(nodeContent1, 1, 'user', 'DIV')), 1)
     t.equal(getLength(createRetain(5)), 5)
     t.equal(getLength(createDelete(5)), 5)
 
     t.equal(getLength([111]), 0)
-    t.equal(getLength(createInsertText()), 0)
-    t.equal(getLength(createInsertOpen()), 0)
-    t.equal(getLength(createInsertOpen(invalidObjectContent)), 0)
-    t.equal(getLength(createInsertClose()), 0)
-    t.equal(getLength(createInsertClose(invalidObjectContent)), 0)
-    t.equal(getLength(createInsertEmbed()), 0)
-    t.equal(getLength(createInsertEmbed(invalidObjectContent)), 0)
-    t.equal(getLength(createRetain()), 0)
+    t.equal(getLength(createInsertText('', 1, 'user')), 0)
+    t.equal(getLength(createInsertOpen('', 1, 'user', 'DIV')), 0)
+    t.equal(getLength(createInsertOpen(invalidNodeContent, 1, 'user', 'DIV')), 0)
+    t.equal(getLength(createInsertClose('', 1, 'user', 'DIV')), 0)
+    t.equal(getLength(createInsertClose(invalidNodeContent, 1, 'user', 'DIV')), 0)
+    t.equal(getLength(createInsertEmbed('', 1, 'user', 'DIV')), 0)
+    t.equal(getLength(createInsertEmbed(invalidNodeContent, 1, 'user', 'DIV')), 0)
+    t.equal(getLength(createRetain(0)), 0)
     t.equal(getLength(createRetain(-1)), 0)
-    t.equal(getLength(createDelete()), 0)
+    t.equal(getLength(createDelete(0)), 0)
     t.equal(getLength(createDelete(-1)), 0)
 
     t.end()
@@ -281,23 +280,23 @@ tap.test('merge', t => {
     t.strictSame(merge(createDelete(3), createDelete(8)), createDelete(11))
     t.strictSame(merge(createDelete(3), createDelete(8)), createDelete(11, 5, 'user'))
     t.strictSame(merge(
-        createInsertText('Hello'),
-        createInsertText(' World')),
-        createInsertText('Hello World'))
+        createInsertText('Hello', 1, 'user'),
+        createInsertText(' World', 1, 'user')),
+        createInsertText('Hello World', 1, 'user'))
     t.strictSame(merge(
         createInsertText('Hello', 1, 'user', ['attributeName', 'attributeValue']),
         createInsertText(' World', 1, 'user', ['attributeName', 'attributeValue'])),
         createInsertText('Hello World', 1, 'user', ['attributeName', 'attributeValue']))
 
     t.equal(merge(createRetain(1), createDelete(1)), null, 'Different actions')
-    t.equal(merge(createInsertOpen(validObjectContent), createInsertClose(validObjectContent)), null, 'Different insert actions')
-    t.equal(merge(createInsertOpen(validObjectContent), createInsertOpen(validObjectContent)), null, 'Insert open')
-    t.equal(merge(createInsertClose(validObjectContent), createInsertClose(validObjectContent)), null, 'Insert close')
-    t.equal(merge(createInsertEmbed(validObjectContent), createInsertEmbed(validObjectContent)), null, 'Insert embed')
+    t.equal(merge(createInsertOpen(nodeContent1, 1, 'user', 'DIV'), createInsertClose(nodeContent1, 1, 'user', 'DIV')), null, 'Different insert actions')
+    t.equal(merge(createInsertOpen(nodeContent1, 1, 'user', 'DIV'), createInsertOpen(nodeContent1, 1, 'user', 'DIV')), null, 'Insert open')
+    t.equal(merge(createInsertClose(nodeContent1, 1, 'user', 'DIV'), createInsertClose(nodeContent1, 1, 'user', 'DIV')), null, 'Insert close')
+    t.equal(merge(createInsertEmbed(nodeContent1, 1, 'user', 'DIV'), createInsertEmbed(nodeContent1, 1, 'user', 'DIV')), null, 'Insert embed')
     t.equal(
         merge(
             createInsertText('hello', 1, 'user', ['attributeName', 'attributeValue']),
-            createInsertText('hello')
+            createInsertText('hello', 1, 'user')
         ),
         null,
         'Different attribute lengths')
@@ -399,60 +398,60 @@ tap.test('slice', t => {
 
     t.test('insert open', t => {
         t.strictSame(
-            slice(createInsertOpen(validObjectContent, ['key', 'value'])),
-            createInsertOpen(validObjectContent, ['key', 'value']),
+            slice(createInsertOpen(nodeContent1, 1, 'user', 'DIV', ['key', 'value'])),
+            createInsertOpen(nodeContent1, 1, 'user', 'DIV', ['key', 'value']),
             'no params')
         t.strictSame(
-            slice(createInsertOpen(validObjectContent, ['key', 'value']), -1),
-            createInsertOpen(validObjectContent, ['key', 'value']),
+            slice(createInsertOpen(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), -1),
+            createInsertOpen(nodeContent1, 1, 'user', 'DIV', ['key', 'value']),
             'negative offset')
         t.strictSame(
-            slice(createInsertOpen(validObjectContent, ['key', 'value']), 1),
-            createInsertOpen('', ['key', 'value']),
+            slice(createInsertOpen(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), 1),
+            createInsertOpen('', 1, 'user', 'DIV', ['key', 'value']),
             'too big offset')
         t.strictSame(
-            slice(createInsertOpen(validObjectContent, ['key', 'value']), 0, 0),
-            createInsertOpen('', ['key', 'value']),
+            slice(createInsertOpen(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), 0, 0),
+            createInsertOpen('', 1, 'user', 'DIV', ['key', 'value']),
             'zero count')
         t.end()
     })
 
     t.test('insert close', t => {
         t.strictSame(
-            slice(createInsertClose(validObjectContent, ['key', 'value'])),
-            createInsertClose(validObjectContent, ['key', 'value']),
+            slice(createInsertClose(nodeContent1, 1, 'user', 'DIV', ['key', 'value'])),
+            createInsertClose(nodeContent1, 1, 'user', 'DIV', ['key', 'value']),
             'no params')
         t.strictSame(
-            slice(createInsertClose(validObjectContent, ['key', 'value']), -1),
-            createInsertClose(validObjectContent, ['key', 'value']),
+            slice(createInsertClose(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), -1),
+            createInsertClose(nodeContent1, 1, 'user', 'DIV', ['key', 'value']),
             'negative offset')
         t.strictSame(
-            slice(createInsertClose(validObjectContent, ['key', 'value']), 1),
-            createInsertClose('', ['key', 'value']),
+            slice(createInsertClose(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), 1),
+            createInsertClose('', 1, 'user', 'DIV', ['key', 'value']),
             'too big offset')
         t.strictSame(
-            slice(createInsertClose(validObjectContent, ['key', 'value']), 0, 0),
-            createInsertClose('', ['key', 'value']),
+            slice(createInsertClose(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), 0, 0),
+            createInsertClose('', 1, 'user', 'DIV', ['key', 'value']),
             'zero count')
         t.end()
     })
 
     t.test('insert embed', t => {
         t.strictSame(
-            slice(createInsertEmbed(validObjectContent, ['key', 'value'])),
-            createInsertEmbed(validObjectContent, ['key', 'value']),
+            slice(createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key', 'value'])),
+            createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key', 'value']),
             'no params')
         t.strictSame(
-            slice(createInsertEmbed(validObjectContent, ['key', 'value']), -1),
-            createInsertEmbed(validObjectContent, ['key', 'value']),
+            slice(createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), -1),
+            createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key', 'value']),
             'negative offset')
         t.strictSame(
-            slice(createInsertEmbed(validObjectContent, ['key', 'value']), 1),
-            createInsertEmbed('', ['key', 'value']),
+            slice(createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), 1),
+            createInsertEmbed('', 1, 'user', 'DIV', ['key', 'value']),
             'too big offset')
         t.strictSame(
-            slice(createInsertEmbed(validObjectContent, ['key', 'value']), 0, 0),
-            createInsertEmbed('', ['key', 'value']),
+            slice(createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), 0, 0),
+            createInsertEmbed('', 1, 'user', 'DIV', ['key', 'value']),
             'zero count')
         t.end()
     })
@@ -592,9 +591,9 @@ tap.test('composeIterators', t => {
     })
 
     t.test('iterator1 insert embed (no attributes), iterator2 retain (with attributes)', t => {
-        const i1 = new Iterator([ createInsertEmbed(validObjectContent) ])
+        const i1 = new Iterator([ createInsertEmbed(nodeContent1, 1, 'user', 'DIV') ])
         const i2 = new Iterator([ createRetain(9, ['key', 'value']) ]).next(2)
-        const composedOperation = createInsertEmbed(validObjectContent, ['key', 'value'])
+        const composedOperation = createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key', 'value'])
 
         t.strictSame(composeIterators(i1, i2), composedOperation)
         t.equal(i1.index, 1)
