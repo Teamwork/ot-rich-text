@@ -82,8 +82,8 @@ tap.test('basic tests', t => {
 tap.test('copyOperation', t => {
     t.test('with attributes', t => {
         t.strictSame(copyOperation(
-            createInsertText('hello', ['key', 'value'])),
-            createInsertText('hello', ['key', 'value']))
+            createInsertText('hello', 1, 'user', ['key', 'value'])),
+            createInsertText('hello', 1, 'user', ['key', 'value']))
         t.strictSame(copyOperation(
             createInsertOpen(nodeContent1, ['key', 'value'])),
             createInsertOpen(nodeContent1, ['key', 'value']))
@@ -104,8 +104,8 @@ tap.test('copyOperation', t => {
 
     t.test('without attributes', t => {
         t.strictSame(copyOperation(
-            createInsertText('hello', ['key', 'value']), true),
-            createInsertText('hello'))
+            createInsertText('hello', 1, 'user', ['key', 'value']), true),
+            createInsertText('hello', 1, 'user'))
         t.strictSame(copyOperation(
             createInsertOpen(nodeContent1, ['key', 'value']), true),
             createInsertOpen(nodeContent1))
@@ -134,28 +134,28 @@ tap.test('areAttributesEqual', t => {
             createInsertText('b')
         ), true)
         t.equal(areAttributesEqual(
-            createInsertText('a', ['key', 'value']),
-            createInsertText('b', ['key', 'value'])
+            createInsertText('a', 1, 'user', ['key', 'value']),
+            createInsertText('b', 1, 'user', ['key', 'value'])
         ), true)
         t.equal(areAttributesEqual(
-            createInsertText('a', ['key', 'value', 'key2', null]),
-            createInsertText('b', ['key', 'value', 'key2', null])
+            createInsertText('a', 1, 'user', ['key', 'value', 'key2', null]),
+            createInsertText('b', 1, 'user', ['key', 'value', 'key2', null])
         ), true)
         t.equal(areAttributesEqual(
-            createInsertText('a', ['key', 'value']),
+            createInsertText('a', 1, 'user', ['key', 'value']),
             createInsertText('b')
         ), false)
         t.equal(areAttributesEqual(
             createInsertText('a'),
-            createInsertText('b', ['key', 'value'])
+            createInsertText('b', 1, 'user', ['key', 'value'])
         ), false)
         t.equal(areAttributesEqual(
-            createInsertText('a', ['key', 'value1']),
-            createInsertText('b', ['key', 'value2'])
+            createInsertText('a', 1, 'user', ['key', 'value1']),
+            createInsertText('b', 1, 'user', ['key', 'value2'])
         ), false)
         t.equal(areAttributesEqual(
-            createInsertText('a', ['key1', 'value']),
-            createInsertText('b', ['key2', 'value'])
+            createInsertText('a', 1, 'user', ['key1', 'value']),
+            createInsertText('b', 1, 'user', ['key2', 'value'])
         ), false)
         t.end()
     })
@@ -223,11 +223,11 @@ tap.test('areAttributesEqual', t => {
     })
     t.test('mix', t => {
         t.equal(areAttributesEqual(
-            createInsertText('hello', ['key1', 'value']),
+            createInsertText('hello', 1, 'user', ['key1', 'value']),
             createInsertEmbed(nodeContent2, ['key1', 'value'])
         ), true)
         t.equal(areAttributesEqual(
-            createInsertText('hello', ['key1', 'value']),
+            createInsertText('hello', 1, 'user', ['key1', 'value']),
             createRetain(2, ['key1', 'value'])
         ), true)
         t.equal(areAttributesEqual(
@@ -235,11 +235,11 @@ tap.test('areAttributesEqual', t => {
             createInsertEmbed(nodeContent2, ['key1', 'value'])
         ), true)
         t.equal(areAttributesEqual(
-            createInsertText('hello', ['key1', 'value1']),
+            createInsertText('hello', 1, 'user', ['key1', 'value1']),
             createInsertEmbed(nodeContent2, ['key1', 'value2'])
         ), false)
         t.equal(areAttributesEqual(
-            createInsertText('hello', ['key1', 'value1']),
+            createInsertText('hello', 1, 'user', ['key1', 'value1']),
             createRetain(2, ['key1', 'value2'])
         ), false)
         t.equal(areAttributesEqual(
@@ -285,9 +285,9 @@ tap.test('merge', t => {
         createInsertText(' World')),
         createInsertText('Hello World'))
     t.strictSame(merge(
-        createInsertText('Hello', ['attributeName', 'attributeValue']),
-        createInsertText(' World', ['attributeName', 'attributeValue'])),
-        createInsertText('Hello World', ['attributeName', 'attributeValue']))
+        createInsertText('Hello', 1, 'user', ['attributeName', 'attributeValue']),
+        createInsertText(' World', 1, 'user', ['attributeName', 'attributeValue'])),
+        createInsertText('Hello World', 1, 'user', ['attributeName', 'attributeValue']))
 
     t.equal(merge(createRetain(1), createDelete(1)), null, 'Different actions')
     t.equal(merge(createInsertOpen(validObjectContent), createInsertClose(validObjectContent)), null, 'Different insert actions')
@@ -296,15 +296,15 @@ tap.test('merge', t => {
     t.equal(merge(createInsertEmbed(validObjectContent), createInsertEmbed(validObjectContent)), null, 'Insert embed')
     t.equal(
         merge(
-            createInsertText('hello', ['attributeName', 'attributeValue']),
+            createInsertText('hello', 1, 'user', ['attributeName', 'attributeValue']),
             createInsertText('hello')
         ),
         null,
         'Different attribute lengths')
     t.equal(
         merge(
-            createInsertText('hello', ['attributeName', 'attributeValue1']),
-            createInsertText('hello', ['attributeName', 'attributeValue2'])
+            createInsertText('hello', 1, 'user', ['attributeName', 'attributeValue1']),
+            createInsertText('hello', 1, 'user', ['attributeName', 'attributeValue2'])
         ),
         null,
         'Different attributes')
@@ -371,28 +371,28 @@ tap.test('slice', t => {
 
     t.test('insert text', t => {
         t.strictSame(
-            slice(createInsertText('hello', ['key', 'value'])),
-            createInsertText('hello', ['key', 'value']),
+            slice(createInsertText('hello', 1, 'user', ['key', 'value'])),
+            createInsertText('hello', 1, 'user', ['key', 'value']),
             'no params')
         t.strictSame(
-            slice(createInsertText('hello', ['key', 'value']), -1),
-            createInsertText('hello', ['key', 'value']),
+            slice(createInsertText('hello', 1, 'user', ['key', 'value']), -1),
+            createInsertText('hello', 1, 'user', ['key', 'value']),
             'negative offset')
         t.strictSame(
-            slice(createInsertText('hello', ['key', 'value']), 1),
-            createInsertText('ello', ['key', 'value']),
+            slice(createInsertText('hello', 1, 'user', ['key', 'value']), 1),
+            createInsertText('ello', 1, 'user', ['key', 'value']),
             'positive offset')
         t.strictSame(
-            slice(createInsertText('hello', ['key', 'value']), 1, -1),
-            createInsertText('', ['key', 'value']),
+            slice(createInsertText('hello', 1, 'user', ['key', 'value']), 1, -1),
+            createInsertText('', 1, 'user', ['key', 'value']),
             'positive offset and negative count')
         t.strictSame(
-            slice(createInsertText('hello', ['key', 'value']), 1, 2),
-            createInsertText('el', ['key', 'value']),
+            slice(createInsertText('hello', 1, 'user', ['key', 'value']), 1, 2),
+            createInsertText('el', 1, 'user', ['key', 'value']),
             'positive offset and small count')
         t.strictSame(
-            slice(createInsertText('hello', ['key', 'value']), 5),
-            createInsertText('', ['key', 'value']),
+            slice(createInsertText('hello', 1, 'user', ['key', 'value']), 5),
+            createInsertText('', 1, 'user', ['key', 'value']),
             'too big offset')
         t.end()
     })
@@ -476,8 +476,8 @@ tap.test('composeIterators', t => {
 
     t.test('iterator1 empty', t => {
         const i1 = new Iterator([])
-        const i2 = new Iterator([ createInsertText('hello', ['key', 'value']) ]).next(1)
-        const composedOperation = createInsertText('ello', ['key', 'value'])
+        const i2 = new Iterator([ createInsertText('hello', 1, 'user', ['key', 'value']) ]).next(1)
+        const composedOperation = createInsertText('ello', 1, 'user', ['key', 'value'])
 
         t.strictSame(composeIterators(i1, i2), composedOperation)
         t.equal(i1.index, 0)
@@ -488,9 +488,9 @@ tap.test('composeIterators', t => {
     })
 
     t.test('iterator2 empty', t => {
-        const i1 = new Iterator([ createInsertText('hello', ['key', 'value']) ]).next(1)
+        const i1 = new Iterator([ createInsertText('hello', 1, 'user', ['key', 'value']) ]).next(1)
         const i2 = new Iterator([])
-        const composedOperation = createInsertText('ello', ['key', 'value'])
+        const composedOperation = createInsertText('ello', 1, 'user', ['key', 'value'])
 
         t.strictSame(composeIterators(i1, i2), composedOperation)
         t.equal(i1.index, 1)
@@ -502,8 +502,8 @@ tap.test('composeIterators', t => {
 
     t.test('iterator1 delete, iterator2 insert', t => {
         const i1 = new Iterator([ createDelete(5) ]).next(1)
-        const i2 = new Iterator([ createInsertText('hello', ['key', 'value']) ]).next(1)
-        const composedOperation = createInsertText('ello', ['key', 'value'])
+        const i2 = new Iterator([ createInsertText('hello', 1, 'user', ['key', 'value']) ]).next(1)
+        const composedOperation = createInsertText('ello', 1, 'user', ['key', 'value'])
 
         t.strictSame(composeIterators(i1, i2), composedOperation)
         t.equal(i1.index, 0)
@@ -566,9 +566,9 @@ tap.test('composeIterators', t => {
     })
 
     t.test('iterator1 insert text (no attributes), iterator2 retain (with attributes)', t => {
-        const i1 = new Iterator([ createInsertText('hello') ]).next(1)
+        const i1 = new Iterator([ createInsertText('hello', 1, 'user') ]).next(1)
         const i2 = new Iterator([ createRetain(9, ['key', 'value']) ]).next(2)
-        const composedOperation = createInsertText('ello', ['key', 'value'])
+        const composedOperation = createInsertText('ello', 1, 'user', ['key', 'value'])
 
         t.strictSame(composeIterators(i1, i2), composedOperation)
         t.equal(i1.index, 1)
@@ -579,9 +579,9 @@ tap.test('composeIterators', t => {
     })
 
     t.test('iterator1 insert text (no attributes), iterator2 retain (with attributes)', t => {
-        const i1 = new Iterator([ createInsertText('hello') ]).next(1)
+        const i1 = new Iterator([ createInsertText('hello', 1, 'user') ]).next(1)
         const i2 = new Iterator([ createRetain(4, ['key', 'value']) ]).next(2)
-        const composedOperation = createInsertText('el', ['key', 'value'])
+        const composedOperation = createInsertText('el', 1, 'user', ['key', 'value'])
 
         t.strictSame(composeIterators(i1, i2), composedOperation)
         t.equal(i1.index, 0)
@@ -717,10 +717,10 @@ tap.test('composeIterators', t => {
     })
 
     t.test('attributes (insert+retain)', t => {
-        t.test('iterator1 retain (with attributes), iterator2 retain (extra atrributes at start)', t => {
-            const i1 = new Iterator([ createInsertText('hello', ['key', 'value']) ]).next(1)
+        t.test('iterator1 insert (with attributes), iterator2 retain (extra atrributes at start)', t => {
+            const i1 = new Iterator([ createInsertText('hello', 1, 'user', ['key', 'value']) ]).next(1)
             const i2 = new Iterator([ createRetain(9, ['anotherKey', 'anotherValue', 'key', 'value']) ]).next(2)
-            const composedOperation = createInsertText('ello', ['anotherKey', 'anotherValue', 'key', 'value'])
+            const composedOperation = createInsertText('ello', 1, 'user', ['anotherKey', 'anotherValue', 'key', 'value'])
 
             t.strictSame(composeIterators(i1, i2), composedOperation)
             t.equal(i1.index, 1)
@@ -729,10 +729,10 @@ tap.test('composeIterators', t => {
             t.equal(i2.offset, 6)
             t.end()
         })
-        t.test('iterator1 retain (with attributes), iterator2 retain (extra atrributes at end)', t => {
-            const i1 = new Iterator([ createInsertText('hello', ['key', 'value']) ]).next(1)
+        t.test('iterator1 insert (with attributes), iterator2 retain (extra atrributes at end)', t => {
+            const i1 = new Iterator([ createInsertText('hello', 1, 'user', ['key', 'value']) ]).next(1)
             const i2 = new Iterator([ createRetain(9, ['key', 'value', 'z-anotherKey', 'anotherValue']) ]).next(2)
-            const composedOperation = createInsertText('ello', ['key', 'value', 'z-anotherKey', 'anotherValue'])
+            const composedOperation = createInsertText('ello', 1, 'user', ['key', 'value', 'z-anotherKey', 'anotherValue'])
 
             t.strictSame(composeIterators(i1, i2), composedOperation)
             t.equal(i1.index, 1)
@@ -741,10 +741,10 @@ tap.test('composeIterators', t => {
             t.equal(i2.offset, 6)
             t.end()
         })
-        t.test('iterator1 retain (extra attributes at start), iterator2 retain (with atrributes)', t => {
-            const i1 = new Iterator([ createInsertText('hello', ['anotherKey', 'anotherValue', 'key', 'value']) ]).next(1)
+        t.test('iterator1 insert (extra attributes at start), iterator2 retain (with atrributes)', t => {
+            const i1 = new Iterator([ createInsertText('hello', 1, 'user', ['anotherKey', 'anotherValue', 'key', 'value']) ]).next(1)
             const i2 = new Iterator([ createRetain(9, ['key', 'value']) ]).next(2)
-            const composedOperation = createInsertText('ello', ['anotherKey', 'anotherValue', 'key', 'value'])
+            const composedOperation = createInsertText('ello', 1, 'user', ['anotherKey', 'anotherValue', 'key', 'value'])
 
             t.strictSame(composeIterators(i1, i2), composedOperation)
             t.equal(i1.index, 1)
@@ -753,10 +753,10 @@ tap.test('composeIterators', t => {
             t.equal(i2.offset, 6)
             t.end()
         })
-        t.test('iterator1 retain (with attributes at end), iterator2 retain (with atrributes)', t => {
-            const i1 = new Iterator([ createInsertText('hello', ['key', 'value', 'z-anotherKey', 'anotherValue']) ]).next(1)
+        t.test('iterator1 insert (with attributes at end), iterator2 retain (with atrributes)', t => {
+            const i1 = new Iterator([ createInsertText('hello', 1, 'user', ['key', 'value', 'z-anotherKey', 'anotherValue']) ]).next(1)
             const i2 = new Iterator([ createRetain(9, ['key', 'value']) ]).next(2)
-            const composedOperation = createInsertText('ello', ['key', 'value', 'z-anotherKey', 'anotherValue'])
+            const composedOperation = createInsertText('ello', 1, 'user', ['key', 'value', 'z-anotherKey', 'anotherValue'])
 
             t.strictSame(composeIterators(i1, i2), composedOperation)
             t.equal(i1.index, 1)
@@ -765,10 +765,10 @@ tap.test('composeIterators', t => {
             t.equal(i2.offset, 6)
             t.end()
         })
-        t.test('iterator1 retain (with attributes), iterator2 retain (extra null atrributes at start)', t => {
-            const i1 = new Iterator([ createInsertText('hello', ['key', 'value']) ]).next(1)
+        t.test('iterator1 insert (with attributes), iterator2 retain (extra null atrributes at start)', t => {
+            const i1 = new Iterator([ createInsertText('hello', 1, 'user', ['key', 'value']) ]).next(1)
             const i2 = new Iterator([ createRetain(9, ['anotherKey', null, 'key', 'value']) ]).next(2)
-            const composedOperation = createInsertText('ello', ['key', 'value'])
+            const composedOperation = createInsertText('ello', 1, 'user', ['key', 'value'])
 
             t.strictSame(composeIterators(i1, i2), composedOperation)
             t.equal(i1.index, 1)
@@ -777,10 +777,10 @@ tap.test('composeIterators', t => {
             t.equal(i2.offset, 6)
             t.end()
         })
-        t.test('iterator1 retain (with attributes), iterator2 retain (extra null atrributes at end)', t => {
-            const i1 = new Iterator([ createInsertText('hello', ['key', 'value']) ]).next(1)
+        t.test('iterator1 insert (with attributes), iterator2 retain (extra null atrributes at end)', t => {
+            const i1 = new Iterator([ createInsertText('hello', 1, 'user', ['key', 'value']) ]).next(1)
             const i2 = new Iterator([ createRetain(9, ['key', 'value', 'z-anotherKey', null]) ]).next(2)
-            const composedOperation = createInsertText('ello', ['key', 'value'])
+            const composedOperation = createInsertText('ello', 1, 'user', ['key', 'value'])
 
             t.strictSame(composeIterators(i1, i2), composedOperation)
             t.equal(i1.index, 1)
@@ -789,10 +789,10 @@ tap.test('composeIterators', t => {
             t.equal(i2.offset, 6)
             t.end()
         })
-        t.test('iterator1 retain (extra null attributes at start), iterator2 retain (with atrributes)', t => {
-            const i1 = new Iterator([ createInsertText('hello', ['anotherKey', null, 'key', 'value']) ]).next(1)
+        t.test('iterator1 insert (extra null attributes at start), iterator2 retain (with atrributes)', t => {
+            const i1 = new Iterator([ createInsertText('hello', 1, 'user', ['anotherKey', null, 'key', 'value']) ]).next(1)
             const i2 = new Iterator([ createRetain(9, ['key', 'value']) ]).next(2)
-            const composedOperation = createInsertText('ello', ['key', 'value'])
+            const composedOperation = createInsertText('ello', 1, 'user', ['key', 'value'])
 
             t.strictSame(composeIterators(i1, i2), composedOperation)
             t.equal(i1.index, 1)
@@ -801,10 +801,10 @@ tap.test('composeIterators', t => {
             t.equal(i2.offset, 6)
             t.end()
         })
-        t.test('iterator1 retain (extra null attributes at end), iterator2 retain (with atrributes)', t => {
-            const i1 = new Iterator([ createInsertText('hello', ['key', 'value', 'z-anotherKey', null]) ]).next(1)
+        t.test('iterator1 insert (extra null attributes at end), iterator2 retain (with atrributes)', t => {
+            const i1 = new Iterator([ createInsertText('hello', 1, 'user', ['key', 'value', 'z-anotherKey', null]) ]).next(1)
             const i2 = new Iterator([ createRetain(9, ['key', 'value']) ]).next(2)
-            const composedOperation = createInsertText('ello', ['key', 'value'])
+            const composedOperation = createInsertText('ello', 1, 'user', ['key', 'value'])
 
             t.strictSame(composeIterators(i1, i2), composedOperation)
             t.equal(i1.index, 1)
@@ -813,10 +813,10 @@ tap.test('composeIterators', t => {
             t.equal(i2.offset, 6)
             t.end()
         })
-        t.test('iterator1 retain (with attributes), iterator2 retain (with null atrributes)', t => {
-            const i1 = new Iterator([ createInsertText('hello', ['key', 'value']) ]).next(1)
+        t.test('iterator1 insert (with attributes), iterator2 retain (with null atrributes)', t => {
+            const i1 = new Iterator([ createInsertText('hello', 1, 'user', ['key', 'value']) ]).next(1)
             const i2 = new Iterator([ createRetain(9, ['key', null]) ]).next(2)
-            const composedOperation = createInsertText('ello')
+            const composedOperation = createInsertText('ello', 1, 'user')
 
             t.strictSame(composeIterators(i1, i2), composedOperation)
             t.equal(i1.index, 1)
@@ -855,7 +855,7 @@ tap.test('composeIterators', t => {
     })
 
     t.test('iterator1 insert, iterator2 delete (longer operation)', t => {
-        const i1 = new Iterator([ createInsertText('hello', ['key', 'value']) ]).next(1)
+        const i1 = new Iterator([ createInsertText('hello', 1, 'user', ['key', 'value']) ]).next(1)
         const i2 = new Iterator([ createDelete(8) ]).next(1)
         const composedOperation = createDelete(3)
 
@@ -868,9 +868,9 @@ tap.test('composeIterators', t => {
     })
 
     t.test('iterator1 insert, iterator2 delete (shorter operation)', t => {
-        const i1 = new Iterator([ createInsertText('hello', ['key', 'value']) ]).next(1)
+        const i1 = new Iterator([ createInsertText('hello', 1, 'user', ['key', 'value']) ]).next(1)
         const i2 = new Iterator([ createDelete(3) ]).next(1)
-        const composedOperation = createInsertText('lo', ['key', 'value'])
+        const composedOperation = createInsertText('lo', 1, 'user', ['key', 'value'])
 
         t.strictSame(composeIterators(i1, i2), composedOperation)
         t.equal(i1.index, 1)

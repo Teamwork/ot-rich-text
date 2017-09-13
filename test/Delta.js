@@ -73,9 +73,9 @@ tap.test('append', t => {
     })
 
     t.test('left insert text, right insert text', t => {
-        const operations = [ createInsertText('Hello', ['key', 'value']) ]
-        t.equal(Delta.append(operations, createInsertText(' World', ['key', 'value'])), operations)
-        t.strictSame(operations, [ createInsertText('Hello World', ['key', 'value']) ])
+        const operations = [ createInsertText('Hello', 1, 'user', ['key', 'value']) ]
+        t.equal(Delta.append(operations, createInsertText(' World', 1, 'user', ['key', 'value'])), operations)
+        t.strictSame(operations, [ createInsertText('Hello World', 1, 'user', ['key', 'value']) ])
         t.end()
     })
 
@@ -91,29 +91,29 @@ tap.test('append', t => {
 
     t.test('left delete, right insert text', t => {
         const operations = [ createDelete(5) ]
-        t.equal(Delta.append(operations, createInsertText('hello', ['key', 'value'])), operations)
+        t.equal(Delta.append(operations, createInsertText('hello', 1, 'user', ['key', 'value'])), operations)
         t.strictSame(operations, [
-            createInsertText('hello', ['key', 'value']),
+            createInsertText('hello', 1, 'user', ['key', 'value']),
             createDelete(5)
         ])
         t.end()
     })
 
     t.test('left insert text and delete, right insert text', t => {
-        const operations = [ createInsertText('hello', ['key', 'value']), createDelete(5) ]
-        t.equal(Delta.append(operations, createInsertText(' world', ['key', 'value'])), operations)
+        const operations = [ createInsertText('hello', 1, 'user', ['key', 'value']), createDelete(5) ]
+        t.equal(Delta.append(operations, createInsertText(' world', 1, 'user', ['key', 'value'])), operations)
         t.strictSame(operations, [
-            createInsertText('hello world', ['key', 'value']),
+            createInsertText('hello world', 1, 'user', ['key', 'value']),
             createDelete(5)
         ])
         t.end()
     })
 
     t.test('left insert text and delete, right insert embed', t => {
-        const operations = [ createInsertText('hello', ['key', 'value']), createDelete(5) ]
+        const operations = [ createInsertText('hello', 1, 'user', ['key', 'value']), createDelete(5) ]
         t.equal(Delta.append(operations, createInsertEmbed(objectContent, ['key', 'value'])), operations)
         t.strictSame(operations, [
-            createInsertText('hello', ['key', 'value']),
+            createInsertText('hello', 1, 'user', ['key', 'value']),
             createInsertEmbed(objectContent, ['key', 'value']),
             createDelete(5)
         ])
@@ -123,16 +123,16 @@ tap.test('append', t => {
     t.test('many', t => {
         const operations = []
         t.equal(Delta.append(operations, createInsertEmbed(objectContent, ['key', 'value'])), operations)
-        t.equal(Delta.append(operations, createInsertText('Hello', ['key', 'value'])), operations)
-        t.equal(Delta.append(operations, createInsertText(' World', ['key', 'value'])), operations)
-        t.equal(Delta.append(operations, createInsertText('!!!', ['key', 'value2'])), operations)
+        t.equal(Delta.append(operations, createInsertText('Hello', 1, 'user', ['key', 'value'])), operations)
+        t.equal(Delta.append(operations, createInsertText(' World', 1, 'user', ['key', 'value'])), operations)
+        t.equal(Delta.append(operations, createInsertText('!!!', 1, 'user', ['key', 'value2'])), operations)
         t.equal(Delta.append(operations, createRetain(5)), operations)
         t.equal(Delta.append(operations, createDelete(3)), operations)
         t.equal(Delta.append(operations, createDelete(4)), operations)
         t.strictSame(operations, [
             createInsertEmbed(objectContent, ['key', 'value']),
-            createInsertText('Hello World', ['key', 'value']),
-            createInsertText('!!!', ['key', 'value2']),
+            createInsertText('Hello World', 1, 'user', ['key', 'value']),
+            createInsertText('!!!', 1, 'user', ['key', 'value2']),
             createRetain(5),
             createDelete(7)
         ])
@@ -145,9 +145,9 @@ tap.test('append', t => {
 tap.test('compose', t => {
     // TODO compose 2 longer deltas
 
-    const insertText1 = createInsertText('hello', ['key', 'value'])
-    const insertText2 = createInsertText(' world', ['key', 'value'])
-    const insertText3 = createInsertText('hello world', ['key', 'value'])
+    const insertText1 = createInsertText('hello', 1, 'user', ['key', 'value'])
+    const insertText2 = createInsertText(' world', 1, 'user', ['key', 'value'])
+    const insertText3 = createInsertText('hello world', 1, 'user', ['key', 'value'])
     const insertEmbed1 = createInsertEmbed(objectContent)
     const insertEmbed2 = createInsertEmbed(objectContent)
     const retain1 = createRetain(5)
