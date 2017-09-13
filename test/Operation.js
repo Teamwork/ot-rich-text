@@ -2,7 +2,7 @@ const tap = require('tap')
 const {
     createInsertText, createInsertOpen, createInsertClose, createInsertEmbed, createRetain, createDelete,
     isInsert, isInsertText, isInsertOpen, isInsertClose, isInsertEmbed, isRetain, isDelete,
-    getContent, getLength,
+    getContent, getLength, copyOperation,
     areAttributesEqual,
     slice, merge, composeIterators
 } = require('../lib/Operation')
@@ -75,6 +75,54 @@ tap.test('basic tests', t => {
     t.equal(isInsertEmbed(insertOpen), false)
     t.equal(isInsertEmbed(insertClose), false)
     t.equal(isInsertEmbed(insertEmbed), true)
+
+    t.end()
+})
+
+tap.test('copyOperation', t => {
+    t.test('with attributes', t => {
+        t.strictSame(copyOperation(
+            createInsertText('hello', ['key', 'value'])),
+            createInsertText('hello', ['key', 'value']))
+        t.strictSame(copyOperation(
+            createInsertOpen(nodeContent1, ['key', 'value'])),
+            createInsertOpen(nodeContent1, ['key', 'value']))
+        t.strictSame(copyOperation(
+            createInsertClose(nodeContent1, ['key', 'value'])),
+            createInsertClose(nodeContent1, ['key', 'value']))
+        t.strictSame(copyOperation(
+            createInsertEmbed(nodeContent1, ['key', 'value'])),
+            createInsertEmbed(nodeContent1, ['key', 'value']))
+        t.strictSame(copyOperation(
+            createRetain(5, ['key', 'value'])),
+            createRetain(5, ['key', 'value']))
+        t.strictSame(copyOperation(
+            createDelete(6)),
+            createDelete(6))
+        t.end()
+    })
+
+    t.test('without attributes', t => {
+        t.strictSame(copyOperation(
+            createInsertText('hello', ['key', 'value']), true),
+            createInsertText('hello'))
+        t.strictSame(copyOperation(
+            createInsertOpen(nodeContent1, ['key', 'value']), true),
+            createInsertOpen(nodeContent1))
+        t.strictSame(copyOperation(
+            createInsertClose(nodeContent1, ['key', 'value']), true),
+            createInsertClose(nodeContent1))
+        t.strictSame(copyOperation(
+            createInsertEmbed(nodeContent1, ['key', 'value']), true),
+            createInsertEmbed(nodeContent1))
+        t.strictSame(copyOperation(
+            createRetain(5, ['key', 'value']), true),
+            createRetain(5))
+        t.strictSame(copyOperation(
+            createDelete(6), true),
+            createDelete(6))
+        t.end()
+    })
 
     t.end()
 })
