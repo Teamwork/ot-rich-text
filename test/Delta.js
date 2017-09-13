@@ -125,16 +125,16 @@ tap.test('append', t => {
         t.equal(Delta.append(operations, createInsertEmbed(objectContent, ['key', 'value'])), operations)
         t.equal(Delta.append(operations, createInsertText('Hello', ['key', 'value'])), operations)
         t.equal(Delta.append(operations, createInsertText(' World', ['key', 'value'])), operations)
-        t.equal(Delta.append(operations, createInsertText('!!!', 2, 'user', ['key', 'value'])), operations)
+        t.equal(Delta.append(operations, createInsertText('!!!', ['key', 'value2'])), operations)
         t.equal(Delta.append(operations, createRetain(5)), operations)
-        t.equal(Delta.append(operations, createDelete(3, 5, 'user')), operations)
-        t.equal(Delta.append(operations, createDelete(4, 5, 'user')), operations)
+        t.equal(Delta.append(operations, createDelete(3)), operations)
+        t.equal(Delta.append(operations, createDelete(4)), operations)
         t.strictSame(operations, [
             createInsertEmbed(objectContent, ['key', 'value']),
             createInsertText('Hello World', ['key', 'value']),
-            createInsertText('!!!', 2, 'user', ['key', 'value']),
+            createInsertText('!!!', ['key', 'value2']),
             createRetain(5),
-            createDelete(7, 5, 'user')
+            createDelete(7)
         ])
         t.end()
     })
