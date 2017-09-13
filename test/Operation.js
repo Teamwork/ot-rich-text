@@ -3,11 +3,14 @@ const {
     createInsertText, createInsertOpen, createInsertClose, createInsertEmbed, createRetain, createDelete,
     isInsert, isInsertText, isInsertOpen, isInsertClose, isInsertEmbed, isRetain, isDelete,
     getContent, getLength,
+    areAttributesEqual,
     slice, merge, composeIterators
 } = require('../lib/Operation')
 const Iterator = require('../lib/Iterator')
 const invalidObjectContent = '\uE000'
 const validObjectContent = '\uE000DIV'
+const nodeContent1 = '\uE001'
+const nodeContent2 = '\uE002'
 
 tap.test('basic tests', t => {
     const retain = createRetain(1)
@@ -73,6 +76,130 @@ tap.test('basic tests', t => {
     t.equal(isInsertEmbed(insertClose), false)
     t.equal(isInsertEmbed(insertEmbed), true)
 
+    t.end()
+})
+
+tap.test('areAttributesEqual', t => {
+    t.test('insertText', t => {
+        t.equal(areAttributesEqual(
+            createInsertText('a'),
+            createInsertText('b')
+        ), true)
+        t.equal(areAttributesEqual(
+            createInsertText('a', ['key', 'value']),
+            createInsertText('b', ['key', 'value'])
+        ), true)
+        t.equal(areAttributesEqual(
+            createInsertText('a', ['key', 'value', 'key2', null]),
+            createInsertText('b', ['key', 'value', 'key2', null])
+        ), true)
+        t.equal(areAttributesEqual(
+            createInsertText('a', ['key', 'value']),
+            createInsertText('b')
+        ), false)
+        t.equal(areAttributesEqual(
+            createInsertText('a'),
+            createInsertText('b', ['key', 'value'])
+        ), false)
+        t.equal(areAttributesEqual(
+            createInsertText('a', ['key', 'value1']),
+            createInsertText('b', ['key', 'value2'])
+        ), false)
+        t.equal(areAttributesEqual(
+            createInsertText('a', ['key1', 'value']),
+            createInsertText('b', ['key2', 'value'])
+        ), false)
+        t.end()
+    })
+    t.test('retain', t => {
+        t.equal(areAttributesEqual(
+            createRetain(1),
+            createRetain(2)
+        ), true)
+        t.equal(areAttributesEqual(
+            createRetain(1, ['key', 'value']),
+            createRetain(2, ['key', 'value'])
+        ), true)
+        t.equal(areAttributesEqual(
+            createRetain(1, ['key', 'value', 'key2', null]),
+            createRetain(2, ['key', 'value', 'key2', null])
+        ), true)
+        t.equal(areAttributesEqual(
+            createRetain(1, ['key', 'value']),
+            createRetain(2)
+        ), false)
+        t.equal(areAttributesEqual(
+            createRetain(1),
+            createRetain(2, ['key', 'value'])
+        ), false)
+        t.equal(areAttributesEqual(
+            createRetain(1, ['key', 'value1']),
+            createRetain(2, ['key', 'value2'])
+        ), false)
+        t.equal(areAttributesEqual(
+            createRetain(1, ['key1', 'value']),
+            createRetain(2, ['key2', 'value'])
+        ), false)
+        t.end()
+    })
+    t.test('insertEmbed', t => {
+        t.equal(areAttributesEqual(
+            createInsertEmbed(nodeContent1),
+            createInsertEmbed(nodeContent2)
+        ), true)
+        t.equal(areAttributesEqual(
+            createInsertEmbed(nodeContent1, ['key', 'value']),
+            createInsertEmbed(nodeContent2, ['key', 'value'])
+        ), true)
+        t.equal(areAttributesEqual(
+            createInsertEmbed(nodeContent1, ['key', 'value', 'key2', null]),
+            createInsertEmbed(nodeContent2, ['key', 'value', 'key2', null])
+        ), true)
+        t.equal(areAttributesEqual(
+            createInsertEmbed(nodeContent1, ['key', 'value']),
+            createInsertEmbed(nodeContent2)
+        ), false)
+        t.equal(areAttributesEqual(
+            createInsertEmbed(nodeContent1),
+            createInsertEmbed(nodeContent2, ['key', 'value'])
+        ), false)
+        t.equal(areAttributesEqual(
+            createInsertEmbed(nodeContent1, ['key', 'value1']),
+            createInsertEmbed(nodeContent2, ['key', 'value2'])
+        ), false)
+        t.equal(areAttributesEqual(
+            createInsertEmbed(nodeContent1, ['key1', 'value']),
+            createInsertEmbed(nodeContent2, ['key2', 'value'])
+        ), false)
+        t.end()
+    })
+    t.test('mix', t => {
+        t.equal(areAttributesEqual(
+            createInsertText('hello', ['key1', 'value']),
+            createInsertEmbed(nodeContent2, ['key1', 'value'])
+        ), true)
+        t.equal(areAttributesEqual(
+            createInsertText('hello', ['key1', 'value']),
+            createRetain(2, ['key1', 'value'])
+        ), true)
+        t.equal(areAttributesEqual(
+            createRetain(5, ['key1', 'value']),
+            createInsertEmbed(nodeContent2, ['key1', 'value'])
+        ), true)
+        t.equal(areAttributesEqual(
+            createInsertText('hello', ['key1', 'value1']),
+            createInsertEmbed(nodeContent2, ['key1', 'value2'])
+        ), false)
+        t.equal(areAttributesEqual(
+            createInsertText('hello', ['key1', 'value1']),
+            createRetain(2, ['key1', 'value2'])
+        ), false)
+        t.equal(areAttributesEqual(
+            createRetain(5, ['key1', 'value1']),
+            createInsertEmbed(nodeContent2, ['key1', 'value2'])
+        ), false)
+        t.end()
+    })
     t.end()
 })
 

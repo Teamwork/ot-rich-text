@@ -1,26 +1,10 @@
 const tap = require('tap')
-const { copyArray, arraysEqual } = require('../lib/util')
+const { copyArray } = require('../lib/util')
 
 tap.test('copyArray', t => {
     t.strictSame(copyArray([]), [])
     t.strictSame(copyArray([1]), [1])
     t.strictSame(copyArray([1, '2', null]), [1, '2', null])
     t.strictSame(copyArray([undefined, null, 1, {}, []]), [undefined, null, 1, {}, []])
-    t.end()
-})
-
-tap.test('arraysEqual', t => {
-    t.equal(arraysEqual([], []), true)
-    t.equal(arraysEqual([], [], 1), true)
-    t.equal(arraysEqual([1], [1]), true)
-    t.equal(arraysEqual(['1'], [1]), false)
-    t.equal(arraysEqual(['1'], ['1']), true)
-    t.equal(arraysEqual([0, 3], [2, 3], 1), true)
-    t.equal(arraysEqual([0, 'a', 3], [2, 'b', 3], 2), true)
-    t.equal(arraysEqual([0, 3], [2, 3]), false)
-    t.equal(arraysEqual([0, 1, 2], [0, 1, 3]), false)
-    t.equal(arraysEqual([0, 1, 2], [0, 1, 2, 3]), false)
-    t.equal(arraysEqual([0, 1, 2, 3], [0, 1, 2]), false)
-    t.equal(arraysEqual([{}], [{}]), false)
     t.end()
 })
