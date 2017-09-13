@@ -4,7 +4,7 @@ const {
     isInsert, isInsertText, isInsertOpen, isInsertClose, isInsertEmbed, isRetain, isDelete,
     getContent, getLength, copyOperation,
     areAttributesEqual,
-    slice, merge, composeIterators
+    slice, merge, composeIterators, transformIterators
 } = require('../lib/Operation')
 const Iterator = require('../lib/Iterator')
 const invalidNodeContent = '\uE000DIV'
@@ -874,6 +874,62 @@ tap.test('composeIterators', t => {
         t.strictSame(composeIterators(i1, i2), composedOperation)
         t.equal(i1.index, 1)
         t.equal(i1.offset, 0)
+        t.equal(i2.index, 1)
+        t.equal(i2.offset, 0)
+        t.end()
+    })
+
+    t.end()
+})
+
+tap.test('transformIterators', t => {
+    t.test('iterator1 insert, iterator2 insert (left first)', t => {
+        const i1 = new Iterator([ createInsertText('abc', 1, 'user', ['key', 'value']) ]).next(1)
+        const i2 = new Iterator([ createInsertText('xyz', 1, 'user', ['key', 'value']) ]).next(1)
+        const transformedOperation = createInsertText('bc', 1, 'user', ['key', 'value'])
+
+        t.strictSame(transformIterators(i1, i2, true), transformedOperation)
+        t.equal(i1.index, 1)
+        t.equal(i1.offset, 0)
+        t.equal(i2.index, 0)
+        t.equal(i2.offset, 1)
+        t.end()
+    })
+
+    t.test('iterator1 insert, iterator2 insert (right first)', t => {
+        const i1 = new Iterator([ createInsertText('abc', 1, 'user', ['key', 'value']) ]).next(1)
+        const i2 = new Iterator([ createInsertText('xyz', 1, 'user', ['key', 'value']) ]).next(1)
+        const transformedOperation = createRetain(2)
+
+        t.strictSame(transformIterators(i1, i2, false), transformedOperation)
+        t.equal(i1.index, 0)
+        t.equal(i1.offset, 1)
+        t.equal(i2.index, 1)
+        t.equal(i2.offset, 0)
+        t.end()
+    })
+
+    t.test('iterator1 delete, iterator2 insert (left first)', t => {
+        const i1 = new Iterator([ createDelete(5) ]).next(1)
+        const i2 = new Iterator([ createInsertText('abc', 1, 'user', ['key', 'value']) ]).next(1)
+        const transformedOperation = createRetain(2)
+
+        t.strictSame(transformIterators(i1, i2, true), transformedOperation)
+        t.equal(i1.index, 0)
+        t.equal(i1.offset, 1)
+        t.equal(i2.index, 1)
+        t.equal(i2.offset, 0)
+        t.end()
+    })
+
+    t.test('iterator1 delete, iterator2 insert (right first)', t => {
+        const i1 = new Iterator([ createDelete(5) ]).next(1)
+        const i2 = new Iterator([ createInsertText('abc', 1, 'user', ['key', 'value']) ]).next(1)
+        const transformedOperation = createRetain(2)
+
+        t.strictSame(transformIterators(i1, i2, false), transformedOperation)
+        t.equal(i1.index, 0)
+        t.equal(i1.offset, 1)
         t.equal(i2.index, 1)
         t.equal(i2.offset, 0)
         t.end()
