@@ -935,5 +935,83 @@ tap.test('transformIterators', t => {
         t.end()
     })
 
+    t.test('iterator1 retain, iterator2 delete (left first)', t => {
+        const i1 = new Iterator([ createRetain(5) ]).next(1)
+        const i2 = new Iterator([ createDelete(8) ]).next(1)
+        const transformedOperation = null
+
+        t.strictSame(transformIterators(i1, i2, true), transformedOperation)
+        t.equal(i1.index, 1)
+        t.equal(i1.offset, 0)
+        t.equal(i2.index, 0)
+        t.equal(i2.offset, 5)
+        t.end()
+    })
+
+    t.test('iterator1 retain, iterator2 delete (right first)', t => {
+        const i1 = new Iterator([ createRetain(5) ]).next(1)
+        const i2 = new Iterator([ createDelete(8) ]).next(1)
+        const transformedOperation = null
+
+        t.strictSame(transformIterators(i1, i2, false), transformedOperation)
+        t.equal(i1.index, 1)
+        t.equal(i1.offset, 0)
+        t.equal(i2.index, 0)
+        t.equal(i2.offset, 5)
+        t.end()
+    })
+
+    t.test('iterator1 retain, iterator2 delete (left first)', t => {
+        const i1 = new Iterator([ createRetain(6) ]).next(1)
+        const i2 = new Iterator([ createDelete(4) ]).next(1)
+        const transformedOperation = createRetain(2)
+
+        t.strictSame(transformIterators(i1, i2, true), transformedOperation)
+        t.equal(i1.index, 1)
+        t.equal(i1.offset, 0)
+        t.equal(i2.index, 1)
+        t.equal(i2.offset, 0)
+        t.end()
+    })
+
+    t.test('iterator1 retain, iterator2 delete (right first)', t => {
+        const i1 = new Iterator([ createRetain(6) ]).next(1)
+        const i2 = new Iterator([ createDelete(4) ]).next(1)
+        const transformedOperation = createRetain(2)
+
+        t.strictSame(transformIterators(i1, i2, false), transformedOperation)
+        t.equal(i1.index, 1)
+        t.equal(i1.offset, 0)
+        t.equal(i2.index, 1)
+        t.equal(i2.offset, 0)
+        t.end()
+    })
+
+    t.test('iterator1 delete, iterator2 retain (left first)', t => {
+        const i1 = new Iterator([ createDelete(4) ]).next(1)
+        const i2 = new Iterator([ createRetain(6) ]).next(1)
+        const transformedOperation = createDelete(3)
+
+        t.strictSame(transformIterators(i1, i2, true), transformedOperation)
+        t.equal(i1.index, 1)
+        t.equal(i1.offset, 0)
+        t.equal(i2.index, 0)
+        t.equal(i2.offset, 4)
+        t.end()
+    })
+
+    t.test('iterator1 retain, iterator2 retain (right first)', t => {
+        const i1 = new Iterator([ createDelete(4) ]).next(1)
+        const i2 = new Iterator([ createRetain(3) ]).next(1)
+        const transformedOperation = createDelete(2)
+
+        t.strictSame(transformIterators(i1, i2, false), transformedOperation)
+        t.equal(i1.index, 0)
+        t.equal(i1.offset, 3)
+        t.equal(i2.index, 1)
+        t.equal(i2.offset, 0)
+        t.end()
+    })
+
     t.end()
 })
