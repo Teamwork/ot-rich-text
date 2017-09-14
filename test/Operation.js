@@ -3,7 +3,7 @@ const {
     createInsertText, createInsertOpen, createInsertClose, createInsertEmbed, createRetain, createDelete,
     isInsert, isInsertText, isInsertOpen, isInsertClose, isInsertEmbed, isRetain, isDelete,
     getContent, getLength, copyOperation,
-    areAttributesEqual,
+    areAttributesEqual, getAttributesIndex,
     slice, merge, composeIterators, transformIterators
 } = require('../lib/Operation')
 const Iterator = require('../lib/Iterator')
@@ -74,6 +74,13 @@ tap.test('basic tests', t => {
     t.equal(isInsertEmbed(insertOpen), false)
     t.equal(isInsertEmbed(insertClose), false)
     t.equal(isInsertEmbed(insertEmbed), true)
+
+    t.equal(getAttributesIndex(retain), 2)
+    t.equal(getAttributesIndex(del), 2)
+    t.equal(getAttributesIndex(insertText), 4)
+    t.equal(getAttributesIndex(insertOpen), 5)
+    t.equal(getAttributesIndex(insertClose), 5)
+    t.equal(getAttributesIndex(insertEmbed), 5)
 
     t.end()
 })
