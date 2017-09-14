@@ -883,7 +883,7 @@ tap.test('composeIterators', t => {
 })
 
 tap.test('transformIterators', t => {
-    t.test('iterator1 insert, iterator2 insert (left first)', t => {
+    t.test('iterator1 insert, iterator2 insert (priority: left)', t => {
         const i1 = new Iterator([ createInsertText('abc', 1, 'user', ['key', 'value']) ]).next(1)
         const i2 = new Iterator([ createInsertText('xyz', 1, 'user', ['key', 'value']) ]).next(1)
         const transformedOperation = createInsertText('bc', 1, 'user', ['key', 'value'])
@@ -896,7 +896,7 @@ tap.test('transformIterators', t => {
         t.end()
     })
 
-    t.test('iterator1 insert, iterator2 insert (right first)', t => {
+    t.test('iterator1 insert, iterator2 insert (priority: right)', t => {
         const i1 = new Iterator([ createInsertText('abc', 1, 'user', ['key', 'value']) ]).next(1)
         const i2 = new Iterator([ createInsertText('xyz', 1, 'user', ['key', 'value']) ]).next(1)
         const transformedOperation = createRetain(2)
@@ -909,7 +909,33 @@ tap.test('transformIterators', t => {
         t.end()
     })
 
-    t.test('iterator1 delete, iterator2 insert (left first)', t => {
+    t.test('iterator1 insert, iterator2 retain (priority: left)', t => {
+        const i1 = new Iterator([ createInsertText('abc', 1, 'user', ['key', 'value']) ]).next(1)
+        const i2 = new Iterator([ createRetain(2, ['key', 'value']) ]).next(1)
+        const transformedOperation = createInsertText('bc', 1, 'user', ['key', 'value'])
+
+        t.strictSame(transformIterators(i1, i2, true), transformedOperation)
+        t.equal(i1.index, 1)
+        t.equal(i1.offset, 0)
+        t.equal(i2.index, 0)
+        t.equal(i2.offset, 1)
+        t.end()
+    })
+
+    t.test('iterator1 insert, iterator2 retain (priority: right)', t => {
+        const i1 = new Iterator([ createInsertText('abc', 1, 'user', ['key', 'value']) ]).next(1)
+        const i2 = new Iterator([ createRetain(2, ['key', 'value']) ]).next(1)
+        const transformedOperation = createInsertText('bc', 1, 'user', ['key', 'value'])
+
+        t.strictSame(transformIterators(i1, i2, false), transformedOperation)
+        t.equal(i1.index, 1)
+        t.equal(i1.offset, 0)
+        t.equal(i2.index, 0)
+        t.equal(i2.offset, 1)
+        t.end()
+    })
+
+    t.test('iterator1 delete, iterator2 insert (priority: left)', t => {
         const i1 = new Iterator([ createDelete(5) ]).next(1)
         const i2 = new Iterator([ createInsertText('abc', 1, 'user', ['key', 'value']) ]).next(1)
         const transformedOperation = createRetain(2)
@@ -922,7 +948,7 @@ tap.test('transformIterators', t => {
         t.end()
     })
 
-    t.test('iterator1 delete, iterator2 insert (right first)', t => {
+    t.test('iterator1 delete, iterator2 insert (priority: right)', t => {
         const i1 = new Iterator([ createDelete(5) ]).next(1)
         const i2 = new Iterator([ createInsertText('abc', 1, 'user', ['key', 'value']) ]).next(1)
         const transformedOperation = createRetain(2)
@@ -935,7 +961,7 @@ tap.test('transformIterators', t => {
         t.end()
     })
 
-    t.test('iterator1 retain, iterator2 delete (left first)', t => {
+    t.test('iterator1 retain, iterator2 delete (priority: left)', t => {
         const i1 = new Iterator([ createRetain(5) ]).next(1)
         const i2 = new Iterator([ createDelete(8) ]).next(1)
         const transformedOperation = null
@@ -948,7 +974,7 @@ tap.test('transformIterators', t => {
         t.end()
     })
 
-    t.test('iterator1 retain, iterator2 delete (right first)', t => {
+    t.test('iterator1 retain, iterator2 delete (priority: right)', t => {
         const i1 = new Iterator([ createRetain(5) ]).next(1)
         const i2 = new Iterator([ createDelete(8) ]).next(1)
         const transformedOperation = null
@@ -961,7 +987,7 @@ tap.test('transformIterators', t => {
         t.end()
     })
 
-    t.test('iterator1 retain, iterator2 delete (left first)', t => {
+    t.test('iterator1 retain, iterator2 delete (priority: left)', t => {
         const i1 = new Iterator([ createRetain(6) ]).next(1)
         const i2 = new Iterator([ createDelete(4) ]).next(1)
         const transformedOperation = createRetain(2)
@@ -974,7 +1000,7 @@ tap.test('transformIterators', t => {
         t.end()
     })
 
-    t.test('iterator1 retain, iterator2 delete (right first)', t => {
+    t.test('iterator1 retain, iterator2 delete (priority: right)', t => {
         const i1 = new Iterator([ createRetain(6) ]).next(1)
         const i2 = new Iterator([ createDelete(4) ]).next(1)
         const transformedOperation = createRetain(2)
@@ -987,7 +1013,7 @@ tap.test('transformIterators', t => {
         t.end()
     })
 
-    t.test('iterator1 delete, iterator2 retain (left first)', t => {
+    t.test('iterator1 delete, iterator2 retain (priority: left)', t => {
         const i1 = new Iterator([ createDelete(4) ]).next(1)
         const i2 = new Iterator([ createRetain(6) ]).next(1)
         const transformedOperation = createDelete(3)
@@ -1000,7 +1026,7 @@ tap.test('transformIterators', t => {
         t.end()
     })
 
-    t.test('iterator1 retain, iterator2 retain (right first)', t => {
+    t.test('iterator1 delete, iterator2 retain (priority: right)', t => {
         const i1 = new Iterator([ createDelete(4) ]).next(1)
         const i2 = new Iterator([ createRetain(3) ]).next(1)
         const transformedOperation = createDelete(2)
@@ -1010,6 +1036,192 @@ tap.test('transformIterators', t => {
         t.equal(i1.offset, 3)
         t.equal(i2.index, 1)
         t.equal(i2.offset, 0)
+        t.end()
+    })
+
+    t.test('iterator1 retain, iterator2 retain (priority: left)', t => {
+        const i1 = new Iterator([ createRetain(4) ]).next(1)
+        const i2 = new Iterator([ createRetain(6) ]).next(1)
+        const transformedOperation = createRetain(3)
+
+        t.strictSame(transformIterators(i1, i2, true), transformedOperation)
+        t.equal(i1.index, 1)
+        t.equal(i1.offset, 0)
+        t.equal(i2.index, 0)
+        t.equal(i2.offset, 4)
+        t.end()
+    })
+
+    t.test('iterator1 retain, iterator2 retain (priority: right)', t => {
+        const i1 = new Iterator([ createRetain(4) ]).next(1)
+        const i2 = new Iterator([ createRetain(6) ]).next(1)
+        const transformedOperation = createRetain(3)
+
+        t.strictSame(transformIterators(i1, i2, false), transformedOperation)
+        t.equal(i1.index, 1)
+        t.equal(i1.offset, 0)
+        t.equal(i2.index, 0)
+        t.equal(i2.offset, 4)
+        t.end()
+    })
+
+    t.test('iterator1 retain, iterator2 retain (priority: left)', t => {
+        const i1 = new Iterator([ createRetain(4) ]).next(1)
+        const i2 = new Iterator([ createRetain(3) ]).next(1)
+        const transformedOperation = createRetain(2)
+
+        t.strictSame(transformIterators(i1, i2, true), transformedOperation)
+        t.equal(i1.index, 0)
+        t.equal(i1.offset, 3)
+        t.equal(i2.index, 1)
+        t.equal(i2.offset, 0)
+        t.end()
+    })
+
+    t.test('iterator1 retain, iterator2 retain (priority: right)', t => {
+        const i1 = new Iterator([ createRetain(4) ]).next(1)
+        const i2 = new Iterator([ createRetain(3) ]).next(1)
+        const transformedOperation = createRetain(2)
+
+        t.strictSame(transformIterators(i1, i2, false), transformedOperation)
+        t.equal(i1.index, 0)
+        t.equal(i1.offset, 3)
+        t.equal(i2.index, 1)
+        t.equal(i2.offset, 0)
+        t.end()
+    })
+
+    t.test('iterator1 retain, iterator2 retain (attributes)', t => {
+        t.test('an attribute <-> the same attribute (priority: left)', t => {
+            const i1 = new Iterator([ createRetain(2, ['key', 'value']) ]).next(1)
+            const i2 = new Iterator([ createRetain(3, ['key', 'value']) ]).next(1)
+            const transformedOperation = createRetain(1, ['key', 'value'])
+
+            t.strictSame(transformIterators(i1, i2, true), transformedOperation)
+            t.equal(i1.index, 1)
+            t.equal(i1.offset, 0)
+            t.equal(i2.index, 0)
+            t.equal(i2.offset, 2)
+            t.end()
+        })
+
+        t.test('an attribute <-> the same attribute (priority: right)', t => {
+            const i1 = new Iterator([ createRetain(2, ['key', 'value']) ]).next(1)
+            const i2 = new Iterator([ createRetain(3, ['key', 'value']) ]).next(1)
+            const transformedOperation = createRetain(1)
+
+            t.strictSame(transformIterators(i1, i2, false), transformedOperation)
+            t.equal(i1.index, 1)
+            t.equal(i1.offset, 0)
+            t.equal(i2.index, 0)
+            t.equal(i2.offset, 2)
+            t.end()
+        })
+
+        t.test('an attribute <-> extra attribute at end (priority: left)', t => {
+            const i1 = new Iterator([ createRetain(2, ['key', 'value']) ]).next(1)
+            const i2 = new Iterator([ createRetain(3, ['key', 'value', 'z key', 'z value']) ]).next(1)
+            const transformedOperation = createRetain(1, ['key', 'value'])
+
+            t.strictSame(transformIterators(i1, i2, true), transformedOperation)
+            t.equal(i1.index, 1)
+            t.equal(i1.offset, 0)
+            t.equal(i2.index, 0)
+            t.equal(i2.offset, 2)
+            t.end()
+        })
+
+        t.test('an attribute <-> extra attribute at end (priority: right)', t => {
+            const i1 = new Iterator([ createRetain(2, ['key', 'value']) ]).next(1)
+            const i2 = new Iterator([ createRetain(3, ['key', 'value', 'z key', 'z value']) ]).next(1)
+            const transformedOperation = createRetain(1)
+
+            t.strictSame(transformIterators(i1, i2, false), transformedOperation)
+            t.equal(i1.index, 1)
+            t.equal(i1.offset, 0)
+            t.equal(i2.index, 0)
+            t.equal(i2.offset, 2)
+            t.end()
+        })
+
+        t.test('an attribute <-> extra attribute at start (priority: left)', t => {
+            const i1 = new Iterator([ createRetain(2, ['key', 'value']) ]).next(1)
+            const i2 = new Iterator([ createRetain(3, ['a key', 'a value', 'key', 'value']) ]).next(1)
+            const transformedOperation = createRetain(1, ['key', 'value'])
+
+            t.strictSame(transformIterators(i1, i2, true), transformedOperation)
+            t.equal(i1.index, 1)
+            t.equal(i1.offset, 0)
+            t.equal(i2.index, 0)
+            t.equal(i2.offset, 2)
+            t.end()
+        })
+
+        t.test('an attribute <-> extra attribute at start (priority: right)', t => {
+            const i1 = new Iterator([ createRetain(2, ['key', 'value']) ]).next(1)
+            const i2 = new Iterator([ createRetain(3, ['a key', 'a value', 'key', 'value']) ]).next(1)
+            const transformedOperation = createRetain(1)
+
+            t.strictSame(transformIterators(i1, i2, false), transformedOperation)
+            t.equal(i1.index, 1)
+            t.equal(i1.offset, 0)
+            t.equal(i2.index, 0)
+            t.equal(i2.offset, 2)
+            t.end()
+        })
+
+        t.test('extra attribute at end <-> an attribute (priority: left)', t => {
+            const i1 = new Iterator([ createRetain(2, ['key', 'value', 'z key', 'z value']) ]).next(1)
+            const i2 = new Iterator([ createRetain(3, ['key', 'value']) ]).next(1)
+            const transformedOperation = createRetain(1, ['key', 'value', 'z key', 'z value'])
+
+            t.strictSame(transformIterators(i1, i2, true), transformedOperation)
+            t.equal(i1.index, 1)
+            t.equal(i1.offset, 0)
+            t.equal(i2.index, 0)
+            t.equal(i2.offset, 2)
+            t.end()
+        })
+
+        t.test('extra attribute at end <-> an attribute (priority: right)', t => {
+            const i1 = new Iterator([ createRetain(2, ['key', 'value', 'z key', 'z value']) ]).next(1)
+            const i2 = new Iterator([ createRetain(3, ['key', 'value']) ]).next(1)
+            const transformedOperation = createRetain(1, ['z key', 'z value'])
+
+            t.strictSame(transformIterators(i1, i2, false), transformedOperation)
+            t.equal(i1.index, 1)
+            t.equal(i1.offset, 0)
+            t.equal(i2.index, 0)
+            t.equal(i2.offset, 2)
+            t.end()
+        })
+
+        t.test('extra attribute at start <-> an attribute (priority: left)', t => {
+            const i1 = new Iterator([ createRetain(2, ['a key', 'a value', 'key', 'value']) ]).next(1)
+            const i2 = new Iterator([ createRetain(3, ['key', 'value']) ]).next(1)
+            const transformedOperation = createRetain(1, ['a key', 'a value', 'key', 'value'])
+
+            t.strictSame(transformIterators(i1, i2, true), transformedOperation)
+            t.equal(i1.index, 1)
+            t.equal(i1.offset, 0)
+            t.equal(i2.index, 0)
+            t.equal(i2.offset, 2)
+            t.end()
+        })
+
+        t.test('extra attribute at start <-> an attribute (priority: right)', t => {
+            const i1 = new Iterator([ createRetain(2, ['a key', 'a value', 'key', 'value']) ]).next(1)
+            const i2 = new Iterator([ createRetain(3, ['key', 'value']) ]).next(1)
+            const transformedOperation = createRetain(1, ['a key', 'a value'])
+
+            t.strictSame(transformIterators(i1, i2, false), transformedOperation)
+            t.equal(i1.index, 1)
+            t.equal(i1.offset, 0)
+            t.equal(i2.index, 0)
+            t.equal(i2.offset, 2)
+            t.end()
+        })
+
         t.end()
     })
 
