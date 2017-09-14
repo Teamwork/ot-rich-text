@@ -143,8 +143,6 @@ tap.test('append', t => {
 })
 
 tap.test('compose', t => {
-    // TODO compose 2 longer deltas
-
     const insertText1 = createInsertText('hello', 1, 'user', ['key', 'value'])
     const insertText2 = createInsertText(' world', 1, 'user', ['key', 'value'])
     const insertText3 = createInsertText('hello world', 1, 'user', ['key', 'value'])
@@ -152,27 +150,69 @@ tap.test('compose', t => {
     const insertEmbed2 = createInsertEmbed(nodeContent, 1, 'user', 'DIV')
     const retain1 = createRetain(5)
     const retain2 = createRetain(8)
+    const retain3 = createRetain(2)
+    const retain4 = createRetain(3)
     const delete1 = createDelete(6)
     const delete2 = createDelete(3)
     const delete3 = createDelete(9)
 
-    t.test('left empty, right insert', t => {
-        const left = []
-        const right = [ insertText1, insertEmbed1, insertText2, insertEmbed2 ]
-        const expected = [ insertText1, insertEmbed1, insertText2, insertEmbed2 ]
+    t.strictSame(Delta.compose(
+        [],
+        [ insertText1, insertEmbed1, insertText2, insertEmbed2 ]),
+        [ insertText1, insertEmbed1, insertText2, insertEmbed2 ])
 
-        t.strictSame(Delta.compose(left, right), expected)
-        t.end()
-    })
+    t.strictSame(Delta.compose(
+        [ delete1, delete2 ],
+        [ insertText1, insertText2 ]),
+        [ insertText3, delete3 ])
 
-    t.test('left delete, right insert', t => {
-        const left = [ delete1, delete2 ]
-        const right = [ insertText1, insertText2 ]
-        const expected = [ insertText3, delete3 ]
+    t.strictSame(Delta.compose(
+        [ insertText2, retain1, insertEmbed1 ],
+        [ insertText1, retain2, insertEmbed2 ]),
+        [ insertText3, retain3, insertEmbed2, retain4, insertEmbed1 ])
 
-        t.strictSame(Delta.compose(left, right), expected)
-        t.end()
-    })
+    t.end()
+})
+
+tap.test('transform', t => {
+    const insertText1 = createInsertText('hello', 1, 'user', ['key', 'value'])
+    const insertText2 = createInsertText(' world', 1, 'user', ['key', 'value'])
+    const insertEmbed1 = createInsertEmbed(nodeContent, 1, 'user', 'DIV')
+    const insertEmbed2 = createInsertEmbed(nodeContent, 1, 'user', 'DIV')
+    const retain1 = createRetain(5)
+    const retain2 = createRetain(8)
+    const retain3 = createRetain(11)
+    const retain4 = createRetain(1)
+    const retain5 = createRetain(6)
+    const delete1 = createDelete(6)
+    const delete2 = createDelete(3)
+
+    t.strictSame(Delta.transform(
+        [ insertText1, retain1, delete1, insertEmbed1 ],
+        [ insertText2, retain2, insertEmbed2 ],
+        'left'),
+        [
+            insertText1, // comes first because of the priority
+            retain3, // insertText2 (6 characters) + retain1 (5 characters) & retain2 (first 5 characters) -> merged by append
+            delete2, // delete1 (first 3 characters) & retain2 (remaining 3 chars)
+            retain4, // insertText2 (1 character)
+            insertEmbed1, // moved before delete1 (remaining 3 characters) by append
+            delete2 // delete1 (remaining 3 characters)
+        ])
+
+    t.strictSame(Delta.transform(
+        [ insertText1, retain1, delete1, insertEmbed1 ],
+        [ insertText2, retain2, insertEmbed2 ],
+        'right'),
+        [
+            retain5, // insertText2 (6 characters) retained first, because of priority
+            insertText1, // comes second because of the priority
+            retain1, // retain1 (5 characters) & retain2 (first 5 characters)
+            delete2, // delete1 (first 3 characters) & retain2 (remaining 3 chars)
+            retain4, // insertText2 (1 character)
+            insertEmbed1, // moved before delete1 (remaining 3 characters) by append
+            delete2 // delete1 (remaining 3 characters)
+        ])
 
     t.end()
 })
