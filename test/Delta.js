@@ -142,6 +142,29 @@ tap.test('append', t => {
     t.end()
 })
 
+tap.test('chop', t => {
+    t.strictSame(Delta.chop(
+        [ createInsertText('hello', 1, 'user') ]),
+        [ createInsertText('hello', 1, 'user') ])
+    t.strictSame(Delta.chop(
+        [ createInsertText('hello', 1, 'user'), createInsertText('hello', 1, 'user') ]),
+        [ createInsertText('hello', 1, 'user'), createInsertText('hello', 1, 'user') ])
+    t.strictSame(Delta.chop(
+        [ createInsertText('hello', 1, 'user'), createRetain(5) ]),
+        [ createInsertText('hello', 1, 'user') ])
+    t.strictSame(Delta.chop(
+        [ createRetain(5) ]),
+        [])
+    t.strictSame(Delta.chop(
+        [ createRetain(5), createInsertText('hello', 1, 'user') ]),
+        [ createRetain(5), createInsertText('hello', 1, 'user') ])
+    t.strictSame(Delta.chop(
+        [ createRetain(5, ['key', 'value']) ]),
+        [ createRetain(5, ['key', 'value']) ])
+
+    t.end()
+})
+
 tap.test('compose', t => {
     const insertText1 = createInsertText('hello', 1, 'user', ['key', 'value'])
     const insertText2 = createInsertText(' world', 1, 'user', ['key', 'value'])
@@ -155,6 +178,8 @@ tap.test('compose', t => {
     const delete1 = createDelete(6)
     const delete2 = createDelete(3)
     const delete3 = createDelete(9)
+
+    t.strictSame(Delta.compose([], []), [])
 
     t.strictSame(Delta.compose(
         [],
@@ -171,6 +196,18 @@ tap.test('compose', t => {
         [ insertText1, retain2, insertEmbed2 ]),
         [ insertText3, retain3, insertEmbed2, retain4, insertEmbed1 ])
 
+    t.strictSame(Delta.compose(
+        [ createRetain(5) ],
+        [ createRetain(5) ]),
+        [],
+        'Should remove trailing retain')
+
+    t.strictSame(Delta.compose(
+        [ createRetain(5, ['key', 'value']) ],
+        [ createRetain(5) ]),
+        [ createRetain(5, ['key', 'value']) ],
+        'Should keep trailing retain with attributes')
+
     t.end()
 })
 
@@ -186,6 +223,9 @@ tap.test('transform', t => {
     const retain5 = createRetain(6)
     const delete1 = createDelete(6)
     const delete2 = createDelete(3)
+
+    t.strictSame(Delta.compose([], [], 'left'), [])
+    t.strictSame(Delta.compose([], [], 'right'), [])
 
     t.strictSame(Delta.transform(
         [ insertText1, retain1, delete1, insertEmbed1 ],
@@ -213,6 +253,27 @@ tap.test('transform', t => {
             insertEmbed1, // moved before delete1 (remaining 3 characters) by append
             delete2 // delete1 (remaining 3 characters)
         ])
+
+    t.strictSame(Delta.compose(
+        [ createRetain(5) ],
+        [ createRetain(5) ],
+        'left'),
+        [],
+        'Should remove trailing retain')
+
+    t.strictSame(Delta.compose(
+        [ createRetain(5) ],
+        [ createRetain(5) ],
+        'right'),
+        [],
+        'Should remove trailing retain')
+
+    t.strictSame(Delta.compose(
+        [ createRetain(5, ['key', 'value']) ],
+        [ createRetain(5) ],
+        'left'),
+        [ createRetain(5, ['key', 'value']) ],
+        'Should keep trailing retain with attributes')
 
     t.end()
 })
