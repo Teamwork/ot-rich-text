@@ -3,7 +3,7 @@ const {
     createInsertText, createInsertOpen, createInsertClose, createInsertEmbed, createRetain, createDelete,
     isInsert, isInsertText, isInsertOpen, isInsertClose, isInsertEmbed, isRetain, isDelete,
     getContent, getLength, copyOperation,
-    areAttributesEqual, getAttributesIndex,
+    areAttributesEqual, getAttributesIndex, hasAttributes,
     slice, merge, composeIterators, transformIterators
 } = require('../lib/Operation')
 const Iterator = require('../lib/Iterator')
@@ -18,6 +18,12 @@ tap.test('basic tests', t => {
     const insertOpen = createInsertOpen(nodeContent1, 1, 'user', 'DIV')
     const insertClose = createInsertClose(nodeContent1, 1, 'user', 'DIV')
     const insertEmbed = createInsertEmbed(nodeContent1, 1, 'user', 'DIV')
+
+    const retainWithAttributes = createRetain(1, ['key', 'value'])
+    const insertTextWithAttributes = createInsertText('hello', 1, 'user', ['key', 'value'])
+    const insertOpenWithAttributes = createInsertOpen(nodeContent1, 1, 'user', 'DIV', ['key', 'value'])
+    const insertCloseWithAttributes = createInsertClose(nodeContent1, 1, 'user', 'DIV', ['key', 'value'])
+    const insertEmbedWithAttributes = createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key', 'value'])
 
     t.equal(getContent(retain), 1)
     t.equal(getContent(del), 2)
@@ -81,6 +87,25 @@ tap.test('basic tests', t => {
     t.equal(getAttributesIndex(insertOpen), 5)
     t.equal(getAttributesIndex(insertClose), 5)
     t.equal(getAttributesIndex(insertEmbed), 5)
+
+    t.equal(getAttributesIndex(retainWithAttributes), 2)
+    t.equal(getAttributesIndex(insertTextWithAttributes), 4)
+    t.equal(getAttributesIndex(insertOpenWithAttributes), 5)
+    t.equal(getAttributesIndex(insertCloseWithAttributes), 5)
+    t.equal(getAttributesIndex(insertEmbedWithAttributes), 5)
+
+    t.equal(hasAttributes(retain), false)
+    t.equal(hasAttributes(del), false)
+    t.equal(hasAttributes(insertText), false)
+    t.equal(hasAttributes(insertOpen), false)
+    t.equal(hasAttributes(insertClose), false)
+    t.equal(hasAttributes(insertEmbed), false)
+
+    t.equal(hasAttributes(retainWithAttributes), true)
+    t.equal(hasAttributes(insertTextWithAttributes), true)
+    t.equal(hasAttributes(insertOpenWithAttributes), true)
+    t.equal(hasAttributes(insertCloseWithAttributes), true)
+    t.equal(hasAttributes(insertEmbedWithAttributes), true)
 
     t.end()
 })
