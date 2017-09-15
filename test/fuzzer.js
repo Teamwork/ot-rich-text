@@ -9,14 +9,26 @@ const {
     slice
 } = require('../lib/Operation')
 
+const randomItemFactory = list => () => list[fuzzer.randomInt(list.length)]
+
 const randomWord = () => fuzzer.randomWord()
-
+const randomNodeContent = () =>
+    // a completely random character
+    fuzzer.randomReal() < 0.5 ? String.fromCharCode(fuzzer.randomInt(0x10000)) :
+    // a character in Unicode Private Use Area - a valid character we expect
+    fuzzer.randomReal() < 0.5 ? String.fromCharCode(0xE000 + fuzzer.randomInt(6400)) :
+    // a character which will likely conflict with text while performing diff
+    fuzzer.randomReal() < 0.5 ? String.fromCharCode(48 + fuzzer.randomInt(80)) :
+    // completely invalid content - not 1 character
+    randomWord()
 const randomVersion = () => fuzzer.randomInt(3)
-
-const users = [ '', 'Mary', 'John' ]
-const randomUser = () => users[fuzzer.randomInt(3)]
-
+const randomUser = randomItemFactory([ '', 'Mary', 'John' ])
+const randomBlockNodeName = randomItemFactory([ '', 'BLOCKQUOTE', 'DIV', 'P' ])
+const randomEmbedNodeName = randomItemFactory([ '', 'BR', 'IMG', 'HR' ])
 const randomInsertText = () => createInsertText(randomWord(), randomVersion(), randomUser())
+const randomInsertOpen = () => createInsertOpen(randomNodeContent(), randomVersion(), randomUser(), randomBlockNodeName())
+const randomInsertClose = () => createInsertClose(randomNodeContent(), randomVersion(), randomUser(), randomBlockNodeName())
+const randomInsertEmbed = () => createInsertEmbed(randomNodeContent(), randomVersion(), randomUser(), randomEmbedNodeName())
 
 const getSnapshotLength = snapshot => {
     let length = 0
@@ -50,7 +62,7 @@ const appendFromIterator = (newSnapshot, snapshotIterator) => count => {
 const generateRandomOperation = snapshot => {
     let remaining = getSnapshotLength(snapshot)
     const snapshotIterator = new Iterator(snapshot)
-    const base = 2 + Math.floor(remaining / 100)
+    const base = 6 + Math.floor(remaining / 100)
     const delta = []
     const newSnapshot = []
     const addToDelta = operation => append(delta, operation)
@@ -70,10 +82,19 @@ const generateRandomOperation = snapshot => {
         keepInSnapshot(modificationIndex)
 
         switch (fuzzer.randomInt(base)) {
-            case 0: // insert plain text
+            case 0: // insert text
                 addToDeltaAndSnapshot(randomInsertText())
                 break
-            default:
+            case 1: // insert open
+                addToDeltaAndSnapshot(randomInsertOpen())
+                break
+            case 2: // insert close
+                addToDeltaAndSnapshot(randomInsertClose())
+                break
+            case 3: // insert embed
+                addToDeltaAndSnapshot(randomInsertEmbed())
+                break
+            default: // delete
                 addToDelta(createDelete(modificationLength))
                 snapshotIterator.next(modificationLength)
                 remaining -= modificationLength
