@@ -25,10 +25,32 @@ const randomVersion = () => fuzzer.randomInt(3)
 const randomUser = randomItemFactory([ '', 'Mary', 'John' ])
 const randomBlockNodeName = randomItemFactory([ '', 'BLOCKQUOTE', 'DIV', 'P' ])
 const randomEmbedNodeName = randomItemFactory([ '', 'BR', 'IMG', 'HR' ])
-const randomInsertText = () => createInsertText(randomWord(), randomVersion(), randomUser())
-const randomInsertOpen = () => createInsertOpen(randomNodeContent(), randomVersion(), randomUser(), randomBlockNodeName())
-const randomInsertClose = () => createInsertClose(randomNodeContent(), randomVersion(), randomUser(), randomBlockNodeName())
-const randomInsertEmbed = () => createInsertEmbed(randomNodeContent(), randomVersion(), randomUser(), randomEmbedNodeName())
+const randomAttributeName = randomItemFactory([ '', 'style[color]', 'href', 'title', 'BOLD' ])
+const randomAttributeValue = randomItemFactory([ '', 'red', 'http://www.example.com', 'This is a link', 'TRUE' ])
+const randomAttributes = (allowNull) => {
+    allowNull = !!allowNull
+    const count = fuzzer.randomInt(5)
+    const attributeNames = new Array(count)
+
+    for (let i = 0; i < count; ++i) {
+        attributeNames[i] = randomAttributeName()
+    }
+
+    attributeNames.sort()
+
+    const attributes = new Array(count * 2)
+
+    for (let i = 0; i < count; ++i) {
+        attributes[i << 1] = attributeNames[i]
+        attributes[(i << 1) + 1] = allowNull && fuzzer.randomReal() < 0.2 ? null : randomAttributeValue()
+    }
+
+    return attributes
+}
+const randomInsertText = () => createInsertText(randomWord(), randomVersion(), randomUser(), randomAttributes())
+const randomInsertOpen = () => createInsertOpen(randomNodeContent(), randomVersion(), randomUser(), randomBlockNodeName(), randomAttributes())
+const randomInsertClose = () => createInsertClose(randomNodeContent(), randomVersion(), randomUser(), randomBlockNodeName(), randomAttributes())
+const randomInsertEmbed = () => createInsertEmbed(randomNodeContent(), randomVersion(), randomUser(), randomEmbedNodeName(), randomAttributes())
 
 const getSnapshotLength = snapshot => {
     let length = 0
