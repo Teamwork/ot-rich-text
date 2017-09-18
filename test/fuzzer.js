@@ -29,11 +29,15 @@ const randomAttributeName = randomItemFactory([ '', 'style[color]', 'href', 'tit
 const randomAttributeValue = randomItemFactory([ '', 'red', 'http://www.example.com', 'This is a link', 'TRUE' ])
 const randomAttributes = (allowNull) => {
     allowNull = !!allowNull
-    const count = fuzzer.randomInt(4) + 1
+    const count = fuzzer.randomInt(3) + 1
     const attributeNames = new Array(count)
 
-    for (let i = 0; i < count; ++i) {
-        attributeNames[i] = randomAttributeName()
+    for (let i = 0; i < count;) {
+        const attributeName = randomAttributeName()
+
+        if (attributeNames.indexOf(attributeName) < 0) {
+            attributeNames[i++] = attributeName
+        }
     }
 
     attributeNames.sort()
