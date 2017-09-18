@@ -25,6 +25,18 @@ tap.test('validate', t => {
     t.end()
 })
 
+tap.test('normalize', t => {
+    t.throws(() => Delta.normalize({ length: 0 }), Error, 'not an array')
+    t.throws(() => Delta.normalize(null), Error, 'not an array')
+    t.throws(() => Delta.normalize(undefined), Error, 'not an array')
+    t.throws(() => Delta.normalize('insert'), Error, 'not an array')
+    t.throws(() => Delta.normalize([ createRetain(0) ]), Error, 'invalid operation at 0')
+    t.throws(() => Delta.normalize([ createRetain(1), createDelete(1), createInsertText('', 0, '') ]), Error, 'invalid operation at 2')
+    Delta.normalize([])
+    Delta.normalize([ createRetain(1), createDelete(1), createInsertText('a', 0, '') ])
+    t.end()
+})
+
 tap.test('append', t => {
     t.test('left empty, right insert (text)', t => {
         const operations = []
