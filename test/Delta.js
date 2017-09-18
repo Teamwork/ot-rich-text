@@ -13,6 +13,18 @@ tap.test('create', t => {
     t.end()
 })
 
+tap.test('validate', t => {
+    t.type(Delta.validate({ length: 0 }), Error, 'not an array')
+    t.type(Delta.validate(null), Error, 'not an array')
+    t.type(Delta.validate(undefined), Error, 'not an array')
+    t.type(Delta.validate('insert'), Error, 'not an array')
+    t.type(Delta.validate([ createRetain(0) ]), Error, 'invalid operation at 0')
+    t.type(Delta.validate([ createRetain(1), createDelete(1), createInsertText('', 0, '') ]), Error, 'invalid operation at 2')
+    t.equal(Delta.validate([]), null)
+    t.equal(Delta.validate([ createRetain(1), createDelete(1), createInsertText('a', 0, '') ]), null)
+    t.end()
+})
+
 tap.test('append', t => {
     t.test('left empty, right insert (text)', t => {
         const operations = []
