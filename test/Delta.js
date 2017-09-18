@@ -301,3 +301,57 @@ tap.test('transform', t => {
 
     t.end()
 })
+
+tap.test('transformCursor', t => {
+    t.equal(Delta.transformCursor(0, [], true), 0)
+    t.equal(Delta.transformCursor(0, [], false), 0)
+    t.equal(Delta.transformCursor(0, [ createInsertText('ab', 0, '') ], true), 2)
+    t.equal(Delta.transformCursor(0, [ createInsertText('ab', 0, '') ], false), 0)
+    t.equal(Delta.transformCursor(0, [ createDelete(2) ], true), 0)
+    t.equal(Delta.transformCursor(0, [ createDelete(2) ], false), 0)
+    t.equal(Delta.transformCursor(0, [ createRetain(2) ], true), 0)
+    t.equal(Delta.transformCursor(0, [ createRetain(2) ], false), 0)
+
+    t.equal(Delta.transformCursor(5, [], true), 5)
+    t.equal(Delta.transformCursor(5, [], false), 5)
+    t.equal(Delta.transformCursor(5, [ createInsertText('ab', 0, '') ], true), 7)
+    t.equal(Delta.transformCursor(5, [ createInsertText('ab', 0, '') ], false), 7)
+    t.equal(Delta.transformCursor(5, [ createDelete(2) ], true), 3)
+    t.equal(Delta.transformCursor(5, [ createDelete(2) ], false), 3)
+    t.equal(Delta.transformCursor(5, [ createRetain(2) ], true), 5)
+    t.equal(Delta.transformCursor(5, [ createRetain(2) ], false), 5)
+
+    t.equal(Delta.transformCursor(5, [
+        createRetain(5), createInsertText('abc', 0, ''), createInsertText('def', 1, 'a')
+    ], true), 11)
+    t.equal(Delta.transformCursor(5, [
+        createRetain(5), createInsertText('abc', 0, ''), createInsertText('def', 1, 'a')
+    ], false), 5)
+    t.equal(Delta.transformCursor(5, [
+        createRetain(5), createInsertText('abc', 0, ''), createRetain(1), createInsertText('def', 1, 'a')
+    ], true), 8)
+    t.equal(Delta.transformCursor(5, [
+        createRetain(5), createInsertText('abc', 0, ''), createRetain(1), createInsertText('def', 1, 'a')
+    ], false), 5)
+
+    t.equal(Delta.transformCursor(5, [
+        createRetain(3), createDelete(1), createRetain(3)
+    ], true), 4)
+    t.equal(Delta.transformCursor(5, [
+        createRetain(3), createDelete(1), createRetain(3)
+    ], false), 4)
+    t.equal(Delta.transformCursor(5, [
+        createRetain(3), createDelete(2), createRetain(3)
+    ], true), 3)
+    t.equal(Delta.transformCursor(5, [
+        createRetain(3), createDelete(2), createRetain(3)
+    ], false), 3)
+    t.equal(Delta.transformCursor(5, [
+        createRetain(3), createDelete(3), createRetain(3)
+    ], true), 3)
+    t.equal(Delta.transformCursor(5, [
+        createRetain(3), createDelete(3), createRetain(3)
+    ], false), 3)
+
+    t.end()
+})
