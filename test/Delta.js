@@ -455,5 +455,39 @@ tap.test('diffX', t => {
         createInsertText('c', 0, '')
     ])
 
+    testDiff([
+        createInsertText('abc ', 0, ''),
+        createInsertEmbed('\uE001', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
+        createInsertText('c', 0, '')
+    ], [
+        createInsertText('abc ', 0, ''),
+        createInsertEmbed('\uE001', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
+        createInsertText('c', 0, '')
+    ])
+
+    testDiff([
+        createInsertText('abc ', 0, ''),
+        createInsertEmbed('\uE001', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
+        createInsertText('c', 0, ''),
+        createInsertEmbed('\uE002', 0, '', 'BR')
+    ], [
+        createInsertText('abc ', 0, ''),
+        createInsertEmbed('\uE001', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
+        createInsertText('c', 0, ''),
+        createInsertEmbed('\uE002', 0, '', 'HR')
+    ])
+
+    testDiff([
+        createInsertText('abc ', 0, ''),
+        createInsertEmbed('\uE001', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
+        createInsertText('c', 0, ''),
+        createInsertEmbed('\uE002', 0, '', 'BR', [ 'hello', 'world' ])
+    ], [
+        createInsertText('abc ', 0, ''),
+        createInsertEmbed('\uE001', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
+        createInsertText('c', 0, ''),
+        createInsertEmbed('\uE002', 0, '', 'BR', [ 'hello', 'world!!!' ])
+    ])
+
     t.end()
 })
