@@ -374,6 +374,8 @@ tap.test('diffX', t => {
         testDiffImpl(delta2, delta1)
     }
 
+    const delta = []
+    testDiff(delta, delta)
     testDiff([], [])
 
     testDiff([
@@ -388,6 +390,68 @@ tap.test('diffX', t => {
     ], [
         createInsertText('a', 0, ''),
         createInsertEmbed('\uE001', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
+        createInsertText('c', 0, '')
+    ])
+
+    testDiff([
+        createInsertText('abc', 0, '', [ 'blah', 'blah!' ])
+    ], [
+        createInsertText('abc', 0, '', [ 'hello', 'world' ])
+    ])
+
+    testDiff([
+        createInsertText('a', 0, '', [ 'blah', 'blah!' ]),
+        createInsertText('b', 0, ''),
+        createInsertText('c', 0, '', [ 'hello', 'world' ])
+    ], [
+        createInsertText('abc', 0, '', [ 'hello', 'world' ])
+    ])
+
+    testDiff([
+        createInsertText('a', 0, '', [ 'blah', 'blah!', 'hello', 'world' ]),
+        createInsertText('b', 0, ''),
+        createInsertText('c', 0, '', [ 'hello', 'world' ])
+    ], [
+        createInsertText('abc', 0, '', [ 'a', 'p', 'blah', '', 'hello', 'world' ])
+    ])
+
+    testDiff([
+        createInsertText('a', 0, ''),
+        createInsertEmbed('\uE001', 0, '', 'IMG', [ 'src', 'http://www.example.com/image2.png' ]),
+        createInsertText('c', 0, '')
+    ], [
+        createInsertText('a', 0, ''),
+        createInsertEmbed('\uE001', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
+        createInsertText('c', 0, '')
+    ])
+
+    testDiff([
+        createInsertText('a', 0, ''),
+        createInsertEmbed('\uE001', 0, '', 'BR'),
+        createInsertText('c', 0, '')
+    ], [
+        createInsertText('a', 0, ''),
+        createInsertEmbed('\uE001', 0, '', 'IMG'),
+        createInsertText('c', 0, '')
+    ])
+
+    testDiff([
+        createInsertText('aef sefef ', 0, ''),
+        createInsertEmbed('\uE001', 0, '', 'BR'),
+        createInsertText('c', 0, '')
+    ], [
+        createInsertText('aef', 0, ''),
+        createInsertEmbed('\uE001', 0, '', 'IMG'),
+        createInsertText('c', 0, '')
+    ])
+
+    testDiff([
+        createInsertText('aef sefef ', 0, ''),
+        createInsertEmbed('\uE001', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
+        createInsertText('c', 0, '')
+    ], [
+        createInsertText('aef', 0, ''),
+        createInsertEmbed('\uE001', 0, '', 'IMG', [ 'src', 'http://www.example.com/image2.png', 'zzz', '' ]),
         createInsertText('c', 0, '')
     ])
 
