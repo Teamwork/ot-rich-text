@@ -362,25 +362,27 @@ tap.test('diffX', t => {
     t.throws(() => Delta.diffX([], [ createRetain(1) ]), Error)
     t.throws(() => Delta.diffX([], [ createDelete(1) ]), Error)
 
-    const testDiff = (delta1, delta2) => {
-        const diff = [ result1, result2 ] = Delta.diffX(delta1, delta2)
+    const testDiffImpl = (delta1, delta2) => {
+        const [ result1, result2 ] = Delta.diffX(delta1, delta2)
+
         t.strictSame(Delta.compose(delta1, result2), delta2)
         t.strictSame(Delta.compose(delta2, result1), delta1)
     }
 
+    const testDiff = (delta1, delta2) => {
+        testDiffImpl(delta1, delta2)
+        testDiffImpl(delta2, delta1)
+    }
+
     testDiff([], [])
+
     testDiff([
         createInsertText('abc', 0, ''),
         createInsertOpen('\uE000', 0, '', 'DIV'),
         createInsertEmbed('\uE001', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
         createInsertClose('\uE002', 0, '', 'DIV')
     ], [])
-    testDiff([], [
-        createInsertText('abc', 0, ''),
-        createInsertOpen('\uE000', 0, '', 'DIV'),
-        createInsertEmbed('\uE001', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
-        createInsertClose('\uE002', 0, '', 'DIV')
-    ])
+
     testDiff([
         createInsertText('abc', 0, '')
     ], [
