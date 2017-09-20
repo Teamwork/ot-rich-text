@@ -180,6 +180,7 @@ tap.test('validate', t => {
         t.type(validate(createDelete(-1)), Error, 'negative content')
         t.type(validate(createDelete(1.01)), Error, 'content not int')
         t.type(validate(createDelete(Infinity)), Error, 'content not finite')
+        t.type(validate(createDelete(1).concat([1])), Error, 'operation too long')
         t.equal(validate(createDelete(1)), null)
         t.end()
     })
