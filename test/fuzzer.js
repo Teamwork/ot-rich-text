@@ -18,9 +18,7 @@ const randomNodeContent = () =>
     // a character in Unicode Private Use Area - a valid character we expect
     fuzzer.randomReal() < 0.5 ? String.fromCharCode(0xE000 + fuzzer.randomInt(6400)) :
     // a character which will likely conflict with text while performing diff
-    fuzzer.randomReal() < 0.5 ? String.fromCharCode(48 + fuzzer.randomInt(80)) :
-    // completely invalid content - not 1 character
-    randomWord()
+    String.fromCharCode(48 + fuzzer.randomInt(80))
 const randomVersion = () => fuzzer.randomInt(3)
 const randomUser = randomItemFactory([ '', 'Mary', 'John' ])
 const randomBlockNodeName = randomItemFactory([ '', 'BLOCKQUOTE', 'DIV', 'P' ])
