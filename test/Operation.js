@@ -113,22 +113,22 @@ tap.test('basic tests', t => {
 tap.test('copyOperation', t => {
     t.test('with attributes', t => {
         t.strictSame(copyOperation(
-            createInsertText('hello', 1, 'user', ['key', 'value'])),
+            createInsertText('hello', 1, 'user', ['key', 'value']), false),
             createInsertText('hello', 1, 'user', ['key', 'value']))
         t.strictSame(copyOperation(
-            createInsertOpen(nodeContent1, 1, 'user', 'DIV', ['key', 'value'])),
+            createInsertOpen(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), false),
             createInsertOpen(nodeContent1, 1, 'user', 'DIV', ['key', 'value']))
         t.strictSame(copyOperation(
-            createInsertClose(nodeContent1, 1, 'user', 'DIV', ['key', 'value'])),
+            createInsertClose(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), false),
             createInsertClose(nodeContent1, 1, 'user', 'DIV', ['key', 'value']))
         t.strictSame(copyOperation(
-            createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key', 'value'])),
+            createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), false),
             createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key', 'value']))
         t.strictSame(copyOperation(
-            createRetain(5, ['key', 'value'])),
+            createRetain(5, ['key', 'value']), false),
             createRetain(5, ['key', 'value']))
         t.strictSame(copyOperation(
-            createDelete(6)),
+            createDelete(6), false),
             createDelete(6))
         t.end()
     })
