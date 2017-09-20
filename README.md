@@ -1,6 +1,6 @@
 # ot-rich-text
 
-A format for representing rich-text documents and changes for use with [ShareDB](https://github.com/share/sharedb). This library implements the [ot type spec](https://github.com/ottypes/docs).
+A format for representing rich-text documents and changes for use with [ShareDB](https://github.com/share/sharedb). This library implements the [ot type spec](https://github.com/ottypes/docs). It has been heavily inspired by [rich-text](https://github.com/ottypes/rich-text) and [quill-delta](https://github.com/quilljs/delta).
 
 OT Rich Text does not implement the optional `invert` function, because it does not keep track of the deleted content - it only knows how many characters to remove from a specific position. For implementing undo/redo you can use the `diffX` function, which generates 2 deltas, which allow moving back and forth between 2 snapshots.
 
