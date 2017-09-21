@@ -2,7 +2,7 @@ const tap = require('tap')
 const {
     createInsertText, createInsertOpen, createInsertClose, createInsertEmbed, createRetain, createDelete,
     isInsert, isInsertText, isInsertOpen, isInsertClose, isInsertEmbed, isRetain, isDelete,
-    getContent, getNodeName, getLength, copyOperation, validate,
+    getContent, getNodeName, getAttributes, getLength, copyOperation, validate,
     areAttributesEqual, getAttributesIndex, hasAttributes,
     slice, merge, composeIterators, transformIterators
 } = require('../lib/Operation')
@@ -35,6 +35,22 @@ tap.test('basic tests', t => {
     t.equal(getNodeName(insertOpen), 'DIV')
     t.equal(getNodeName(insertClose), 'DIV')
     t.equal(getNodeName(insertEmbed), 'DIV')
+
+    t.strictSame(getAttributes(retain), [])
+    t.strictSame(getAttributes(del), [])
+    t.strictSame(getAttributes(insertText), [])
+    t.strictSame(getAttributes(insertOpen), [])
+    t.strictSame(getAttributes(insertClose), [])
+    t.strictSame(getAttributes(insertEmbed), [])
+
+    t.strictSame(getAttributes(retainWithAttributes), ['key', 'value'])
+    t.strictSame(getAttributes(insertTextWithAttributes), ['key', 'value'])
+    t.strictSame(getAttributes(insertOpenWithAttributes), ['key', 'value'])
+    t.strictSame(getAttributes(insertCloseWithAttributes), ['key', 'value'])
+    t.strictSame(getAttributes(insertEmbedWithAttributes), ['key', 'value'])
+    t.strictSame(
+        getAttributes(createRetain(1, [ 'more', 'attributes', 'nullValue', null, 'yet another', 'one' ])),
+        [ 'more', 'attributes', 'nullValue', null, 'yet another', 'one' ])
 
     t.equal(isRetain(retain), true)
     t.equal(isRetain(del), false)
