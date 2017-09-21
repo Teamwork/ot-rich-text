@@ -2,7 +2,7 @@ const tap = require('tap')
 const {
     createInsertText, createInsertOpen, createInsertClose, createInsertEmbed, createRetain, createDelete,
     isInsert, isInsertText, isInsertOpen, isInsertClose, isInsertEmbed, isRetain, isDelete,
-    getContent, getLength, copyOperation, validate,
+    getContent, getNodeName, getLength, copyOperation, validate,
     areAttributesEqual, getAttributesIndex, hasAttributes,
     slice, merge, composeIterators, transformIterators
 } = require('../lib/Operation')
@@ -31,6 +31,10 @@ tap.test('basic tests', t => {
     t.equal(getContent(insertOpen), nodeContent1)
     t.equal(getContent(insertClose), nodeContent1)
     t.equal(getContent(insertEmbed), nodeContent1)
+
+    t.equal(getNodeName(insertOpen), 'DIV')
+    t.equal(getNodeName(insertClose), 'DIV')
+    t.equal(getNodeName(insertEmbed), 'DIV')
 
     t.equal(isRetain(retain), true)
     t.equal(isRetain(del), false)
