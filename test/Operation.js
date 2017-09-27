@@ -527,147 +527,73 @@ tap.test('merge', t => {
 })
 
 tap.test('slice', t => {
+
     t.test('retain', t => {
         t.strictSame(
-            slice(createRetain(5, ['key', 'value'])),
-            createRetain(5, ['key', 'value']),
-            'no params')
+            slice(createRetain(5, ['key', 'value']), 0, 5),
+            createRetain(5, ['key', 'value']))
         t.strictSame(
-            slice(createRetain(5, ['key', 'value']), -1),
-            createRetain(5, ['key', 'value']),
-            'negative offset')
-        t.strictSame(
-            slice(createRetain(5, ['key', 'value']), 1),
-            createRetain(4, ['key', 'value']),
-            'positive offset')
-        t.strictSame(
-            slice(createRetain(5, ['key', 'value']), 1, -1),
-            createRetain(0, ['key', 'value']),
-            'positive offset and negative count')
+            slice(createRetain(5, ['key', 'value']), 0, 2),
+            createRetain(2, ['key', 'value']))
         t.strictSame(
             slice(createRetain(5, ['key', 'value']), 1, 2),
-            createRetain(2, ['key', 'value']),
-            'positive offset and small count')
+            createRetain(2, ['key', 'value']))
         t.strictSame(
-            slice(createRetain(5, ['key', 'value']), 5),
-            createRetain(0, ['key', 'value']),
-            'too big offset')
+            slice(createRetain(5, ['key', 'value']), 2, 3),
+            createRetain(3, ['key', 'value']))
         t.end()
     })
 
     t.test('delete', t => {
         t.strictSame(
-            slice(createDelete(5)),
-            createDelete(5),
-            'no params')
+            slice(createDelete(5), 0, 5),
+            createDelete(5))
         t.strictSame(
-            slice(createDelete(5), -1),
-            createDelete(5),
-            'negative offset')
-        t.strictSame(
-            slice(createDelete(5), 1),
-            createDelete(4),
-            'positive offset')
-        t.strictSame(
-            slice(createDelete(5), 1, -1),
-            createDelete(0),
-            'positive offset and negative count')
+            slice(createDelete(5), 0, 2),
+            createDelete(2))
         t.strictSame(
             slice(createDelete(5), 1, 2),
-            createDelete(2),
-            'positive offset and small count')
+            createDelete(2))
         t.strictSame(
-            slice(createDelete(5), 5),
-            createDelete(0),
-            'too big offset')
+            slice(createDelete(5), 2, 3),
+            createDelete(3))
         t.end()
     })
 
     t.test('insert text', t => {
         t.strictSame(
-            slice(createInsertText('hello', 1, 'user', ['key', 'value'])),
-            createInsertText('hello', 1, 'user', ['key', 'value']),
-            'no params')
+            slice(createInsertText('hello', 1, 'user', ['key', 'value']), 0, 5),
+            createInsertText('hello', 1, 'user', ['key', 'value']))
         t.strictSame(
-            slice(createInsertText('hello', 1, 'user', ['key', 'value']), -1),
-            createInsertText('hello', 1, 'user', ['key', 'value']),
-            'negative offset')
-        t.strictSame(
-            slice(createInsertText('hello', 1, 'user', ['key', 'value']), 1),
-            createInsertText('ello', 1, 'user', ['key', 'value']),
-            'positive offset')
-        t.strictSame(
-            slice(createInsertText('hello', 1, 'user', ['key', 'value']), 1, -1),
-            createInsertText('', 1, 'user', ['key', 'value']),
-            'positive offset and negative count')
+            slice(createInsertText('hello', 1, 'user', ['key', 'value']), 0, 2),
+            createInsertText('he', 1, 'user', ['key', 'value']))
         t.strictSame(
             slice(createInsertText('hello', 1, 'user', ['key', 'value']), 1, 2),
-            createInsertText('el', 1, 'user', ['key', 'value']),
-            'positive offset and small count')
+            createInsertText('el', 1, 'user', ['key', 'value']))
         t.strictSame(
-            slice(createInsertText('hello', 1, 'user', ['key', 'value']), 5),
-            createInsertText('', 1, 'user', ['key', 'value']),
-            'too big offset')
+            slice(createInsertText('hello', 1, 'user', ['key', 'value']), 2, 3),
+            createInsertText('llo', 1, 'user', ['key', 'value']))
         t.end()
     })
 
     t.test('insert open', t => {
         t.strictSame(
-            slice(createInsertOpen(nodeContent1, 1, 'user', 'DIV', ['key', 'value'])),
-            createInsertOpen(nodeContent1, 1, 'user', 'DIV', ['key', 'value']),
-            'no params')
-        t.strictSame(
-            slice(createInsertOpen(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), -1),
-            createInsertOpen(nodeContent1, 1, 'user', 'DIV', ['key', 'value']),
-            'negative offset')
-        t.strictSame(
-            slice(createInsertOpen(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), 1),
-            createInsertOpen('', 1, 'user', 'DIV', ['key', 'value']),
-            'too big offset')
-        t.strictSame(
-            slice(createInsertOpen(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), 0, 0),
-            createInsertOpen('', 1, 'user', 'DIV', ['key', 'value']),
-            'zero count')
+            slice(createInsertOpen(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), 0, 1),
+            createInsertOpen(nodeContent1, 1, 'user', 'DIV', ['key', 'value']))
         t.end()
     })
 
     t.test('insert close', t => {
         t.strictSame(
-            slice(createInsertClose(nodeContent1, 1, 'user', 'DIV', ['key', 'value'])),
-            createInsertClose(nodeContent1, 1, 'user', 'DIV', ['key', 'value']),
-            'no params')
-        t.strictSame(
-            slice(createInsertClose(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), -1),
-            createInsertClose(nodeContent1, 1, 'user', 'DIV', ['key', 'value']),
-            'negative offset')
-        t.strictSame(
-            slice(createInsertClose(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), 1),
-            createInsertClose('', 1, 'user', 'DIV', ['key', 'value']),
-            'too big offset')
-        t.strictSame(
-            slice(createInsertClose(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), 0, 0),
-            createInsertClose('', 1, 'user', 'DIV', ['key', 'value']),
-            'zero count')
+            slice(createInsertClose(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), 0, 1),
+            createInsertClose(nodeContent1, 1, 'user', 'DIV', ['key', 'value']))
         t.end()
     })
 
     t.test('insert embed', t => {
         t.strictSame(
-            slice(createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key', 'value'])),
-            createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key', 'value']),
-            'no params')
-        t.strictSame(
-            slice(createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), -1),
-            createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key', 'value']),
-            'negative offset')
-        t.strictSame(
-            slice(createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), 1),
-            createInsertEmbed('', 1, 'user', 'DIV', ['key', 'value']),
-            'too big offset')
-        t.strictSame(
-            slice(createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), 0, 0),
-            createInsertEmbed('', 1, 'user', 'DIV', ['key', 'value']),
-            'zero count')
+            slice(createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), 0, 1),
+            createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key', 'value']))
         t.end()
     })
 
