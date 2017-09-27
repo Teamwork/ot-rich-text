@@ -73,7 +73,8 @@ const getSnapshotLength = snapshot => {
 
 const appendFromIterator = (snapshot, iterator) => (count, attributes) => {
     while (count > 0) {
-        const { operation, offset, remaining } = iterator
+        const { operation, offset } = iterator
+        const remaining = getLength(operation) - offset
         const length = Math.min(remaining, count)
         let newOperation = slice(operation, offset, length)
 

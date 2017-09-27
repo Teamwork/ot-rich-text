@@ -11,11 +11,9 @@ tap.test('no operations', t => {
 
     t.equal(i.operations, operations)
     t.equal(i.index, 0)
-    t.equal(i.hasOperation, false)
     t.equal(i.operation, null)
     t.equal(i.operationLength, 0)
     t.equal(i.offset, 0)
-    t.equal(i.remaining, 0)
     t.end()
 })
 
@@ -25,11 +23,9 @@ tap.test('empty insert text operation at the start', t => {
 
     t.equal(i.operations, operations)
     t.equal(i.index, 1)
-    t.equal(i.hasOperation, false)
     t.equal(i.operation, null)
     t.equal(i.operationLength, 0)
     t.equal(i.offset, 0)
-    t.equal(i.remaining, 0)
     t.end()
 })
 
@@ -39,11 +35,9 @@ tap.test('empty insert object operation at the start', t => {
 
     t.equal(i.operations, operations)
     t.equal(i.index, 1)
-    t.equal(i.hasOperation, false)
     t.equal(i.operation, null)
     t.equal(i.operationLength, 0)
     t.equal(i.offset, 0)
-    t.equal(i.remaining, 0)
     t.end()
 })
 
@@ -53,11 +47,9 @@ tap.test('empty delete operation at the start', t => {
 
     t.equal(i.operations, operations)
     t.equal(i.index, 1)
-    t.equal(i.hasOperation, false)
     t.equal(i.operation, null)
     t.equal(i.operationLength, 0)
     t.equal(i.offset, 0)
-    t.equal(i.remaining, 0)
     t.end()
 })
 
@@ -67,11 +59,9 @@ tap.test('empty retain operation at the start', t => {
 
     t.equal(i.operations, operations)
     t.equal(i.index, 1)
-    t.equal(i.hasOperation, false)
     t.equal(i.operation, null)
     t.equal(i.operationLength, 0)
     t.equal(i.offset, 0)
-    t.equal(i.remaining, 0)
     t.end()
 })
 
@@ -80,7 +70,6 @@ tap.test('insert text operation', t => {
     const operation = createInsertText(text, 1, 'user')
     const i = new Iterator([ operation ])
 
-    t.equal(i.hasOperation, true)
     t.equal(i.operation, operation)
     t.equal(i.operationLength, text.length)
     t.end()
@@ -90,7 +79,6 @@ tap.test('insert object operation', t => {
     const operation = createInsertEmbed(nodeContent, 1, 'user', 'DIV')
     const i = new Iterator([ operation ])
 
-    t.equal(i.hasOperation, true)
     t.equal(i.operation, operation)
     t.equal(i.operationLength, 1)
     t.end()
@@ -101,7 +89,6 @@ tap.test('retain operation', t => {
     const operation = createRetain(count)
     const i = new Iterator([ operation ])
 
-    t.equal(i.hasOperation, true)
     t.equal(i.operation, operation)
     t.equal(i.operationLength, count)
     t.end()
@@ -112,7 +99,6 @@ tap.test('delete operation', t => {
     const operation = createDelete(count)
     const i = new Iterator([ operation ])
 
-    t.equal(i.hasOperation, true)
     t.equal(i.operation, operation)
     t.equal(i.operationLength, count)
     t.end()
@@ -130,43 +116,36 @@ tap.test('move within operation', t => {
     t.equal(i.operation, operation0)
     t.equal(i.index, 0)
     t.equal(i.offset, 0)
-    t.equal(i.remaining, 1)
 
     i.next(1)
     t.equal(i.operation, operation1)
     t.equal(i.index, 1)
     t.equal(i.offset, 0)
-    t.equal(i.remaining, 4)
 
     i.next(1)
     t.equal(i.operation, operation1)
     t.equal(i.index, 1)
     t.equal(i.offset, 1)
-    t.equal(i.remaining, 3)
 
     i.next(2)
     t.equal(i.operation, operation1)
     t.equal(i.index, 1)
     t.equal(i.offset, 3)
-    t.equal(i.remaining, 1)
 
     i.next(2)
     t.equal(i.operation, operation2)
     t.equal(i.index, 2)
     t.equal(i.offset, 1)
-    t.equal(i.remaining, 9)
 
     i.next(25)
     t.equal(i.operation, operation4)
     t.equal(i.index, 4)
     t.equal(i.offset, 1)
-    t.equal(i.remaining, 19)
 
     i.next(Infinity)
     t.equal(i.operation, null)
     t.equal(i.index, 5)
     t.equal(i.offset, 0)
-    t.equal(i.remaining, 0)
 
     t.end()
 })
