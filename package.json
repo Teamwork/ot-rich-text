@@ -1,6 +1,6 @@
 {
   "name": "ot-rich-text",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Format for representing rich-text documents and changes.",
   "main": "index.js",
   "scripts": {
