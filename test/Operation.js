@@ -473,7 +473,6 @@ tap.test('getLength', t => {
     t.equal(getLength(createRetain(5)), 5)
     t.equal(getLength(createDelete(5)), 5)
 
-    t.equal(getLength([111]), 0)
     t.equal(getLength(createInsertText('', 1, 'user')), 0)
     t.equal(getLength(createInsertOpen('', 1, 'user', 'DIV')), 0)
     t.equal(getLength(createInsertOpen(invalidNodeContent, 1, 'user', 'DIV')), invalidNodeContent.length)
