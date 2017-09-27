@@ -529,69 +529,69 @@ tap.test('slice', t => {
 
     t.test('retain', t => {
         t.strictSame(
-            slice(createRetain(5, ['key', 'value']), 0, 5),
+            slice(createRetain(5, ['key', 'value']), 0, 5, 5),
             createRetain(5, ['key', 'value']))
         t.strictSame(
-            slice(createRetain(5, ['key', 'value']), 0, 2),
+            slice(createRetain(5, ['key', 'value']), 0, 2, 5),
             createRetain(2, ['key', 'value']))
         t.strictSame(
-            slice(createRetain(5, ['key', 'value']), 1, 2),
+            slice(createRetain(5, ['key', 'value']), 1, 2, 5),
             createRetain(2, ['key', 'value']))
         t.strictSame(
-            slice(createRetain(5, ['key', 'value']), 2, 3),
+            slice(createRetain(5, ['key', 'value']), 2, 3, 5),
             createRetain(3, ['key', 'value']))
         t.end()
     })
 
     t.test('delete', t => {
         t.strictSame(
-            slice(createDelete(5), 0, 5),
+            slice(createDelete(5), 0, 5, 5),
             createDelete(5))
         t.strictSame(
-            slice(createDelete(5), 0, 2),
+            slice(createDelete(5), 0, 2, 5),
             createDelete(2))
         t.strictSame(
-            slice(createDelete(5), 1, 2),
+            slice(createDelete(5), 1, 2, 5),
             createDelete(2))
         t.strictSame(
-            slice(createDelete(5), 2, 3),
+            slice(createDelete(5), 2, 3, 5),
             createDelete(3))
         t.end()
     })
 
     t.test('insert text', t => {
         t.strictSame(
-            slice(createInsertText('hello', 1, 'user', ['key', 'value']), 0, 5),
+            slice(createInsertText('hello', 1, 'user', ['key', 'value']), 0, 5, 5),
             createInsertText('hello', 1, 'user', ['key', 'value']))
         t.strictSame(
-            slice(createInsertText('hello', 1, 'user', ['key', 'value']), 0, 2),
+            slice(createInsertText('hello', 1, 'user', ['key', 'value']), 0, 2, 5),
             createInsertText('he', 1, 'user', ['key', 'value']))
         t.strictSame(
-            slice(createInsertText('hello', 1, 'user', ['key', 'value']), 1, 2),
+            slice(createInsertText('hello', 1, 'user', ['key', 'value']), 1, 2, 5),
             createInsertText('el', 1, 'user', ['key', 'value']))
         t.strictSame(
-            slice(createInsertText('hello', 1, 'user', ['key', 'value']), 2, 3),
+            slice(createInsertText('hello', 1, 'user', ['key', 'value']), 2, 3, 5),
             createInsertText('llo', 1, 'user', ['key', 'value']))
         t.end()
     })
 
     t.test('insert open', t => {
         t.strictSame(
-            slice(createInsertOpen(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), 0, 1),
+            slice(createInsertOpen(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), 0, 1, 1),
             createInsertOpen(nodeContent1, 1, 'user', 'DIV', ['key', 'value']))
         t.end()
     })
 
     t.test('insert close', t => {
         t.strictSame(
-            slice(createInsertClose(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), 0, 1),
+            slice(createInsertClose(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), 0, 1, 1),
             createInsertClose(nodeContent1, 1, 'user', 'DIV', ['key', 'value']))
         t.end()
     })
 
     t.test('insert embed', t => {
         t.strictSame(
-            slice(createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), 0, 1),
+            slice(createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key', 'value']), 0, 1, 1),
             createInsertEmbed(nodeContent1, 1, 'user', 'DIV', ['key', 'value']))
         t.end()
     })

@@ -74,9 +74,10 @@ const getSnapshotLength = snapshot => {
 const appendFromIterator = (snapshot, iterator) => (count, attributes) => {
     while (count > 0) {
         const { operation, offset } = iterator
-        const remaining = getLength(operation) - offset
+        const operationLength = getLength(operation)
+        const remaining = operationLength - offset
         const length = Math.min(remaining, count)
-        let newOperation = slice(operation, offset, length)
+        let newOperation = slice(operation, offset, length, operationLength)
 
         if (attributes && attributes.length > 0) {
             // copy the operation without attributes
