@@ -3,7 +3,7 @@ const {
     createInsertText, createInsertOpen, createInsertClose, createInsertEmbed, createRetain, createDelete,
     isInsert, isInsertText, isInsertOpen, isInsertClose, isInsertEmbed, isRetain, isDelete,
     getContent, getNodeName, getAttributes, getLength, copyOperation, validate,
-    areAttributesEqual, getAttributesIndex, hasAttributes,
+    areOperationsEqual, areAttributesEqual, getAttributesIndex, hasAttributes,
     slice, merge, composeIterators, transformIterators
 } = require('../lib/Operation')
 const Iterator = require('../lib/Iterator')
@@ -338,6 +338,66 @@ tap.test('validate', t => {
         t.end()
     })
 
+    t.end()
+})
+
+tap.test('areOperationsEqual', t => {
+    t.equal(areOperationsEqual(
+        createInsertText('a', 1, 'user', [ 'key1', 'value1', 'key2', 'value2' ] ),
+        createInsertText('a', 1, 'user', [ 'key1', 'value1', 'key2', 'value2' ] )
+    ), true)
+    t.equal(areOperationsEqual(
+        createInsertOpen(nodeContent1, 1, 'user', 'P', [ 'key1', 'value1', 'key2', 'value2' ] ),
+        createInsertOpen(nodeContent1, 1, 'user', 'P', [ 'key1', 'value1', 'key2', 'value2' ] )
+    ), true)
+    t.equal(areOperationsEqual(
+        createInsertClose(nodeContent1, 1, 'user', 'P', [ 'key1', 'value1', 'key2', 'value2' ] ),
+        createInsertClose(nodeContent1, 1, 'user', 'P', [ 'key1', 'value1', 'key2', 'value2' ] )
+    ), true)
+    t.equal(areOperationsEqual(
+        createInsertEmbed(nodeContent1, 1, 'user', 'P', [ 'key1', 'value1', 'key2', 'value2' ] ),
+        createInsertEmbed(nodeContent1, 1, 'user', 'P', [ 'key1', 'value1', 'key2', 'value2' ] )
+    ), true)
+    t.equal(areOperationsEqual(
+        createRetain(5, [ 'key1', 'value1', 'key2', 'value2' ] ),
+        createRetain(5, [ 'key1', 'value1', 'key2', 'value2' ] )
+    ), true)
+    t.equal(areOperationsEqual(
+        createDelete(5),
+        createDelete(5)
+    ), true)
+    t.equal(areOperationsEqual(
+        createDelete(5),
+        createRetain(5)
+    ), false)
+    t.equal(areOperationsEqual(
+        createDelete(5),
+        createDelete(6)
+    ), false)
+    t.equal(areOperationsEqual(
+        createRetain(5, [ 'key1', 'value1' ] ),
+        createRetain(5, [ 'key1', 'value1', 'key2', 'value2' ] )
+    ), false)
+    t.equal(areOperationsEqual(
+        createInsertOpen(nodeContent1, 1, 'user', 'P', [ 'key1', 'value1', 'key2', 'value2' ] ),
+        createInsertOpen(nodeContent2, 1, 'user', 'P', [ 'key1', 'value1', 'key2', 'value2' ] )
+    ), false)
+    t.equal(areOperationsEqual(
+        createInsertOpen(nodeContent1, 1, 'user', 'P', [ 'key1', 'value1', 'key2', 'value2' ] ),
+        createInsertOpen(nodeContent1, 2, 'user', 'P', [ 'key1', 'value1', 'key2', 'value2' ] )
+    ), false)
+    t.equal(areOperationsEqual(
+        createInsertOpen(nodeContent1, 1, 'user', 'P', [ 'key1', 'value1', 'key2', 'value2' ] ),
+        createInsertOpen(nodeContent1, 1, 'user2', 'P', [ 'key1', 'value1', 'key2', 'value2' ] )
+    ), false)
+    t.equal(areOperationsEqual(
+        createInsertOpen(nodeContent1, 1, 'user', 'P', [ 'key1', 'value1', 'key2', 'value2' ] ),
+        createInsertOpen(nodeContent1, 1, 'user', 'DIV', [ 'key1', 'value1', 'key2', 'value2' ] )
+    ), false)
+    t.equal(areOperationsEqual(
+        createInsertOpen(nodeContent1, 1, 'user', 'P', [ 'key1', 'value1', 'key2', 'value2' ] ),
+        createInsertOpen(nodeContent1, 2, 'user', 'P', [ 'key1', 'value1', 'key2', 'value3' ] )
+    ), false)
     t.end()
 })
 
