@@ -357,10 +357,56 @@ tap.test('transformCursor', t => {
 })
 
 tap.test('diffX', t => {
-    t.throws(() => Delta.diffX([ createRetain(1) ], []), Error)
-    t.throws(() => Delta.diffX([ createDelete(1) ], []), Error)
-    t.throws(() => Delta.diffX([], [ createRetain(1) ]), Error)
-    t.throws(() => Delta.diffX([], [ createDelete(1) ]), Error)
+    t.throws(() => Delta.diffX(
+        [ createRetain(1) ],
+        []
+    ), Error)
+    t.throws(() => Delta.diffX(
+        [ createDelete(1) ],
+        []
+    ), Error)
+    t.throws(() => Delta.diffX(
+        [],
+        [ createRetain(1) ]
+    ), Error)
+    t.throws(() => Delta.diffX(
+        [],
+        [ createDelete(1) ]
+    ), Error)
+
+    t.throws(() => Delta.diffX(
+        [ createRetain(1) ],
+        [ createInsertText('a', 1, 'user') ]
+    ), Error)
+    t.throws(() => Delta.diffX(
+        [ createDelete(1) ],
+        [ createInsertText('a', 1, 'user') ]
+    ), Error)
+    t.throws(() => Delta.diffX(
+        [ createInsertText('a', 1, 'user') ],
+        [ createRetain(1) ]
+    ), Error)
+    t.throws(() => Delta.diffX(
+        [ createInsertText('a', 1, 'user') ],
+        [ createDelete(1) ]
+    ), Error)
+
+    t.throws(() => Delta.diffX(
+        [ createInsertText('a', 1, 'user'), createRetain(1) ],
+        [ createInsertText('b', 1, 'user'), createInsertText('a', 1, 'user') ]
+    ), Error)
+    t.throws(() => Delta.diffX(
+        [ createInsertText('a', 1, 'user'), createDelete(1) ],
+        [ createInsertText('b', 1, 'user'), createInsertText('a', 1, 'user') ]
+    ), Error)
+    t.throws(() => Delta.diffX(
+        [ createInsertText('a', 1, 'user'), createInsertText('a', 1, 'user') ],
+        [ createInsertText('b', 1, 'user'), createRetain(1) ]
+    ), Error)
+    t.throws(() => Delta.diffX(
+        [ createInsertText('a', 1, 'user'), createInsertText('a', 1, 'user') ],
+        [ createInsertText('b', 1, 'user'), createDelete(1) ]
+    ), Error)
 
     const testDiffImpl = (delta1, delta2) => {
         const [ result1, result2 ] = Delta.diffX(delta1, delta2)
