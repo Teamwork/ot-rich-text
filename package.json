@@ -1,5 +1,5 @@
 {
-  "name": "ot-rich-text",
+  "name": "@teamwork/ot-rich-text",
   "version": "0.1.6",
   "description": "Format for representing rich-text documents and changes.",
   "main": "index.js",
