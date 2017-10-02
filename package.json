@@ -1,6 +1,6 @@
 {
   "name": "@teamwork/ot-rich-text",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Format for representing rich-text documents and changes.",
   "main": "index.js",
   "scripts": {
@@ -20,8 +20,8 @@
     "url": "git://github.com/Teamwork/ot-rich-text.git"
   },
   "files": [
-      "index.js",
-      "lib/"
+    "index.js",
+    "lib/"
   ],
   "devDependencies": {
     "nodemon": "^1.12.0",
