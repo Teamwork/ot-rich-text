@@ -19,6 +19,10 @@
     "type": "git",
     "url": "git://github.com/Teamwork/ot-rich-text.git"
   },
+  "files": [
+      "index.js",
+      "lib/"
+  ],
   "devDependencies": {
     "nodemon": "^1.12.0",
     "ot-fuzzer": "Teamwork/fuzzer#diffX",
