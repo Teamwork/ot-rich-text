@@ -15,7 +15,6 @@
   },
   "author": "",
   "license": "UNLICENSED",
-  "private": true,
   "repository": {
     "type": "git",
     "url": "git://github.com/Teamwork/ot-rich-text.git"
