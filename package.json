@@ -10,8 +10,7 @@
     "test-coverage": "npm test -- --cov --coverage-report=lcov",
     "tdd-coverage": "nodemon ./node_modules/.bin/tap --cov --coverage-report=lcov --no-browser test/*.js",
     "tap": "tap",
-    "tap-watch": "nodemon ./node_modules/.bin/tap",
-    "prepublish": "cd node_modules/ot-fuzzer && npm i"
+    "tap-watch": "nodemon ./node_modules/.bin/tap"
   },
   "author": "",
   "license": "UNLICENSED",
@@ -25,7 +24,7 @@
   ],
   "devDependencies": {
     "nodemon": "^1.12.0",
-    "ot-fuzzer": "Teamwork/fuzzer#diffX",
+    "ot-fuzzer": "^1.1.0",
     "tap": "^10.7.2"
   },
   "dependencies": {
