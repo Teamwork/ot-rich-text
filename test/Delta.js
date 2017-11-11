@@ -278,21 +278,21 @@ tap.test('transform', t => {
             delete2 // delete1 (remaining 3 characters)
         ])
 
-    t.strictSame(Delta.compose(
+    t.strictSame(Delta.transform(
         [ createRetain(5) ],
         [ createRetain(5) ],
         'left'),
         [],
         'Should remove trailing retain')
 
-    t.strictSame(Delta.compose(
+    t.strictSame(Delta.transform(
         [ createRetain(5) ],
         [ createRetain(5) ],
         'right'),
         [],
         'Should remove trailing retain')
 
-    t.strictSame(Delta.compose(
+    t.strictSame(Delta.transform(
         [ createRetain(5, ['key', 'value']) ],
         [ createRetain(5) ],
         'left'),
