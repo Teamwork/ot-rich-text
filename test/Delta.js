@@ -3,7 +3,7 @@ const Delta = require('../lib/Delta')
 const {
     createInsertText, createInsertOpen, createInsertClose, createInsertEmbed, createRetain, createDelete
 } = require('../lib/Operation')
-const nodeContent = '\uE000'
+const nodeContent = '\uFDD0'
 
 tap.test('create', t => {
     const snapshot = []
@@ -426,16 +426,16 @@ tap.test('diffX', t => {
 
     testDiff([
         createInsertText('abc', 0, ''),
-        createInsertOpen('\uE000', 0, '', 'DIV'),
-        createInsertEmbed('\uE001', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
-        createInsertClose('\uE002', 0, '', 'DIV')
+        createInsertOpen('\uFDD0', 0, '', 'DIV'),
+        createInsertEmbed('\uFDD1', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
+        createInsertClose('\uFDD2', 0, '', 'DIV')
     ], [])
 
     testDiff([
         createInsertText('abc', 0, '')
     ], [
         createInsertText('a', 0, ''),
-        createInsertEmbed('\uE001', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
+        createInsertEmbed('\uFDD1', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
         createInsertText('c', 0, '')
     ])
 
@@ -463,76 +463,76 @@ tap.test('diffX', t => {
 
     testDiff([
         createInsertText('a', 0, ''),
-        createInsertEmbed('\uE001', 0, '', 'IMG', [ 'src', 'http://www.example.com/image2.png' ]),
+        createInsertEmbed('\uFDD1', 0, '', 'IMG', [ 'src', 'http://www.example.com/image2.png' ]),
         createInsertText('c', 0, '')
     ], [
         createInsertText('a', 0, ''),
-        createInsertEmbed('\uE001', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
+        createInsertEmbed('\uFDD1', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
         createInsertText('c', 0, '')
     ])
 
     testDiff([
         createInsertText('a', 0, ''),
-        createInsertEmbed('\uE001', 0, '', 'BR'),
+        createInsertEmbed('\uFDD1', 0, '', 'BR'),
         createInsertText('c', 0, '')
     ], [
         createInsertText('a', 0, ''),
-        createInsertEmbed('\uE001', 0, '', 'IMG'),
+        createInsertEmbed('\uFDD1', 0, '', 'IMG'),
         createInsertText('c', 0, '')
     ])
 
     testDiff([
         createInsertText('aef sefef ', 0, ''),
-        createInsertEmbed('\uE001', 0, '', 'BR'),
+        createInsertEmbed('\uFDD1', 0, '', 'BR'),
         createInsertText('c', 0, '')
     ], [
         createInsertText('aef', 0, ''),
-        createInsertEmbed('\uE001', 0, '', 'IMG'),
+        createInsertEmbed('\uFDD1', 0, '', 'IMG'),
         createInsertText('c', 0, '')
     ])
 
     testDiff([
         createInsertText('aef sefef ', 0, ''),
-        createInsertEmbed('\uE001', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
+        createInsertEmbed('\uFDD1', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
         createInsertText('c', 0, '')
     ], [
         createInsertText('aef', 0, ''),
-        createInsertEmbed('\uE001', 0, '', 'IMG', [ 'src', 'http://www.example.com/image2.png', 'zzz', '' ]),
+        createInsertEmbed('\uFDD1', 0, '', 'IMG', [ 'src', 'http://www.example.com/image2.png', 'zzz', '' ]),
         createInsertText('c', 0, '')
     ])
 
     testDiff([
         createInsertText('abc ', 0, ''),
-        createInsertEmbed('\uE001', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
+        createInsertEmbed('\uFDD1', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
         createInsertText('c', 0, '')
     ], [
         createInsertText('abc ', 0, ''),
-        createInsertEmbed('\uE001', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
+        createInsertEmbed('\uFDD1', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
         createInsertText('c', 0, '')
     ])
 
     testDiff([
         createInsertText('abc ', 0, ''),
-        createInsertEmbed('\uE001', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
+        createInsertEmbed('\uFDD1', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
         createInsertText('c', 0, ''),
-        createInsertEmbed('\uE002', 0, '', 'BR')
+        createInsertEmbed('\uFDD2', 0, '', 'BR')
     ], [
         createInsertText('abc ', 0, ''),
-        createInsertEmbed('\uE001', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
+        createInsertEmbed('\uFDD1', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
         createInsertText('c', 0, ''),
-        createInsertEmbed('\uE002', 0, '', 'HR')
+        createInsertEmbed('\uFDD2', 0, '', 'HR')
     ])
 
     testDiff([
         createInsertText('abc ', 0, ''),
-        createInsertEmbed('\uE001', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
+        createInsertEmbed('\uFDD1', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
         createInsertText('c', 0, ''),
-        createInsertEmbed('\uE002', 0, '', 'BR', [ 'hello', 'world' ])
+        createInsertEmbed('\uFDD2', 0, '', 'BR', [ 'hello', 'world' ])
     ], [
         createInsertText('abc ', 0, ''),
-        createInsertEmbed('\uE001', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
+        createInsertEmbed('\uFDD1', 0, '', 'IMG', [ 'src', 'http://www.example.com/image.png' ]),
         createInsertText('c', 0, ''),
-        createInsertEmbed('\uE002', 0, '', 'BR', [ 'hello', 'world!!!' ])
+        createInsertEmbed('\uFDD2', 0, '', 'BR', [ 'hello', 'world!!!' ])
     ])
 
     t.end()

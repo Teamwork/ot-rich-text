@@ -16,7 +16,7 @@ const randomNodeContent = () =>
     // a completely random character
     fuzzer.randomReal() < 0.5 ? String.fromCharCode(fuzzer.randomInt(0x10000)) :
     // a character in Unicode Private Use Area - a valid character we expect
-    fuzzer.randomReal() < 0.5 ? String.fromCharCode(0xE000 + fuzzer.randomInt(6400)) :
+    fuzzer.randomReal() < 0.5 ? String.fromCharCode(0xFDD0 + fuzzer.randomInt(32)) :
     // a character which will likely conflict with text while performing diff
     String.fromCharCode(48 + fuzzer.randomInt(80))
 const randomVersion = () => fuzzer.randomInt(3)

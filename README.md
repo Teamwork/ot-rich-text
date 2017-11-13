@@ -40,7 +40,7 @@ An insert operation is an instruction to add certain text or node at the current
 #### Insert (Open/Close/Embed) Node Operation
 
 - `0 (ACTION)`: 2, 3, 4 - a code for insert open node, close node and embed node operation respectively
-- `1 (CONTENT)`: a 1 character string - the character must be in the Private Use Area of the Unicode Basic Multilingual Plane (0xE000-0xF8FF). It's used for improving the quality of `diffX` output. A random character in the specified range works fine.
+- `1 (CONTENT)`: a 1 character string - a Unicode non-character between 0xFDD0 and 0xFDEF. It's used for improving the quality of `diffX` output. A random character in the specified range works fine.
 - `2 (VERSION)`: a non-negative integer - the version number at which the change was introduced
 - `3 (AUTHOR)`: a string - the ID of the user who introduced the change
 - `4 (NODE_NAME)`: a string - the name of the node to insert
@@ -82,7 +82,7 @@ A retain operation is an instruction to keep a specified number of characters. T
 
 ```
 // insert an open node
-[2, '\uE87A', 12, 'jo7766', 'P']
+[2, '\uFDD0', 12, 'jo7766', 'P']
 
 // insert plain text
 [ 1, 'Hello ', 1, 'john1234' ]
@@ -91,10 +91,10 @@ A retain operation is an instruction to keep a specified number of characters. T
 [ 1, 'World', 1, 'john1234', 'STRONG', '' ]
 
 // insert an image
-[ 4, '\uE1F0', 44, 'mary9876', 'IMG', 'alt', 'An image', 'src', 'http://www.example.com/image.jpg' ]
+[ 4, '\uFDD1', 44, 'mary9876', 'IMG', 'alt', 'An image', 'src', 'http://www.example.com/image.jpg' ]
 
 // insert a close node
-[3, '\uE87A', 12, 'jo7766', 'P']
+[3, '\uFDD0', 12, 'jo7766', 'P']
 
 // delete 5 characters
 [ -1, 5 ]

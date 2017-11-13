@@ -7,9 +7,9 @@ const {
     slice, merge, composeIterators, transformIterators
 } = require('../lib/Operation')
 const Iterator = require('../lib/Iterator')
-const invalidNodeContent = '\uE000DIV'
-const nodeContent1 = '\uE001'
-const nodeContent2 = '\uE002'
+const invalidNodeContent = '\uFDD0DIV'
+const nodeContent1 = '\uFDD1'
+const nodeContent2 = '\uFDD2'
 
 tap.test('basic tests', t => {
     const retain = createRetain(1)
@@ -255,8 +255,8 @@ tap.test('validate', t => {
         t.type(validate(createInsertOpen(1, 0, '', '')), Error, 'content not a string')
         t.type(validate(createInsertOpen('', 0, '', '')), Error, 'content empty')
         t.type(validate(createInsertOpen('aa', 0, '', '')), Error, 'content too long')
-        t.type(validate(createInsertOpen(String.fromCharCode(0xE000 - 1), 0, '', '')), Error, 'content outside private use area')
-        t.type(validate(createInsertOpen(String.fromCharCode(0xF8FF + 1), 0, '', '')), Error, 'content outside private use area')
+        t.type(validate(createInsertOpen(String.fromCharCode(0xFDD0 - 1), 0, '', '')), Error, 'invalid node id')
+        t.type(validate(createInsertOpen(String.fromCharCode(0xFDEF + 1), 0, '', '')), Error, 'invalid node id')
         t.type(validate(createInsertOpen(nodeContent1, -1, '', '')), Error, 'version negative')
         t.type(validate(createInsertOpen(nodeContent1, 1.01, '', '')), Error, 'version not int')
         t.type(validate(createInsertOpen(nodeContent1, Infinity, '', '')), Error, 'version not finite')
@@ -284,8 +284,8 @@ tap.test('validate', t => {
         t.type(validate(createInsertClose(1, 0, '', '')), Error, 'content not a string')
         t.type(validate(createInsertClose('', 0, '', '')), Error, 'content empty')
         t.type(validate(createInsertClose('aa', 0, '', '')), Error, 'content too long')
-        t.type(validate(createInsertClose(String.fromCharCode(0xE000 - 1), 0, '', '')), Error, 'content outside private use area')
-        t.type(validate(createInsertClose(String.fromCharCode(0xF8FF + 1), 0, '', '')), Error, 'content outside private use area')
+        t.type(validate(createInsertClose(String.fromCharCode(0xFDD0 - 1), 0, '', '')), Error, 'invalid node id')
+        t.type(validate(createInsertClose(String.fromCharCode(0xFDEF + 1), 0, '', '')), Error, 'invalid node id')
         t.type(validate(createInsertClose(nodeContent1, -1, '', '')), Error, 'version negative')
         t.type(validate(createInsertClose(nodeContent1, 1.01, '', '')), Error, 'version not int')
         t.type(validate(createInsertClose(nodeContent1, Infinity, '', '')), Error, 'version not finite')
@@ -313,8 +313,8 @@ tap.test('validate', t => {
         t.type(validate(createInsertEmbed(1, 0, '', '')), Error, 'content not a string')
         t.type(validate(createInsertEmbed('', 0, '', '')), Error, 'content empty')
         t.type(validate(createInsertEmbed('aa', 0, '', '')), Error, 'content too long')
-        t.type(validate(createInsertEmbed(String.fromCharCode(0xE000 - 1), 0, '', '')), Error, 'content outside private use area')
-        t.type(validate(createInsertEmbed(String.fromCharCode(0xF8FF + 1), 0, '', '')), Error, 'content outside private use area')
+        t.type(validate(createInsertEmbed(String.fromCharCode(0xFDD0 - 1), 0, '', '')), Error, 'invalid node id')
+        t.type(validate(createInsertEmbed(String.fromCharCode(0xFDEF + 1), 0, '', '')), Error, 'invalid node id')
         t.type(validate(createInsertEmbed(nodeContent1, -1, '', '')), Error, 'version negative')
         t.type(validate(createInsertEmbed(nodeContent1, 1.01, '', '')), Error, 'version not int')
         t.type(validate(createInsertEmbed(nodeContent1, Infinity, '', '')), Error, 'version not finite')

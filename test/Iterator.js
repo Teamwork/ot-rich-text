@@ -3,7 +3,7 @@ const Iterator = require('../lib/Iterator')
 const {
     createInsertText, createInsertEmbed, createRetain, createDelete
 } = require('../lib/Operation')
-const nodeContent = '\uE000'
+const nodeContent = '\uFDD0'
 
 tap.test('no operations', t => {
     const operations = []
