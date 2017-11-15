@@ -3,7 +3,6 @@ const Iterator = require('../lib/Iterator')
 const {
     createInsertText, createInsertEmbed, createRetain, createDelete
 } = require('../lib/Operation')
-const nodeContent = '\uFDD0'
 
 tap.test('no operations', t => {
     const operations = []
@@ -18,17 +17,6 @@ tap.test('no operations', t => {
 
 tap.test('empty insert text operation at the start', t => {
     const operations = [ createInsertText('', 1, 'user') ]
-    const i = new Iterator(operations)
-
-    t.equal(i.operations, operations)
-    t.equal(i.index, 1)
-    t.equal(i.operation, null)
-    t.equal(i.offset, 0)
-    t.end()
-})
-
-tap.test('empty insert object operation at the start', t => {
-    const operations = [ createInsertEmbed('', 1, 'user', 'DIV') ]
     const i = new Iterator(operations)
 
     t.equal(i.operations, operations)
@@ -70,7 +58,7 @@ tap.test('insert text operation', t => {
 })
 
 tap.test('insert object operation', t => {
-    const operation = createInsertEmbed(nodeContent, 1, 'user', 'DIV')
+    const operation = createInsertEmbed('DIV', 1, 'user')
     const i = new Iterator([ operation ])
 
     t.equal(i.operation, operation)
@@ -96,7 +84,7 @@ tap.test('delete operation', t => {
 })
 
 tap.test('move within operation', t => {
-    const operation0 = createInsertEmbed(nodeContent, 1, 'user', 'DIV')
+    const operation0 = createInsertEmbed('DIV', 1, 'user')
     const operation1 = createInsertText('1234', 1, 'user')
     const operation2 = createRetain(10)
     const operation3 = createDelete(15)
