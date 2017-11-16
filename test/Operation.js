@@ -3,7 +3,7 @@ const {
     createInsertText, createInsertOpen, createInsertClose, createInsertEmbed, createRetain, createDelete,
     isInsert, isInsertText, isInsertOpen, isInsertClose, isInsertEmbed, isRetain, isDelete,
     getContent, getAttributes, getLength, copyOperation, validate,
-    areOperationsEqual, areAttributesEqual, getAttributesIndex, hasAttributes,
+    areOperationsEqual, areActionsEqual, areAttributesEqual, getAttributesIndex, hasAttributes,
     slice, merge, composeIterators, transformIterators
 } = require('../lib/Operation')
 const Iterator = require('../lib/Iterator')
@@ -374,6 +374,46 @@ tap.test('areOperationsEqual', t => {
     t.equal(areOperationsEqual(
         createInsertOpen('P', 1, 'user', [ 'key1', 'value1', 'key2', 'value2' ] ),
         createInsertOpen('P', 2, 'user', [ 'key1', 'value1', 'key2', 'value3' ] )
+    ), false)
+    t.end()
+})
+
+tap.test('areActionsEqual', t => {
+    t.equal(areActionsEqual(
+        createInsertText('abc', 4, 'user', ['a', 'b']),
+        createInsertText('xyz', 5, 'user2', ['c', 'd'])
+    ), true)
+    t.equal(areActionsEqual(
+        createInsertOpen('P', 4, 'user', ['a', 'b']),
+        createInsertOpen('DIV', 5, 'user2', ['c', 'd'])
+    ), true)
+    t.equal(areActionsEqual(
+        createInsertClose('P', 4, 'user', ['a', 'b']),
+        createInsertClose('DIV', 5, 'user2', ['c', 'd'])
+    ), true)
+    t.equal(areActionsEqual(
+        createInsertEmbed('BR', 4, 'user', ['a', 'b']),
+        createInsertEmbed('HR', 5, 'user2', ['c', 'd'])
+    ), true)
+    t.equal(areActionsEqual(
+        createRetain(4, ['a', 'b']),
+        createRetain(5, ['c', 'd'])
+    ), true)
+    t.equal(areActionsEqual(
+        createDelete(4),
+        createDelete(5)
+    ), true)
+    t.equal(areActionsEqual(
+        createRetain(4),
+        createDelete(5)
+    ), false)
+    t.equal(areActionsEqual(
+        createRetain(4),
+        createDelete(4)
+    ), false)
+    t.equal(areActionsEqual(
+        createInsertOpen('P', 4, 'user', ['a', 'b']),
+        createInsertClose('DIV', 5, 'user2', ['c', 'd'])
     ), false)
     t.end()
 })
