@@ -16,7 +16,7 @@ tap.test('no operations', t => {
 })
 
 tap.test('empty insert text operation at the start', t => {
-    const operations = [ createInsertText('', 1, 'user') ]
+    const operations = [ createInsertText('', 'user') ]
     const i = new Iterator(operations)
 
     t.equal(i.operations, operations)
@@ -50,7 +50,7 @@ tap.test('empty retain operation at the start', t => {
 
 tap.test('insert text operation', t => {
     const text = 'asese fesfsefsd fsdhjb hbj \u{101EE}'
-    const operation = createInsertText(text, 1, 'user')
+    const operation = createInsertText(text, 'user')
     const i = new Iterator([ operation ])
 
     t.equal(i.operation, operation)
@@ -58,7 +58,7 @@ tap.test('insert text operation', t => {
 })
 
 tap.test('insert object operation', t => {
-    const operation = createInsertEmbed('DIV', 1, 'user')
+    const operation = createInsertEmbed('DIV', 'user')
     const i = new Iterator([ operation ])
 
     t.equal(i.operation, operation)
@@ -84,8 +84,8 @@ tap.test('delete operation', t => {
 })
 
 tap.test('move within operation', t => {
-    const operation0 = createInsertEmbed('DIV', 1, 'user')
-    const operation1 = createInsertText('1234', 1, 'user')
+    const operation0 = createInsertEmbed('DIV', 'user')
+    const operation1 = createInsertText('1234', 'user')
     const operation2 = createRetain(10)
     const operation3 = createDelete(15)
     const operation4 = createRetain(20)

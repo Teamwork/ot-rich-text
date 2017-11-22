@@ -12,7 +12,6 @@ const {
 const randomItemFactory = list => () => list[fuzzer.randomInt(list.length)]
 
 const randomWord = () => fuzzer.randomWord()
-const randomVersion = () => fuzzer.randomInt(3)
 const randomUser = randomItemFactory([ '', 'Mary', 'John' ])
 const randomBlockNodeName = randomItemFactory([ '', 'BLOCKQUOTE', 'DIV', 'P' ])
 const randomEmbedNodeName = randomItemFactory([ '', 'BR', 'IMG', 'HR' ])
@@ -42,10 +41,10 @@ const randomAttributes = (allowNull) => {
 
     return attributes
 }
-const randomInsertText = () => createInsertText(randomWord(), randomVersion(), randomUser(), randomAttributes())
-const randomInsertOpen = () => createInsertOpen(randomBlockNodeName(), randomVersion(), randomUser(), randomAttributes())
-const randomInsertClose = () => createInsertClose(randomBlockNodeName(), randomVersion(), randomUser(), randomAttributes())
-const randomInsertEmbed = () => createInsertEmbed(randomEmbedNodeName(), randomVersion(), randomUser(), randomAttributes())
+const randomInsertText = () => createInsertText(randomWord(), randomUser(), randomAttributes())
+const randomInsertOpen = () => createInsertOpen(randomBlockNodeName(), randomUser(), randomAttributes())
+const randomInsertClose = () => createInsertClose(randomBlockNodeName(), randomUser(), randomAttributes())
+const randomInsertEmbed = () => createInsertEmbed(randomEmbedNodeName(), randomUser(), randomAttributes())
 
 const getSnapshotLength = snapshot => {
     let length = 0

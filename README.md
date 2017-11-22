@@ -27,15 +27,14 @@ An insert operation is an instruction to add certain text or node at the current
 
 - `0 (ACTION)`: 1, 2, 3, 4 - a code for insert text, open node, close node and embed node operations respectively
 - `1 (CONTENT)`: a non-empty string - the text to insert or the node name
-- `2 (VERSION)`: a non-negative integer - the version number at which the change was introduced
-- `3 (AUTHOR)`: a string - the ID of the user who introduced the change
-- `4 (ATTRIBUTE_0_NAME)`: a string - the name of attribute 0
-- `5 (ATTRIBUTE_0_VALUE)`: a string - the value of attribute 0
-- `6 (ATTRIBUTE_1_NAME)`: a string - the name of attribute 1
-- `7 (ATTRIBUTE_1_VALUE)`: a string - the value of attribute 1
+- `2 (AUTHOR)`: a string - the ID of the user who introduced the change
+- `3 (ATTRIBUTE_0_NAME)`: a string - the name of attribute 0
+- `4 (ATTRIBUTE_0_VALUE)`: a string - the value of attribute 0
+- `5 (ATTRIBUTE_1_NAME)`: a string - the name of attribute 1
+- `6 (ATTRIBUTE_1_VALUE)`: a string - the value of attribute 1
 - ...
-- `4 + (N * 2) (ATTRIBUTE_N_NAME)`: a string - the name of attribute N
-- `5 + (N * 2) (ATTRIBUTE_N_VALUE)`: a string - the value of attribute N
+- `3 + (N * 2) (ATTRIBUTE_N_NAME)`: a string - the name of attribute N
+- `4 + (N * 2) (ATTRIBUTE_N_VALUE)`: a string - the value of attribute N
 
 
 ### Delete Operation
@@ -67,19 +66,19 @@ A retain operation is an instruction to keep a specified number of characters. T
 
 ```
 // insert an open node
-[2, 'P', 12, 'jo7766']
+[2, 'P', 'jo7766']
 
 // insert plain text
-[ 1, 'Hello ', 1, 'john1234' ]
+[ 1, 'Hello ', 'john1234' ]
 
 // insert bold text
-[ 1, 'World', 1, 'john1234', 'STRONG', '' ]
+[ 1, 'World', 'john1234', 'STRONG', '' ]
 
 // insert an image
-[ 4, 'IMG', 44, 'mary9876', 'alt', 'An image', 'src', 'http://www.example.com/image.jpg' ]
+[ 4, 'IMG', 'mary9876', 'alt', 'An image', 'src', 'http://www.example.com/image.jpg' ]
 
 // insert a close node
-[3, 'P', 12, 'jo7766']
+[3, 'P', 'jo7766']
 
 // delete 5 characters
 [ -1, 5 ]
