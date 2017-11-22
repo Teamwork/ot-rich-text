@@ -23,26 +23,39 @@ The attribute names must be string. The attribute values for insert must be stri
 
 An insert operation is an instruction to add certain text or node at the current position, with optional attributes. The attributes can be subsequently modified using the retain operation.
 
-#### Insert (Text / Open Node / Close Node / Embed Node) Operation
+#### Insert Text Operation
 
-- `0 (ACTION)`: 1, 2, 3, 4 - a code for insert text, open node, close node and embed node operations respectively
-- `1 (CONTENT)`: a non-empty string - the text to insert or the node name
-- `2 (VERSION)`: a non-negative integer - the version number at which the change was introduced
-- `3 (AUTHOR)`: a string - the ID of the user who introduced the change
-- `4 (ATTRIBUTE_0_NAME)`: a string - the name of attribute 0
-- `5 (ATTRIBUTE_0_VALUE)`: a string - the value of attribute 0
-- `6 (ATTRIBUTE_1_NAME)`: a string - the name of attribute 1
-- `7 (ATTRIBUTE_1_VALUE)`: a string - the value of attribute 1
+- `0 (ACTION)`: 1 - the code for the insert text operation
+- `1 (CONTENT)`: a non-empty string - the text to insert
+- `2 (AUTHOR)`: a string - the ID of the user who inserts the text
+- `3 (ATTRIBUTE_0_NAME)`: a string - the name of attribute 0
+- `4 (ATTRIBUTE_0_VALUE)`: a string - the value of attribute 0
+- `5 (ATTRIBUTE_1_NAME)`: a string - the name of attribute 1
+- `6 (ATTRIBUTE_1_VALUE)`: a string - the value of attribute 1
 - ...
-- `4 + (N * 2) (ATTRIBUTE_N_NAME)`: a string - the name of attribute N
-- `5 + (N * 2) (ATTRIBUTE_N_VALUE)`: a string - the value of attribute N
+- `3 + (N * 2) (ATTRIBUTE_N_NAME)`: a string - the name of attribute N
+- `4 + (N * 2) (ATTRIBUTE_N_VALUE)`: a string - the value of attribute N
+
+
+#### Insert Open Node / Close Node / Embed Node Operation
+
+- `0 (ACTION)`: 2, 3, 4 - the code for the insert open node, close node and embed node operations respectively
+- `1 (CONTENT)`: a string - a node ID and name. The first characters is the node ID, the rest are node name. Node ID must be a single character in the Private Use Area in the Unicode Basic Multilingual Plane.
+- `2 (AUTHOR)`: a string - the ID of the user who inserts the node
+- `3 (ATTRIBUTE_0_NAME)`: a string - the name of attribute 0
+- `4 (ATTRIBUTE_0_VALUE)`: a string - the value of attribute 0
+- `5 (ATTRIBUTE_1_NAME)`: a string - the name of attribute 1
+- `6 (ATTRIBUTE_1_VALUE)`: a string - the value of attribute 1
+- ...
+- `3 + (N * 2) (ATTRIBUTE_N_NAME)`: a string - the name of attribute N
+- `4 + (N * 2) (ATTRIBUTE_N_VALUE)`: a string - the value of attribute N
 
 
 ### Delete Operation
 
 A delete operation is an instruction to delete a specified number of characters at the current position. The original characters come from the insert operations. Insert open/close/embed node operations are tread as 1-character strings.
 
-- `0 (ACTION)`: -1 - a code for the delete operation
+- `0 (ACTION)`: -1 - the code for the delete operation
 - `1 (CONTENT)`: a positive integer - the number of characters to delete
 
 
@@ -52,7 +65,7 @@ A retain operation is an instruction to keep a specified number of characters. T
 
 *Note: It is not necessary to retain the last characters of a document as this is implied.*
 
-- `0 (ACTION)`: 0 - a code for retain operation
+- `0 (ACTION)`: 0 - the code for the retain operation
 - `1 (CONTENT)`: a positive integer - the number of characters to keep
 - `2 (ATTRIBUTE_0_NAME)`: a string - the name of attribute 0
 - `3 (ATTRIBUTE_0_VALUE)`: a string or null - the value of attribute 0
@@ -67,19 +80,19 @@ A retain operation is an instruction to keep a specified number of characters. T
 
 ```
 // insert an open node
-[2, 'P', 12, 'jo7766']
+[2, '\uE000P', 'jo7766']
 
 // insert plain text
-[ 1, 'Hello ', 1, 'john1234' ]
+[ 1, 'Hello ', 'john1234' ]
 
 // insert bold text
-[ 1, 'World', 1, 'john1234', 'STRONG', '' ]
+[ 1, 'World', 'john1234', 'STRONG', '' ]
 
 // insert an image
-[ 4, 'IMG', 44, 'mary9876', 'alt', 'An image', 'src', 'http://www.example.com/image.jpg' ]
+[ 4, '\uE001IMG', 'mary9876', 'alt', 'An image', 'src', 'http://www.example.com/image.jpg' ]
 
 // insert a close node
-[3, 'P', 12, 'jo7766']
+[3, '\uE000P', 'jo7766']
 
 // delete 5 characters
 [ -1, 5 ]
