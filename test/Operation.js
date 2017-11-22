@@ -2,7 +2,7 @@ const tap = require('tap')
 const {
     createInsertText, createInsertOpen, createInsertClose, createInsertEmbed, createRetain, createDelete,
     isInsert, isInsertText, isInsertOpen, isInsertClose, isInsertEmbed, isRetain, isDelete,
-    getContent, getAttributes, getLength, copyOperation, validate,
+    getCount, getText, getNodeId, getNodeName, getAuthor, getAttributes, getLength, copyOperation, validate,
     areOperationsEqual, areActionsEqual, areAttributesEqual, getAttributesIndex, hasAttributes,
     slice, merge, composeIterators, transformIterators
 } = require('../lib/Operation')
@@ -12,22 +12,29 @@ tap.test('basic tests', t => {
     const retain = createRetain(1)
     const del = createDelete(2)
     const insertText = createInsertText('hello', 'user')
-    const insertOpen = createInsertOpen('DIV', 'user')
-    const insertClose = createInsertClose('DIV', 'user')
-    const insertEmbed = createInsertEmbed('DIV', 'user')
+    const insertOpen = createInsertOpen('\uE000DIV', 'user')
+    const insertClose = createInsertClose('\uE000DIV', 'user')
+    const insertEmbed = createInsertEmbed('\uE000DIV', 'user')
 
     const retainWithAttributes = createRetain(1, ['key', 'value'])
     const insertTextWithAttributes = createInsertText('hello', 'user', ['key', 'value'])
-    const insertOpenWithAttributes = createInsertOpen('DIV', 'user', ['key', 'value'])
-    const insertCloseWithAttributes = createInsertClose('DIV', 'user', ['key', 'value'])
-    const insertEmbedWithAttributes = createInsertEmbed('DIV', 'user', ['key', 'value'])
+    const insertOpenWithAttributes = createInsertOpen('\uE000DIV', 'user', ['key', 'value'])
+    const insertCloseWithAttributes = createInsertClose('\uE000DIV', 'user', ['key', 'value'])
+    const insertEmbedWithAttributes = createInsertEmbed('\uE000DIV', 'user', ['key', 'value'])
 
-    t.equal(getContent(retain), 1)
-    t.equal(getContent(del), 2)
-    t.equal(getContent(insertText), 'hello')
-    t.equal(getContent(insertOpen), 'DIV')
-    t.equal(getContent(insertClose), 'DIV')
-    t.equal(getContent(insertEmbed), 'DIV')
+    t.equal(getCount(retain), 1)
+    t.equal(getCount(del), 2)
+    t.equal(getText(insertText), 'hello')
+    t.equal(getNodeName(insertOpen), 'DIV')
+    t.equal(getNodeName(insertClose), 'DIV')
+    t.equal(getNodeName(insertEmbed), 'DIV')
+    t.equal(getNodeId(insertOpen), '\uE000')
+    t.equal(getNodeId(insertClose), '\uE000')
+    t.equal(getNodeId(insertEmbed), '\uE000')
+    t.equal(getAuthor(insertText), 'user')
+    t.equal(getAuthor(insertOpen), 'user')
+    t.equal(getAuthor(insertClose), 'user')
+    t.equal(getAuthor(insertEmbed), 'user')
 
     t.strictSame(getAttributes(retain), [])
     t.strictSame(getAttributes(del), [])
@@ -129,14 +136,14 @@ tap.test('copyOperation', t => {
             createInsertText('hello', 'user', ['key', 'value']), false),
             createInsertText('hello', 'user', ['key', 'value']))
         t.strictSame(copyOperation(
-            createInsertOpen('DIV', 'user', ['key', 'value']), false),
-            createInsertOpen('DIV', 'user', ['key', 'value']))
+            createInsertOpen('\uE000DIV', 'user', ['key', 'value']), false),
+            createInsertOpen('\uE000DIV', 'user', ['key', 'value']))
         t.strictSame(copyOperation(
-            createInsertClose('DIV', 'user', ['key', 'value']), false),
-            createInsertClose('DIV', 'user', ['key', 'value']))
+            createInsertClose('\uE000DIV', 'user', ['key', 'value']), false),
+            createInsertClose('\uE000DIV', 'user', ['key', 'value']))
         t.strictSame(copyOperation(
-            createInsertEmbed('DIV', 'user', ['key', 'value']), false),
-            createInsertEmbed('DIV', 'user', ['key', 'value']))
+            createInsertEmbed('\uE000DIV', 'user', ['key', 'value']), false),
+            createInsertEmbed('\uE000DIV', 'user', ['key', 'value']))
         t.strictSame(copyOperation(
             createRetain(5, ['key', 'value']), false),
             createRetain(5, ['key', 'value']))
@@ -151,14 +158,14 @@ tap.test('copyOperation', t => {
             createInsertText('hello', 'user', ['key', 'value']), true),
             createInsertText('hello', 'user'))
         t.strictSame(copyOperation(
-            createInsertOpen('DIV', 'user', ['key', 'value']), true),
-            createInsertOpen('DIV', 'user'))
+            createInsertOpen('\uE000DIV', 'user', ['key', 'value']), true),
+            createInsertOpen('\uE000DIV', 'user'))
         t.strictSame(copyOperation(
-            createInsertClose('DIV', 'user', ['key', 'value']), true),
-            createInsertClose('DIV', 'user'))
+            createInsertClose('\uE000DIV', 'user', ['key', 'value']), true),
+            createInsertClose('\uE000DIV', 'user'))
         t.strictSame(copyOperation(
-            createInsertEmbed('DIV', 'user', ['key', 'value']), true),
-            createInsertEmbed('DIV', 'user'))
+            createInsertEmbed('\uE000DIV', 'user', ['key', 'value']), true),
+            createInsertEmbed('\uE000DIV', 'user'))
         t.strictSame(copyOperation(
             createRetain(5, ['key', 'value']), true),
             createRetain(5))
@@ -180,10 +187,10 @@ tap.test('validate', t => {
         t.type(validate([-2, 5]), Error, 'unsupported action')
         t.type(validate([ -1 ]), Error, 'too short for delete')
         t.type(validate([ 0 ]), Error, 'too short for retain')
-        t.type(validate([ 1, 'a', 0 ]), Error, 'too short for insert text')
-        t.type(validate([ 2, 'DIV', 0 ]), Error, 'too short for insert open')
-        t.type(validate([ 3, 'DIV', 0 ]), Error, 'too short for insert close')
-        t.type(validate([ 4, 'DIV', 0 ]), Error, 'too short for insert embed')
+        t.type(validate([ 1, 'hello' ]), Error, 'too short for insert text')
+        t.type(validate([ 2, '\uE000DIV' ]), Error, 'too short for insert open')
+        t.type(validate([ 3, '\uE000DIV' ]), Error, 'too short for insert close')
+        t.type(validate([ 4, '\uE000DIV' ]), Error, 'too short for insert embed')
         t.end()
     })
 
@@ -243,63 +250,72 @@ tap.test('validate', t => {
     t.test('insertOpen', t => {
         t.type(validate(createInsertOpen(1, '')), Error, 'content not a string')
         t.type(validate(createInsertOpen('', '')), Error, 'content empty')
-        t.type(validate(createInsertOpen('DIV', 1)), Error, 'author not a string')
-        t.type(validate(createInsertOpen('DIV', '', [ '1' ])), Error, 'no attribute value')
-        t.type(validate(createInsertOpen('DIV', '', [ 1, '1' ])), Error, 'attribute name not a string')
-        t.type(validate(createInsertOpen('DIV', '', [ null, '1' ])), Error, 'attribute name not a string')
-        t.type(validate(createInsertOpen('DIV', '', [ '1', 1 ])), Error, 'attribute value not a string')
-        t.type(validate(createInsertOpen('DIV', '', [ '1', null ])), Error, 'attribute value not a string')
-        t.type(validate(createInsertOpen('DIV', '', [ 'b', '', 'a', '' ])), Error, 'attributes not sorted by name')
-        t.type(validate(createInsertOpen('DIV', '', [ 'a', '', 'a', '' ])), Error, 'duplicate attribute name')
-        t.type(validate(createInsertOpen('DIV', '', [ 'a', '', 'b', '', 'a', '' ])), Error, 'attributes not sorted by name')
-        t.equal(validate(createInsertOpen('DIV', '')), null)
-        t.equal(validate(createInsertOpen('DIV', '')), null)
-        t.equal(validate(createInsertOpen('DIV', '', [ '1', '1' ])), null)
-        t.equal(validate(createInsertOpen('DIV', '', [ '1', '' ])), null)
-        t.equal(validate(createInsertOpen('DIV', '', [ '', '', '1', '', 'a', '', 'ab', 'b' ])), null)
-        t.equal(validate(createInsertOpen('DIV', '', [ 'a', '', 'b', '' ])), null)
+        t.type(validate(createInsertOpen('\uE000', '')), Error, 'node name missing')
+        t.type(validate(createInsertOpen('P', '')), Error, 'node name missing and node ID invalid "P"')
+        t.type(validate(createInsertOpen('DIV', '')), Error, 'node ID invalid "D"')
+        t.type(validate(createInsertOpen('\uE000DIV', 1)), Error, 'author not a string')
+        t.type(validate(createInsertOpen('\uE000DIV', '', [ '1' ])), Error, 'no attribute value')
+        t.type(validate(createInsertOpen('\uE000DIV', '', [ 1, '1' ])), Error, 'attribute name not a string')
+        t.type(validate(createInsertOpen('\uE000DIV', '', [ null, '1' ])), Error, 'attribute name not a string')
+        t.type(validate(createInsertOpen('\uE000DIV', '', [ '1', 1 ])), Error, 'attribute value not a string')
+        t.type(validate(createInsertOpen('\uE000DIV', '', [ '1', null ])), Error, 'attribute value not a string')
+        t.type(validate(createInsertOpen('\uE000DIV', '', [ 'b', '', 'a', '' ])), Error, 'attributes not sorted by name')
+        t.type(validate(createInsertOpen('\uE000DIV', '', [ 'a', '', 'a', '' ])), Error, 'duplicate attribute name')
+        t.type(validate(createInsertOpen('\uE000DIV', '', [ 'a', '', 'b', '', 'a', '' ])), Error, 'attributes not sorted by name')
+        t.equal(validate(createInsertOpen('\uE000DIV', '')), null)
+        t.equal(validate(createInsertOpen('\uE000DIV', '')), null)
+        t.equal(validate(createInsertOpen('\uE000DIV', '', [ '1', '1' ])), null)
+        t.equal(validate(createInsertOpen('\uE000DIV', '', [ '1', '' ])), null)
+        t.equal(validate(createInsertOpen('\uE000DIV', '', [ '', '', '1', '', 'a', '', 'ab', 'b' ])), null)
+        t.equal(validate(createInsertOpen('\uE000DIV', '', [ 'a', '', 'b', '' ])), null)
         t.end()
     })
 
     t.test('insertClose', t => {
         t.type(validate(createInsertClose(1, '')), Error, 'content not a string')
         t.type(validate(createInsertClose('', '')), Error, 'content empty')
-        t.type(validate(createInsertClose('DIV', 1)), Error, 'author not a string')
-        t.type(validate(createInsertClose('DIV', '', [ '1' ])), Error, 'no attribute value')
-        t.type(validate(createInsertClose('DIV', '', [ 1, '1' ])), Error, 'attribute name not a string')
-        t.type(validate(createInsertClose('DIV', '', [ null, '1' ])), Error, 'attribute name not a string')
-        t.type(validate(createInsertClose('DIV', '', [ '1', 1 ])), Error, 'attribute value not a string')
-        t.type(validate(createInsertClose('DIV', '', [ '1', null ])), Error, 'attribute value not a string')
-        t.type(validate(createInsertClose('DIV', '', [ 'b', '', 'a', '' ])), Error, 'attributes not sorted by name')
-        t.type(validate(createInsertClose('DIV', '', [ 'a', '', 'a', '' ])), Error, 'duplicate attribute name')
-        t.type(validate(createInsertClose('DIV', '', [ 'a', '', 'b', '', 'a', '' ])), Error, 'attributes not sorted by name')
-        t.equal(validate(createInsertClose('DIV', '')), null)
-        t.equal(validate(createInsertClose('DIV', '')), null)
-        t.equal(validate(createInsertClose('DIV', '', [ '1', '1' ])), null)
-        t.equal(validate(createInsertClose('DIV', '', [ '1', '' ])), null)
-        t.equal(validate(createInsertClose('DIV', '', [ '', '', '1', '', 'a', '', 'ab', 'b' ])), null)
-        t.equal(validate(createInsertClose('DIV', '', [ 'a', '', 'b', '' ])), null)
+        t.type(validate(createInsertClose('\uE000', '')), Error, 'node name missing')
+        t.type(validate(createInsertClose('P', '')), Error, 'node name missing and node ID invalid "P"')
+        t.type(validate(createInsertClose('DIV', '')), Error, 'node ID invalid "D"')
+        t.type(validate(createInsertClose('\uE000DIV', 1)), Error, 'author not a string')
+        t.type(validate(createInsertClose('\uE000DIV', '', [ '1' ])), Error, 'no attribute value')
+        t.type(validate(createInsertClose('\uE000DIV', '', [ 1, '1' ])), Error, 'attribute name not a string')
+        t.type(validate(createInsertClose('\uE000DIV', '', [ null, '1' ])), Error, 'attribute name not a string')
+        t.type(validate(createInsertClose('\uE000DIV', '', [ '1', 1 ])), Error, 'attribute value not a string')
+        t.type(validate(createInsertClose('\uE000DIV', '', [ '1', null ])), Error, 'attribute value not a string')
+        t.type(validate(createInsertClose('\uE000DIV', '', [ 'b', '', 'a', '' ])), Error, 'attributes not sorted by name')
+        t.type(validate(createInsertClose('\uE000DIV', '', [ 'a', '', 'a', '' ])), Error, 'duplicate attribute name')
+        t.type(validate(createInsertClose('\uE000DIV', '', [ 'a', '', 'b', '', 'a', '' ])), Error, 'attributes not sorted by name')
+        t.equal(validate(createInsertClose('\uE000DIV', '')), null)
+        t.equal(validate(createInsertClose('\uE000DIV', '')), null)
+        t.equal(validate(createInsertClose('\uE000DIV', '', [ '1', '1' ])), null)
+        t.equal(validate(createInsertClose('\uE000DIV', '', [ '1', '' ])), null)
+        t.equal(validate(createInsertClose('\uE000DIV', '', [ '', '', '1', '', 'a', '', 'ab', 'b' ])), null)
+        t.equal(validate(createInsertClose('\uE000DIV', '', [ 'a', '', 'b', '' ])), null)
         t.end()
     })
 
     t.test('insertEmbed', t => {
         t.type(validate(createInsertEmbed(1, '')), Error, 'content not a string')
         t.type(validate(createInsertEmbed('', '')), Error, 'content empty')
-        t.type(validate(createInsertEmbed('DIV', 1)), Error, 'author not a string')
-        t.type(validate(createInsertEmbed('DIV', '', [ '1' ])), Error, 'no attribute value')
-        t.type(validate(createInsertEmbed('DIV', '', [ 1, '1' ])), Error, 'attribute name not a string')
-        t.type(validate(createInsertEmbed('DIV', '', [ null, '1' ])), Error, 'attribute name not a string')
-        t.type(validate(createInsertEmbed('DIV', '', [ '1', 1 ])), Error, 'attribute value not a string')
-        t.type(validate(createInsertEmbed('DIV', '', [ '1', null ])), Error, 'attribute value not a string')
-        t.type(validate(createInsertEmbed('DIV', '', [ 'b', '', 'a', '' ])), Error, 'attributes not sorted by name')
-        t.type(validate(createInsertEmbed('DIV', '', [ 'a', '', 'a', '' ])), Error, 'duplicate attribute name')
-        t.type(validate(createInsertEmbed('DIV', '', [ 'a', '', 'b', '', 'a', '' ])), Error, 'attributes not sorted by name')
-        t.equal(validate(createInsertEmbed('DIV', '')), null)
-        t.equal(validate(createInsertEmbed('DIV', '')), null)
-        t.equal(validate(createInsertEmbed('DIV', '', [ '1', '1' ])), null)
-        t.equal(validate(createInsertEmbed('DIV', '', [ '1', '' ])), null)
-        t.equal(validate(createInsertEmbed('DIV', '', [ '', '', '1', '', 'a', '', 'ab', 'b' ])), null)
-        t.equal(validate(createInsertEmbed('DIV', '', [ 'a', '', 'b', '' ])), null)
+        t.type(validate(createInsertEmbed('\uE000', '')), Error, 'node name missing')
+        t.type(validate(createInsertEmbed('P', '')), Error, 'node name missing and node ID invalid "P"')
+        t.type(validate(createInsertEmbed('DIV', '')), Error, 'node ID invalid "D"')
+        t.type(validate(createInsertEmbed('\uE000DIV', 1)), Error, 'author not a string')
+        t.type(validate(createInsertEmbed('\uE000DIV', '', [ '1' ])), Error, 'no attribute value')
+        t.type(validate(createInsertEmbed('\uE000DIV', '', [ 1, '1' ])), Error, 'attribute name not a string')
+        t.type(validate(createInsertEmbed('\uE000DIV', '', [ null, '1' ])), Error, 'attribute name not a string')
+        t.type(validate(createInsertEmbed('\uE000DIV', '', [ '1', 1 ])), Error, 'attribute value not a string')
+        t.type(validate(createInsertEmbed('\uE000DIV', '', [ '1', null ])), Error, 'attribute value not a string')
+        t.type(validate(createInsertEmbed('\uE000DIV', '', [ 'b', '', 'a', '' ])), Error, 'attributes not sorted by name')
+        t.type(validate(createInsertEmbed('\uE000DIV', '', [ 'a', '', 'a', '' ])), Error, 'duplicate attribute name')
+        t.type(validate(createInsertEmbed('\uE000DIV', '', [ 'a', '', 'b', '', 'a', '' ])), Error, 'attributes not sorted by name')
+        t.equal(validate(createInsertEmbed('\uE000DIV', '')), null)
+        t.equal(validate(createInsertEmbed('\uE000DIV', '')), null)
+        t.equal(validate(createInsertEmbed('\uE000DIV', '', [ '1', '1' ])), null)
+        t.equal(validate(createInsertEmbed('\uE000DIV', '', [ '1', '' ])), null)
+        t.equal(validate(createInsertEmbed('\uE000DIV', '', [ '', '', '1', '', 'a', '', 'ab', 'b' ])), null)
+        t.equal(validate(createInsertEmbed('\uE000DIV', '', [ 'a', '', 'b', '' ])), null)
         t.end()
     })
 
@@ -312,16 +328,16 @@ tap.test('areOperationsEqual', t => {
         createInsertText('a', 'user', [ 'key1', 'value1', 'key2', 'value2' ] )
     ), true)
     t.equal(areOperationsEqual(
-        createInsertOpen('P', 'user', [ 'key1', 'value1', 'key2', 'value2' ] ),
-        createInsertOpen('P', 'user', [ 'key1', 'value1', 'key2', 'value2' ] )
+        createInsertOpen('\uE000P', 'user', [ 'key1', 'value1', 'key2', 'value2' ] ),
+        createInsertOpen('\uE000P', 'user', [ 'key1', 'value1', 'key2', 'value2' ] )
     ), true)
     t.equal(areOperationsEqual(
-        createInsertClose('P', 'user', [ 'key1', 'value1', 'key2', 'value2' ] ),
-        createInsertClose('P', 'user', [ 'key1', 'value1', 'key2', 'value2' ] )
+        createInsertClose('\uE000P', 'user', [ 'key1', 'value1', 'key2', 'value2' ] ),
+        createInsertClose('\uE000P', 'user', [ 'key1', 'value1', 'key2', 'value2' ] )
     ), true)
     t.equal(areOperationsEqual(
-        createInsertEmbed('P', 'user', [ 'key1', 'value1', 'key2', 'value2' ] ),
-        createInsertEmbed('P', 'user', [ 'key1', 'value1', 'key2', 'value2' ] )
+        createInsertEmbed('\uE000P', 'user', [ 'key1', 'value1', 'key2', 'value2' ] ),
+        createInsertEmbed('\uE000P', 'user', [ 'key1', 'value1', 'key2', 'value2' ] )
     ), true)
     t.equal(areOperationsEqual(
         createRetain(5, [ 'key1', 'value1', 'key2', 'value2' ] ),
@@ -344,16 +360,16 @@ tap.test('areOperationsEqual', t => {
         createRetain(5, [ 'key1', 'value1', 'key2', 'value2' ] )
     ), false)
     t.equal(areOperationsEqual(
-        createInsertOpen('P', 'user', [ 'key1', 'value1', 'key2', 'value2' ] ),
-        createInsertOpen('P', 'user2', [ 'key1', 'value1', 'key2', 'value2' ] )
+        createInsertOpen('\uE000P', 'user', [ 'key1', 'value1', 'key2', 'value2' ] ),
+        createInsertOpen('\uE000P', 'user2', [ 'key1', 'value1', 'key2', 'value2' ] )
     ), false)
     t.equal(areOperationsEqual(
-        createInsertOpen('P', 'user', [ 'key1', 'value1', 'key2', 'value2' ] ),
-        createInsertOpen('DIV', 'user', [ 'key1', 'value1', 'key2', 'value2' ] )
+        createInsertOpen('\uE000P', 'user', [ 'key1', 'value1', 'key2', 'value2' ] ),
+        createInsertOpen('\uE000DIV', 'user', [ 'key1', 'value1', 'key2', 'value2' ] )
     ), false)
     t.equal(areOperationsEqual(
-        createInsertOpen('P', 'user', [ 'key1', 'value1', 'key2', 'value2' ] ),
-        createInsertOpen('P', 'user', [ 'key1', 'value1', 'key2', 'value3' ] )
+        createInsertOpen('\uE000P', 'user', [ 'key1', 'value1', 'key2', 'value2' ] ),
+        createInsertOpen('\uE000P', 'user', [ 'key1', 'value1', 'key2', 'value3' ] )
     ), false)
     t.end()
 })
@@ -364,16 +380,16 @@ tap.test('areActionsEqual', t => {
         createInsertText('xyz', 'user2', ['c', 'd'])
     ), true)
     t.equal(areActionsEqual(
-        createInsertOpen('P', 'user', ['a', 'b']),
-        createInsertOpen('DIV', 'user2', ['c', 'd'])
+        createInsertOpen('\uE000P', 'user', ['a', 'b']),
+        createInsertOpen('\uE000DIV', 'user2', ['c', 'd'])
     ), true)
     t.equal(areActionsEqual(
-        createInsertClose('P', 'user', ['a', 'b']),
-        createInsertClose('DIV', 'user2', ['c', 'd'])
+        createInsertClose('\uE000P', 'user', ['a', 'b']),
+        createInsertClose('\uE000DIV', 'user2', ['c', 'd'])
     ), true)
     t.equal(areActionsEqual(
-        createInsertEmbed('BR', 'user', ['a', 'b']),
-        createInsertEmbed('HR', 'user2', ['c', 'd'])
+        createInsertEmbed('\uE000BR', 'user', ['a', 'b']),
+        createInsertEmbed('\uE000HR', 'user2', ['c', 'd'])
     ), true)
     t.equal(areActionsEqual(
         createRetain(4, ['a', 'b']),
@@ -392,8 +408,8 @@ tap.test('areActionsEqual', t => {
         createDelete(4)
     ), false)
     t.equal(areActionsEqual(
-        createInsertOpen('P', 'user', ['a', 'b']),
-        createInsertClose('DIV', 'user2', ['c', 'd'])
+        createInsertOpen('\uE000P', 'user', ['a', 'b']),
+        createInsertClose('\uE000DIV', 'user2', ['c', 'd'])
     ), false)
     t.end()
 })
@@ -463,39 +479,39 @@ tap.test('areAttributesEqual', t => {
     })
     t.test('insertEmbed', t => {
         t.equal(areAttributesEqual(
-            createInsertEmbed('DIV', 'user'),
-            createInsertEmbed('P', 'user')
+            createInsertEmbed('\uE000DIV', 'user'),
+            createInsertEmbed('\uE000P', 'user')
         ), true)
         t.equal(areAttributesEqual(
-            createInsertEmbed('DIV', 'user', ['key', 'value']),
-            createInsertEmbed('P', 'user', ['key', 'value'])
+            createInsertEmbed('\uE000DIV', 'user', ['key', 'value']),
+            createInsertEmbed('\uE000P', 'user', ['key', 'value'])
         ), true)
         t.equal(areAttributesEqual(
-            createInsertEmbed('DIV', 'user', ['key', 'value', 'key2', null]),
-            createInsertEmbed('P', 'user', ['key', 'value', 'key2', null])
+            createInsertEmbed('\uE000DIV', 'user', ['key', 'value', 'key2', null]),
+            createInsertEmbed('\uE000P', 'user', ['key', 'value', 'key2', null])
         ), true)
         t.equal(areAttributesEqual(
-            createInsertEmbed('DIV', 'user', ['key', 'value']),
-            createInsertEmbed('P', 'user')
+            createInsertEmbed('\uE000DIV', 'user', ['key', 'value']),
+            createInsertEmbed('\uE000P', 'user')
         ), false)
         t.equal(areAttributesEqual(
-            createInsertEmbed('DIV', 'user'),
-            createInsertEmbed('P', 'user', ['key', 'value'])
+            createInsertEmbed('\uE000DIV', 'user'),
+            createInsertEmbed('\uE000P', 'user', ['key', 'value'])
         ), false)
         t.equal(areAttributesEqual(
-            createInsertEmbed('DIV', 'user', ['key', 'value1']),
-            createInsertEmbed('P', 'user', ['key', 'value2'])
+            createInsertEmbed('\uE000DIV', 'user', ['key', 'value1']),
+            createInsertEmbed('\uE000P', 'user', ['key', 'value2'])
         ), false)
         t.equal(areAttributesEqual(
-            createInsertEmbed('DIV', 'user', ['key1', 'value']),
-            createInsertEmbed('P', 'user', ['key2', 'value'])
+            createInsertEmbed('\uE000DIV', 'user', ['key1', 'value']),
+            createInsertEmbed('\uE000P', 'user', ['key2', 'value'])
         ), false)
         t.end()
     })
     t.test('mix', t => {
         t.equal(areAttributesEqual(
             createInsertText('hello', 'user', ['key1', 'value']),
-            createInsertEmbed('P', 'user', ['key1', 'value'])
+            createInsertEmbed('\uE000P', 'user', ['key1', 'value'])
         ), true)
         t.equal(areAttributesEqual(
             createInsertText('hello', 'user', ['key1', 'value']),
@@ -503,11 +519,11 @@ tap.test('areAttributesEqual', t => {
         ), true)
         t.equal(areAttributesEqual(
             createRetain(5, ['key1', 'value']),
-            createInsertEmbed('P', 'user', ['key1', 'value'])
+            createInsertEmbed('\uE000P', 'user', ['key1', 'value'])
         ), true)
         t.equal(areAttributesEqual(
             createInsertText('hello', 'user', ['key1', 'value1']),
-            createInsertEmbed('P', 'user', ['key1', 'value2'])
+            createInsertEmbed('\uE000P', 'user', ['key1', 'value2'])
         ), false)
         t.equal(areAttributesEqual(
             createInsertText('hello', 'user', ['key1', 'value1']),
@@ -515,7 +531,7 @@ tap.test('areAttributesEqual', t => {
         ), false)
         t.equal(areAttributesEqual(
             createRetain(5, ['key1', 'value1']),
-            createInsertEmbed('P', 'user', ['key1', 'value2'])
+            createInsertEmbed('\uE000P', 'user', ['key1', 'value2'])
         ), false)
         t.end()
     })
@@ -524,16 +540,16 @@ tap.test('areAttributesEqual', t => {
 
 tap.test('getLength', t => {
     t.equal(getLength(createInsertText('hello', 'user')), 5)
-    t.equal(getLength(createInsertOpen('DIV', 'user')), 1)
-    t.equal(getLength(createInsertClose('DIV', 'user')), 1)
-    t.equal(getLength(createInsertEmbed('DIV', 'user')), 1)
+    t.equal(getLength(createInsertOpen('\uE000DIV', 'user')), 1)
+    t.equal(getLength(createInsertClose('\uE000DIV', 'user')), 1)
+    t.equal(getLength(createInsertEmbed('\uE000DIV', 'user')), 1)
     t.equal(getLength(createRetain(5)), 5)
     t.equal(getLength(createDelete(5)), 5)
 
     t.equal(getLength(createInsertText('', 'user')), 0)
-    t.equal(getLength(createInsertOpen('', 'user')), 1)
-    t.equal(getLength(createInsertClose('', 'user')), 1)
-    t.equal(getLength(createInsertEmbed('', 'user')), 1)
+    t.equal(getLength(createInsertOpen('\uE000', 'user')), 1)
+    t.equal(getLength(createInsertClose('\uE000', 'user')), 1)
+    t.equal(getLength(createInsertEmbed('\uE000', 'user')), 1)
     t.equal(getLength(createRetain(0)), 0)
     t.equal(getLength(createRetain(-1)), -1)
     t.equal(getLength(createDelete(0)), 0)
@@ -557,10 +573,10 @@ tap.test('merge', t => {
         createInsertText('Hello World', 'user', ['attributeName', 'attributeValue']))
 
     t.equal(merge(createRetain(1), createDelete(1)), null, 'Different actions')
-    t.equal(merge(createInsertOpen('DIV', 'user'), createInsertClose('DIV', 'user')), null, 'Different insert actions')
-    t.equal(merge(createInsertOpen('DIV', 'user'), createInsertOpen('DIV', 'user')), null, 'Insert open')
-    t.equal(merge(createInsertClose('DIV', 'user'), createInsertClose('DIV', 'user')), null, 'Insert close')
-    t.equal(merge(createInsertEmbed('DIV', 'user'), createInsertEmbed('DIV', 'user')), null, 'Insert embed')
+    t.equal(merge(createInsertOpen('\uE000DIV', 'user'), createInsertClose('\uE000DIV', 'user')), null, 'Different insert actions')
+    t.equal(merge(createInsertOpen('\uE000DIV', 'user'), createInsertOpen('\uE000DIV', 'user')), null, 'Insert open')
+    t.equal(merge(createInsertClose('\uE000DIV', 'user'), createInsertClose('\uE000DIV', 'user')), null, 'Insert close')
+    t.equal(merge(createInsertEmbed('\uE000DIV', 'user'), createInsertEmbed('\uE000DIV', 'user')), null, 'Insert embed')
     t.equal(
         merge(
             createInsertText('hello', 'user', ['attributeName', 'attributeValue']),
@@ -631,22 +647,22 @@ tap.test('slice', t => {
 
     t.test('insert open', t => {
         t.strictSame(
-            slice(createInsertOpen('DIV', 'user', ['key', 'value']), 0, 1, 1),
-            createInsertOpen('DIV', 'user', ['key', 'value']))
+            slice(createInsertOpen('\uE000DIV', 'user', ['key', 'value']), 0, 1, 1),
+            createInsertOpen('\uE000DIV', 'user', ['key', 'value']))
         t.end()
     })
 
     t.test('insert close', t => {
         t.strictSame(
-            slice(createInsertClose('DIV', 'user', ['key', 'value']), 0, 1, 1),
-            createInsertClose('DIV', 'user', ['key', 'value']))
+            slice(createInsertClose('\uE000DIV', 'user', ['key', 'value']), 0, 1, 1),
+            createInsertClose('\uE000DIV', 'user', ['key', 'value']))
         t.end()
     })
 
     t.test('insert embed', t => {
         t.strictSame(
-            slice(createInsertEmbed('DIV', 'user', ['key', 'value']), 0, 1, 1),
-            createInsertEmbed('DIV', 'user', ['key', 'value']))
+            slice(createInsertEmbed('\uE000DIV', 'user', ['key', 'value']), 0, 1, 1),
+            createInsertEmbed('\uE000DIV', 'user', ['key', 'value']))
         t.end()
     })
 
@@ -785,9 +801,9 @@ tap.test('composeIterators', t => {
     })
 
     t.test('iterator1 insert embed (no attributes), iterator2 retain (with attributes)', t => {
-        const i1 = new Iterator([ createInsertEmbed('DIV', 'user') ])
+        const i1 = new Iterator([ createInsertEmbed('\uE000DIV', 'user') ])
         const i2 = new Iterator([ createRetain(9, ['key', 'value']) ]).next(2)
-        const composedOperation = createInsertEmbed('DIV', 'user', ['key', 'value'])
+        const composedOperation = createInsertEmbed('\uE000DIV', 'user', ['key', 'value'])
 
         t.strictSame(composeIterators(i1, i2), composedOperation)
         t.equal(i1.index, 1)

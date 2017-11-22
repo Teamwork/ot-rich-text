@@ -58,7 +58,7 @@ tap.test('insert text operation', t => {
 })
 
 tap.test('insert object operation', t => {
-    const operation = createInsertEmbed('DIV', 'user')
+    const operation = createInsertEmbed('\uE000DIV', 'user')
     const i = new Iterator([ operation ])
 
     t.equal(i.operation, operation)
@@ -84,7 +84,7 @@ tap.test('delete operation', t => {
 })
 
 tap.test('move within operation', t => {
-    const operation0 = createInsertEmbed('DIV', 'user')
+    const operation0 = createInsertEmbed('\uE000DIV', 'user')
     const operation1 = createInsertText('1234', 'user')
     const operation2 = createRetain(10)
     const operation3 = createDelete(15)
