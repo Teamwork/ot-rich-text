@@ -55,6 +55,33 @@ tap.test('basic tests', t => {
         getAttributes(createRetain(1, [ 'more', 'attributes', 'nullValue', null, 'yet another', 'one' ])),
         [ 'more', 'attributes', 'nullValue', null, 'yet another', 'one' ])
 
+    t.strictSame(getAttributes(retain, [ 'key' ]), [])
+    t.strictSame(getAttributes(del, [ 'key' ]), [])
+    t.strictSame(getAttributes(insertText, [ 'key' ]), [])
+    t.strictSame(getAttributes(insertOpen, [ 'key' ]), [])
+    t.strictSame(getAttributes(insertClose, [ 'key' ]), [])
+    t.strictSame(getAttributes(insertEmbed, [ 'key' ]), [])
+
+    t.strictSame(getAttributes(retainWithAttributes, [ 'key' ]), ['key', 'value'])
+    t.strictSame(getAttributes(insertTextWithAttributes, [ 'key' ]), ['key', 'value'])
+    t.strictSame(getAttributes(insertOpenWithAttributes, [ 'key' ]), ['key', 'value'])
+    t.strictSame(getAttributes(insertCloseWithAttributes, [ 'key' ]), ['key', 'value'])
+    t.strictSame(getAttributes(insertEmbedWithAttributes, [ 'key' ]), ['key', 'value'])
+
+    t.strictSame(getAttributes(retainWithAttributes, []), [])
+    t.strictSame(getAttributes(insertTextWithAttributes, []), [])
+    t.strictSame(getAttributes(insertOpenWithAttributes, []), [])
+    t.strictSame(getAttributes(insertCloseWithAttributes, []), [])
+    t.strictSame(getAttributes(insertEmbedWithAttributes, []), [])
+
+    t.strictSame(
+        getAttributes(
+            createRetain(1, [ 'more', 'attributes', 'nullValue', null, 'won\'t be found', '', 'yet another', 'one' ]),
+            [ 'aaa', 'nullValue', 'ppp', 'yet another', 'zzz' ]
+        ),
+        [ 'nullValue', null, 'yet another', 'one' ]
+    )
+
     t.equal(isRetain(retain), true)
     t.equal(isRetain(del), false)
     t.equal(isRetain(insertText), false)
