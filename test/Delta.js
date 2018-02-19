@@ -231,6 +231,53 @@ tap.test('compose', t => {
         [ createRetain(5, ['key', 'value']) ],
         'Should keep trailing retain with attributes')
 
+    t.strictSame(Delta.compose(
+        [ createRetain(5, ['key', 'value']) ],
+        [ createRetain(5), createDelete(6) ]),
+        [ createRetain(5, ['key', 'value']), createDelete(6) ],
+        'Should keep trailing delete')
+
+    t.end()
+})
+
+tap.test('apply', t => {
+    const insertText1 = createInsertText('hello', 'user', ['key', 'value'])
+    const insertText2 = createInsertText(' world', 'user', ['key', 'value'])
+    const insertText3 = createInsertText('hello world', 'user', ['key', 'value'])
+    const insertEmbed1 = createInsertEmbed('\uE000BR', 'user')
+    const insertEmbed2 = createInsertEmbed('\uE000IMG', 'user')
+    const retain1 = createRetain(6)
+    const retain2 = createRetain(8)
+    const delete1 = createDelete(6)
+    const delete2 = createDelete(8)
+
+    t.strictSame(Delta.apply([], []), [])
+
+    t.strictSame(Delta.apply(
+        [],
+        [ insertText1, insertEmbed1, insertText2, insertEmbed2 ]),
+        [ insertText1, insertEmbed1, insertText2, insertEmbed2 ])
+
+    t.strictSame(Delta.apply(
+        [ insertText2, insertEmbed1 ],
+        [ insertText1, retain1, insertEmbed2 ]),
+        [ insertText3, insertEmbed2, insertEmbed1 ])
+
+    t.strictSame(Delta.apply(
+        [ insertText2, insertEmbed1 ],
+        [ insertText1, delete1, insertEmbed2 ]),
+        [ insertText1, insertEmbed2, insertEmbed1 ])
+
+    t.strictSame(Delta.apply(
+        [ insertText2, insertEmbed1 ],
+        [ insertText1, retain2, insertEmbed2 ]),
+        [ insertText3, insertEmbed1 ])
+
+    t.strictSame(Delta.apply(
+        [ insertText2, insertEmbed1 ],
+        [ insertText1, delete2, insertEmbed2 ]),
+        [ insertText1 ])
+
     t.end()
 })
 
@@ -247,8 +294,8 @@ tap.test('transform', t => {
     const delete1 = createDelete(6)
     const delete2 = createDelete(3)
 
-    t.strictSame(Delta.compose([], [], 'left'), [])
-    t.strictSame(Delta.compose([], [], 'right'), [])
+    t.strictSame(Delta.transform([], [], 'left'), [])
+    t.strictSame(Delta.transform([], [], 'right'), [])
 
     t.strictSame(Delta.transform(
         [ insertText1, retain1, delete1, insertEmbed1 ],
@@ -410,8 +457,8 @@ tap.test('diffX', t => {
     const testDiffImpl = (delta1, delta2) => {
         const [ result1, result2 ] = Delta.diffX(delta1, delta2)
 
-        t.strictSame(Delta.compose(delta1, result2), delta2)
-        t.strictSame(Delta.compose(delta2, result1), delta1)
+        t.strictSame(Delta.apply(delta1, result2), delta2)
+        t.strictSame(Delta.apply(delta2, result1), delta1)
     }
 
     const testDiff = (delta1, delta2) => {
