@@ -4,7 +4,7 @@ const {
     isInsert, isInsertText, isInsertOpen, isInsertClose, isInsertEmbed, isRetain, isDelete,
     getCount, getText, getNodeIdAndName, getNodeId, getNodeName, getAuthor, getAttributes, getLength, copyOperation,
     validate, areOperationsEqual, areActionsEqual, areAttributesEqual, getAttributesIndex, hasAttributes,
-    slice, merge, composeIterators, transformIterators
+    slice, merge, composeIterators, transformIterators, setAttribute
 } = require('../lib/Operation')
 const Iterator = require('../lib/Iterator')
 
@@ -205,6 +205,34 @@ tap.test('copyOperation', t => {
         t.end()
     })
 
+    t.end()
+})
+
+tap.test('setAttribute', t => {
+    t.strictSame(
+        setAttribute(createInsertText('Test', '', []), 'name', 'value'),
+        createInsertText('Test', '', [ 'name', 'value' ]))
+    t.strictSame(
+        setAttribute(createInsertText('Test', '', [ 'name', 'blah' ]), 'name', 'value'),
+        createInsertText('Test', '', [ 'name', 'value' ]))
+    t.strictSame(
+        setAttribute(createInsertText('Test', '', [ 'a', 'b', 'name', 'blah' ]), 'name', 'value'),
+        createInsertText('Test', '', [ 'a', 'b', 'name', 'value' ]))
+    t.strictSame(
+        setAttribute(createInsertText('Test', '', [ 'name', 'blah', 'x', 'y' ]), 'name', 'value'),
+        createInsertText('Test', '', [ 'name', 'value', 'x', 'y' ]))
+    t.strictSame(
+        setAttribute(createInsertText('Test', '', [ 'a', 'b' ]), 'name', 'value'),
+        createInsertText('Test', '', [ 'a', 'b', 'name', 'value' ]))
+    t.strictSame(
+        setAttribute(createInsertText('Test', '', [ 'x', 'y' ]), 'name', 'value'),
+        createInsertText('Test', '', [ 'name', 'value', 'x', 'y' ]))
+    t.strictSame(
+        setAttribute(createInsertText('Test', '', [ 'x', '1', 'y', '2', 'z', '3' ]), 'name', 'value'),
+        createInsertText('Test', '', [ 'name', 'value', 'x', '1', 'y', '2', 'z', '3' ]))
+    t.strictSame(
+        setAttribute(createInsertText('Test', '', [ 'a', 'A', 'b', 'B', 'c', 'C', 'x', '1', 'y', '2', 'z', '3' ]), 'name', 'value'),
+        createInsertText('Test', '', [ 'a', 'A', 'b', 'B', 'c', 'C', 'name', 'value', 'x', '1', 'y', '2', 'z', '3' ]))
     t.end()
 })
 
