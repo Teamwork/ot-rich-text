@@ -2,7 +2,7 @@ const tap = require('tap')
 const {
     createInsertText, createInsertOpen, createInsertClose, createInsertEmbed, createRetain, createDelete,
     isInsert, isInsertText, isInsertOpen, isInsertClose, isInsertEmbed, isRetain, isDelete,
-    getCount, getText, getNodeIdAndName, getNodeId, getNodeName, getAttributes, getLength, copyOperation,
+    getCount, getText, getNodeIdAndName, getNodeId, getNodeName, getAttributes, getLength, copyAction,
     validate, areOperationsEqual, areActionsEqual, areAttributesEqual, getAttributesIndex, hasAttributes,
     slice, merge, composeIterators, transformIterators, setAttribute
 } = require('../lib/Action')
@@ -156,46 +156,46 @@ tap.test('basic tests', t => {
     t.end()
 })
 
-tap.test('copyOperation', t => {
+tap.test('copyAction', t => {
     t.test('with attributes', t => {
-        t.strictSame(copyOperation(
+        t.strictSame(copyAction(
             createInsertText('hello', ['key', 'value']), false),
             createInsertText('hello', ['key', 'value']))
-        t.strictSame(copyOperation(
+        t.strictSame(copyAction(
             createInsertOpen('\uE000DIV', ['key', 'value']), false),
             createInsertOpen('\uE000DIV', ['key', 'value']))
-        t.strictSame(copyOperation(
+        t.strictSame(copyAction(
             createInsertClose('\uE000DIV', ['key', 'value']), false),
             createInsertClose('\uE000DIV', ['key', 'value']))
-        t.strictSame(copyOperation(
+        t.strictSame(copyAction(
             createInsertEmbed('\uE000DIV', ['key', 'value']), false),
             createInsertEmbed('\uE000DIV', ['key', 'value']))
-        t.strictSame(copyOperation(
+        t.strictSame(copyAction(
             createRetain(5, ['key', 'value']), false),
             createRetain(5, ['key', 'value']))
-        t.strictSame(copyOperation(
+        t.strictSame(copyAction(
             createDelete(6), false),
             createDelete(6))
         t.end()
     })
 
     t.test('without attributes', t => {
-        t.strictSame(copyOperation(
+        t.strictSame(copyAction(
             createInsertText('hello', ['key', 'value']), true),
             createInsertText('hello'))
-        t.strictSame(copyOperation(
+        t.strictSame(copyAction(
             createInsertOpen('\uE000DIV', ['key', 'value']), true),
             createInsertOpen('\uE000DIV'))
-        t.strictSame(copyOperation(
+        t.strictSame(copyAction(
             createInsertClose('\uE000DIV', ['key', 'value']), true),
             createInsertClose('\uE000DIV'))
-        t.strictSame(copyOperation(
+        t.strictSame(copyAction(
             createInsertEmbed('\uE000DIV', ['key', 'value']), true),
             createInsertEmbed('\uE000DIV'))
-        t.strictSame(copyOperation(
+        t.strictSame(copyAction(
             createRetain(5, ['key', 'value']), true),
             createRetain(5))
-        t.strictSame(copyOperation(
+        t.strictSame(copyAction(
             createDelete(6), true),
             createDelete(6))
         t.end()

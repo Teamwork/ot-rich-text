@@ -6,7 +6,7 @@ const { append } = require('../lib/Operation')
 const {
     createInsertText, createInsertOpen, createInsertClose, createInsertEmbed, createRetain, createDelete,
     isInsert, getLength, getAttributesIndex,
-    slice, copyOperation
+    slice, copyAction
 } = require('../lib/Action')
 
 const randomItemFactory = list => () => list[fuzzer.randomInt(list.length)]
@@ -73,7 +73,7 @@ const appendFromIterator = (snapshot, iterator) => (count, attributes) => {
 
         if (attributes && attributes.length > 0) {
             // copy the action without attributes
-            newAction = copyOperation(newAction, true)
+            newAction = copyAction(newAction, true)
 
             let i1 = getAttributesIndex(action) // `action` attributes index
             let i2 = 0 // `attributes` index
