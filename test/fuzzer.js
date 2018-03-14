@@ -65,20 +65,20 @@ const getSnapshotLength = snapshot => {
 
 const appendFromIterator = (snapshot, iterator) => (count, attributes) => {
     while (count > 0) {
-        const { operation, offset } = iterator
-        const operationLength = getLength(operation)
+        const { action, offset } = iterator
+        const operationLength = getLength(action)
         const remaining = operationLength - offset
         const length = Math.min(remaining, count)
-        let newOperation = slice(operation, offset, length, operationLength)
+        let newOperation = slice(action, offset, length, operationLength)
 
         if (attributes && attributes.length > 0) {
-            // copy the operation without attributes
+            // copy the action without attributes
             newOperation = copyOperation(newOperation, true)
 
-            let i1 = getAttributesIndex(operation) // `operation` attributes index
+            let i1 = getAttributesIndex(action) // `action` attributes index
             let i2 = 0 // `attributes` index
             let i3 = newOperation.length // `newOperation` attributes index
-            const l1 = operation.length
+            const l1 = action.length
             const l2 = attributes.length
 
             while (i1 < l1 || i2 < l2) {
@@ -91,10 +91,10 @@ const appendFromIterator = (snapshot, iterator) => (count, attributes) => {
                     }
 
                 } else if (i2 >= l2) {
-                    newOperation[i3++] = operation[i1++]
-                    newOperation[i3++] = operation[i1++]
+                    newOperation[i3++] = action[i1++]
+                    newOperation[i3++] = action[i1++]
 
-                } else if (operation[i1] === attributes[i2]) {
+                } else if (action[i1] === attributes[i2]) {
                     if (attributes[i2 + 1] != null) {
                         newOperation[i3++] = attributes[i2++]
                         newOperation[i3++] = attributes[i2++]
@@ -103,9 +103,9 @@ const appendFromIterator = (snapshot, iterator) => (count, attributes) => {
                     }
                     i1 += 2
 
-                } else if (operation[i1] < attributes[i2]) {
-                    newOperation[i3++] = operation[i1++]
-                    newOperation[i3++] = operation[i1++]
+                } else if (action[i1] < attributes[i2]) {
+                    newOperation[i3++] = action[i1++]
+                    newOperation[i3++] = action[i1++]
 
                 } else {
                     if (attributes[i2 + 1] != null) {
