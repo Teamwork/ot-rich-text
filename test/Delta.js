@@ -18,9 +18,9 @@ tap.test('validate', t => {
     t.type(Delta.validate(undefined), Error, 'not an array')
     t.type(Delta.validate('insert'), Error, 'not an array')
     t.type(Delta.validate([ createRetain(0) ]), Error, 'invalid operation at 0')
-    t.type(Delta.validate([ createRetain(1), createDelete(1), createInsertText('', '') ]), Error, 'invalid operation at 2')
+    t.type(Delta.validate([ createRetain(1), createDelete(1), createInsertText('') ]), Error, 'invalid operation at 2')
     t.equal(Delta.validate([]), null)
-    t.equal(Delta.validate([ createRetain(1), createDelete(1), createInsertText('a', '') ]), null)
+    t.equal(Delta.validate([ createRetain(1), createDelete(1), createInsertText('a') ]), null)
     t.end()
 })
 
@@ -30,35 +30,35 @@ tap.test('normalize', t => {
     t.throws(() => Delta.normalize(undefined), Error, 'not an array')
     t.throws(() => Delta.normalize('insert'), Error, 'not an array')
     t.throws(() => Delta.normalize([ createRetain(0) ]), Error, 'invalid operation at 0')
-    t.throws(() => Delta.normalize([ createRetain(1), createDelete(1), createInsertText('', '') ]), Error, 'invalid operation at 2')
+    t.throws(() => Delta.normalize([ createRetain(1), createDelete(1), createInsertText('') ]), Error, 'invalid operation at 2')
     Delta.normalize([])
-    Delta.normalize([ createRetain(1), createDelete(1), createInsertText('a', '') ])
+    Delta.normalize([ createRetain(1), createDelete(1), createInsertText('a') ])
     t.end()
 })
 
 tap.test('append', t => {
     t.test('left empty, right insert (text)', t => {
         const operations = []
-        t.equal(Delta.append(operations, createInsertText('hello', 'user')), operations)
-        t.strictSame(operations, [ createInsertText('hello', 'user') ])
+        t.equal(Delta.append(operations, createInsertText('hello')), operations)
+        t.strictSame(operations, [ createInsertText('hello') ])
         t.end()
     })
     t.test('left empty, right insert (open)', t => {
         const operations = []
-        t.equal(Delta.append(operations, createInsertOpen('\uE000DIV', 'user')), operations)
-        t.strictSame(operations, [ createInsertOpen('\uE000DIV', 'user') ])
+        t.equal(Delta.append(operations, createInsertOpen('\uE000DIV')), operations)
+        t.strictSame(operations, [ createInsertOpen('\uE000DIV') ])
         t.end()
     })
     t.test('left empty, right insert (close)', t => {
         const operations = []
-        t.equal(Delta.append(operations, createInsertClose('\uE000DIV', 'user')), operations)
-        t.strictSame(operations, [ createInsertClose('\uE000DIV', 'user') ])
+        t.equal(Delta.append(operations, createInsertClose('\uE000DIV')), operations)
+        t.strictSame(operations, [ createInsertClose('\uE000DIV') ])
         t.end()
     })
     t.test('left empty, right insert (embed)', t => {
         const operations = []
-        t.equal(Delta.append(operations, createInsertEmbed('\uE000DIV', 'user')), operations)
-        t.strictSame(operations, [ createInsertEmbed('\uE000DIV', 'user') ])
+        t.equal(Delta.append(operations, createInsertEmbed('\uE000DIV')), operations)
+        t.strictSame(operations, [ createInsertEmbed('\uE000DIV') ])
         t.end()
     })
     t.test('left empty, right retain', t => {
@@ -76,7 +76,7 @@ tap.test('append', t => {
 
     t.test('left empty, right insert (empty)', t => {
         const operations = []
-        t.equal(Delta.append(operations, createInsertText('', 'user')), operations)
+        t.equal(Delta.append(operations, createInsertText('')), operations)
         t.strictSame(operations, [])
         t.end()
     })
@@ -96,48 +96,48 @@ tap.test('append', t => {
     })
 
     t.test('left insert text, right insert text', t => {
-        const operations = [ createInsertText('Hello', 'user', ['key', 'value']) ]
-        t.equal(Delta.append(operations, createInsertText(' World', 'user', ['key', 'value'])), operations)
-        t.strictSame(operations, [ createInsertText('Hello World', 'user', ['key', 'value']) ])
+        const operations = [ createInsertText('Hello', ['key', 'value']) ]
+        t.equal(Delta.append(operations, createInsertText(' World', ['key', 'value'])), operations)
+        t.strictSame(operations, [ createInsertText('Hello World', ['key', 'value']) ])
         t.end()
     })
 
     t.test('left insert embed, right insert embed', t => {
-        const operations = [ createInsertEmbed('\uE000DIV', 'user', ['key', 'value']) ]
-        t.equal(Delta.append(operations, createInsertEmbed('\uE000DIV', 'user', ['key', 'value'])), operations)
+        const operations = [ createInsertEmbed('\uE000DIV', ['key', 'value']) ]
+        t.equal(Delta.append(operations, createInsertEmbed('\uE000DIV', ['key', 'value'])), operations)
         t.strictSame(operations, [
-            createInsertEmbed('\uE000DIV', 'user', ['key', 'value']),
-            createInsertEmbed('\uE000DIV', 'user', ['key', 'value'])
+            createInsertEmbed('\uE000DIV', ['key', 'value']),
+            createInsertEmbed('\uE000DIV', ['key', 'value'])
         ])
         t.end()
     })
 
     t.test('left delete, right insert text', t => {
         const operations = [ createDelete(5) ]
-        t.equal(Delta.append(operations, createInsertText('hello', 'user', ['key', 'value'])), operations)
+        t.equal(Delta.append(operations, createInsertText('hello', ['key', 'value'])), operations)
         t.strictSame(operations, [
-            createInsertText('hello', 'user', ['key', 'value']),
+            createInsertText('hello', ['key', 'value']),
             createDelete(5)
         ])
         t.end()
     })
 
     t.test('left insert text and delete, right insert text', t => {
-        const operations = [ createInsertText('hello', 'user', ['key', 'value']), createDelete(5) ]
-        t.equal(Delta.append(operations, createInsertText(' world', 'user', ['key', 'value'])), operations)
+        const operations = [ createInsertText('hello', ['key', 'value']), createDelete(5) ]
+        t.equal(Delta.append(operations, createInsertText(' world', ['key', 'value'])), operations)
         t.strictSame(operations, [
-            createInsertText('hello world', 'user', ['key', 'value']),
+            createInsertText('hello world', ['key', 'value']),
             createDelete(5)
         ])
         t.end()
     })
 
     t.test('left insert text and delete, right insert embed', t => {
-        const operations = [ createInsertText('hello', 'user', ['key', 'value']), createDelete(5) ]
-        t.equal(Delta.append(operations, createInsertEmbed('\uE000DIV', 'user', ['key', 'value'])), operations)
+        const operations = [ createInsertText('hello', ['key', 'value']), createDelete(5) ]
+        t.equal(Delta.append(operations, createInsertEmbed('\uE000DIV', ['key', 'value'])), operations)
         t.strictSame(operations, [
-            createInsertText('hello', 'user', ['key', 'value']),
-            createInsertEmbed('\uE000DIV', 'user', ['key', 'value']),
+            createInsertText('hello', ['key', 'value']),
+            createInsertEmbed('\uE000DIV', ['key', 'value']),
             createDelete(5)
         ])
         t.end()
@@ -145,17 +145,17 @@ tap.test('append', t => {
 
     t.test('many', t => {
         const operations = []
-        t.equal(Delta.append(operations, createInsertEmbed('\uE000DIV', 'user', ['key', 'value'])), operations)
-        t.equal(Delta.append(operations, createInsertText('Hello', 'user', ['key', 'value'])), operations)
-        t.equal(Delta.append(operations, createInsertText(' World', 'user', ['key', 'value'])), operations)
-        t.equal(Delta.append(operations, createInsertText('!!!', 'user', ['key', 'value2'])), operations)
+        t.equal(Delta.append(operations, createInsertEmbed('\uE000DIV', ['key', 'value'])), operations)
+        t.equal(Delta.append(operations, createInsertText('Hello', ['key', 'value'])), operations)
+        t.equal(Delta.append(operations, createInsertText(' World', ['key', 'value'])), operations)
+        t.equal(Delta.append(operations, createInsertText('!!!', ['key', 'value2'])), operations)
         t.equal(Delta.append(operations, createRetain(5)), operations)
         t.equal(Delta.append(operations, createDelete(3)), operations)
         t.equal(Delta.append(operations, createDelete(4)), operations)
         t.strictSame(operations, [
-            createInsertEmbed('\uE000DIV', 'user', ['key', 'value']),
-            createInsertText('Hello World', 'user', ['key', 'value']),
-            createInsertText('!!!', 'user', ['key', 'value2']),
+            createInsertEmbed('\uE000DIV', ['key', 'value']),
+            createInsertText('Hello World', ['key', 'value']),
+            createInsertText('!!!', ['key', 'value2']),
             createRetain(5),
             createDelete(7)
         ])
@@ -167,20 +167,20 @@ tap.test('append', t => {
 
 tap.test('chop', t => {
     t.strictSame(Delta.chop(
-        [ createInsertText('hello', 'user') ]),
-        [ createInsertText('hello', 'user') ])
+        [ createInsertText('hello') ]),
+        [ createInsertText('hello') ])
     t.strictSame(Delta.chop(
-        [ createInsertText('hello', 'user'), createInsertText('hello', 'user') ]),
-        [ createInsertText('hello', 'user'), createInsertText('hello', 'user') ])
+        [ createInsertText('hello'), createInsertText('hello') ]),
+        [ createInsertText('hello'), createInsertText('hello') ])
     t.strictSame(Delta.chop(
-        [ createInsertText('hello', 'user'), createRetain(5) ]),
-        [ createInsertText('hello', 'user') ])
+        [ createInsertText('hello'), createRetain(5) ]),
+        [ createInsertText('hello') ])
     t.strictSame(Delta.chop(
         [ createRetain(5) ]),
         [])
     t.strictSame(Delta.chop(
-        [ createRetain(5), createInsertText('hello', 'user') ]),
-        [ createRetain(5), createInsertText('hello', 'user') ])
+        [ createRetain(5), createInsertText('hello') ]),
+        [ createRetain(5), createInsertText('hello') ])
     t.strictSame(Delta.chop(
         [ createRetain(5, ['key', 'value']) ]),
         [ createRetain(5, ['key', 'value']) ])
@@ -189,11 +189,11 @@ tap.test('chop', t => {
 })
 
 tap.test('compose', t => {
-    const insertText1 = createInsertText('hello', 'user', ['key', 'value'])
-    const insertText2 = createInsertText(' world', 'user', ['key', 'value'])
-    const insertText3 = createInsertText('hello world', 'user', ['key', 'value'])
-    const insertEmbed1 = createInsertEmbed('\uE000DIV', 'user')
-    const insertEmbed2 = createInsertEmbed('\uE000DIV', 'user')
+    const insertText1 = createInsertText('hello', ['key', 'value'])
+    const insertText2 = createInsertText(' world', ['key', 'value'])
+    const insertText3 = createInsertText('hello world', ['key', 'value'])
+    const insertEmbed1 = createInsertEmbed('\uE000DIV')
+    const insertEmbed2 = createInsertEmbed('\uE000DIV')
     const retain1 = createRetain(5)
     const retain2 = createRetain(8)
     const retain3 = createRetain(2)
@@ -241,11 +241,11 @@ tap.test('compose', t => {
 })
 
 tap.test('apply', t => {
-    const insertText1 = createInsertText('hello', 'user', ['key', 'value'])
-    const insertText2 = createInsertText(' world', 'user', ['key', 'value'])
-    const insertText3 = createInsertText('hello world', 'user', ['key', 'value'])
-    const insertEmbed1 = createInsertEmbed('\uE000BR', 'user')
-    const insertEmbed2 = createInsertEmbed('\uE000IMG', 'user')
+    const insertText1 = createInsertText('hello', ['key', 'value'])
+    const insertText2 = createInsertText(' world', ['key', 'value'])
+    const insertText3 = createInsertText('hello world', ['key', 'value'])
+    const insertEmbed1 = createInsertEmbed('\uE000BR')
+    const insertEmbed2 = createInsertEmbed('\uE000IMG')
     const retain1 = createRetain(6)
     const retain2 = createRetain(8)
     const delete1 = createDelete(6)
@@ -282,10 +282,10 @@ tap.test('apply', t => {
 })
 
 tap.test('transform', t => {
-    const insertText1 = createInsertText('hello', 'user', ['key', 'value'])
-    const insertText2 = createInsertText(' world', 'user', ['key', 'value'])
-    const insertEmbed1 = createInsertEmbed('\uE000DIV', 'user')
-    const insertEmbed2 = createInsertEmbed('\uE000DIV', 'user')
+    const insertText1 = createInsertText('hello', ['key', 'value'])
+    const insertText2 = createInsertText(' world', ['key', 'value'])
+    const insertEmbed1 = createInsertEmbed('\uE000DIV')
+    const insertEmbed2 = createInsertEmbed('\uE000DIV')
     const retain1 = createRetain(5)
     const retain2 = createRetain(8)
     const retain3 = createRetain(11)
@@ -351,8 +351,8 @@ tap.test('transform', t => {
 tap.test('transformCursor', t => {
     t.equal(Delta.transformCursor(0, [], true), 0)
     t.equal(Delta.transformCursor(0, [], false), 0)
-    t.equal(Delta.transformCursor(0, [ createInsertText('ab', '') ], true), 2)
-    t.equal(Delta.transformCursor(0, [ createInsertText('ab', '') ], false), 0)
+    t.equal(Delta.transformCursor(0, [ createInsertText('ab') ], true), 2)
+    t.equal(Delta.transformCursor(0, [ createInsertText('ab') ], false), 0)
     t.equal(Delta.transformCursor(0, [ createDelete(2) ], true), 0)
     t.equal(Delta.transformCursor(0, [ createDelete(2) ], false), 0)
     t.equal(Delta.transformCursor(0, [ createRetain(2) ], true), 0)
@@ -360,24 +360,24 @@ tap.test('transformCursor', t => {
 
     t.equal(Delta.transformCursor(5, [], true), 5)
     t.equal(Delta.transformCursor(5, [], false), 5)
-    t.equal(Delta.transformCursor(5, [ createInsertText('ab', '') ], true), 7)
-    t.equal(Delta.transformCursor(5, [ createInsertText('ab', '') ], false), 7)
+    t.equal(Delta.transformCursor(5, [ createInsertText('ab') ], true), 7)
+    t.equal(Delta.transformCursor(5, [ createInsertText('ab') ], false), 7)
     t.equal(Delta.transformCursor(5, [ createDelete(2) ], true), 3)
     t.equal(Delta.transformCursor(5, [ createDelete(2) ], false), 3)
     t.equal(Delta.transformCursor(5, [ createRetain(2) ], true), 5)
     t.equal(Delta.transformCursor(5, [ createRetain(2) ], false), 5)
 
     t.equal(Delta.transformCursor(5, [
-        createRetain(5), createInsertText('abc', ''), createInsertText('def', 'a')
+        createRetain(5), createInsertText('abc'), createInsertText('def')
     ], true), 11)
     t.equal(Delta.transformCursor(5, [
-        createRetain(5), createInsertText('abc', ''), createInsertText('def', 'a')
+        createRetain(5), createInsertText('abc'), createInsertText('def')
     ], false), 5)
     t.equal(Delta.transformCursor(5, [
-        createRetain(5), createInsertText('abc', ''), createRetain(1), createInsertText('def', 'a')
+        createRetain(5), createInsertText('abc'), createRetain(1), createInsertText('def')
     ], true), 8)
     t.equal(Delta.transformCursor(5, [
-        createRetain(5), createInsertText('abc', ''), createRetain(1), createInsertText('def', 'a')
+        createRetain(5), createInsertText('abc'), createRetain(1), createInsertText('def')
     ], false), 5)
 
     t.equal(Delta.transformCursor(5, [
@@ -422,36 +422,36 @@ tap.test('diffX', t => {
 
     t.throws(() => Delta.diffX(
         [ createRetain(1) ],
-        [ createInsertText('a', 'user') ]
+        [ createInsertText('a') ]
     ), Error)
     t.throws(() => Delta.diffX(
         [ createDelete(1) ],
-        [ createInsertText('a', 'user') ]
+        [ createInsertText('a') ]
     ), Error)
     t.throws(() => Delta.diffX(
-        [ createInsertText('a', 'user') ],
+        [ createInsertText('a') ],
         [ createRetain(1) ]
     ), Error)
     t.throws(() => Delta.diffX(
-        [ createInsertText('a', 'user') ],
+        [ createInsertText('a') ],
         [ createDelete(1) ]
     ), Error)
 
     t.throws(() => Delta.diffX(
-        [ createInsertText('a', 'user'), createRetain(1) ],
-        [ createInsertText('b', 'user'), createInsertText('a', 'user') ]
+        [ createInsertText('a'), createRetain(1) ],
+        [ createInsertText('b'), createInsertText('a') ]
     ), Error)
     t.throws(() => Delta.diffX(
-        [ createInsertText('a', 'user'), createDelete(1) ],
-        [ createInsertText('b', 'user'), createInsertText('a', 'user') ]
+        [ createInsertText('a'), createDelete(1) ],
+        [ createInsertText('b'), createInsertText('a') ]
     ), Error)
     t.throws(() => Delta.diffX(
-        [ createInsertText('a', 'user'), createInsertText('a', 'user') ],
-        [ createInsertText('b', 'user'), createRetain(1) ]
+        [ createInsertText('a'), createInsertText('a') ],
+        [ createInsertText('b'), createRetain(1) ]
     ), Error)
     t.throws(() => Delta.diffX(
-        [ createInsertText('a', 'user'), createInsertText('a', 'user') ],
-        [ createInsertText('b', 'user'), createDelete(1) ]
+        [ createInsertText('a'), createInsertText('a') ],
+        [ createInsertText('b'), createDelete(1) ]
     ), Error)
 
     const testDiffImpl = (delta1, delta2) => {
@@ -471,114 +471,114 @@ tap.test('diffX', t => {
     testDiff([], [])
 
     testDiff([
-        createInsertText('abc', ''),
-        createInsertOpen('\uE000DIV', ''),
-        createInsertEmbed('\uE000IMG', '', [ 'src', 'http://www.example.com/image.png' ]),
-        createInsertClose('\uE000DIV', '')
+        createInsertText('abc'),
+        createInsertOpen('\uE000DIV'),
+        createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image.png' ]),
+        createInsertClose('\uE000DIV')
     ], [])
 
     testDiff([
-        createInsertText('abc', '')
+        createInsertText('abc')
     ], [
-        createInsertText('a', ''),
-        createInsertEmbed('\uE000IMG', '', [ 'src', 'http://www.example.com/image.png' ]),
-        createInsertText('c', '')
+        createInsertText('a'),
+        createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image.png' ]),
+        createInsertText('c')
     ])
 
     testDiff([
-        createInsertText('abc', '', [ 'blah', 'blah!' ])
+        createInsertText('abc', [ 'blah', 'blah!' ])
     ], [
-        createInsertText('abc', '', [ 'hello', 'world' ])
+        createInsertText('abc', [ 'hello', 'world' ])
     ])
 
     testDiff([
-        createInsertText('a', '', [ 'blah', 'blah!' ]),
-        createInsertText('b', ''),
-        createInsertText('c', '', [ 'hello', 'world' ])
+        createInsertText('a', [ 'blah', 'blah!' ]),
+        createInsertText('b'),
+        createInsertText('c', [ 'hello', 'world' ])
     ], [
-        createInsertText('abc', '', [ 'hello', 'world' ])
+        createInsertText('abc', [ 'hello', 'world' ])
     ])
 
     testDiff([
-        createInsertText('a', '', [ 'blah', 'blah!', 'hello', 'world' ]),
-        createInsertText('b', ''),
-        createInsertText('c', '', [ 'hello', 'world' ])
+        createInsertText('a', [ 'blah', 'blah!', 'hello', 'world' ]),
+        createInsertText('b'),
+        createInsertText('c', [ 'hello', 'world' ])
     ], [
-        createInsertText('abc', '', [ 'a', 'p', 'blah', '', 'hello', 'world' ])
+        createInsertText('abc', [ 'a', 'p', 'blah', '', 'hello', 'world' ])
     ])
 
     testDiff([
-        createInsertText('a', ''),
-        createInsertEmbed('\uE000IMG', '', [ 'src', 'http://www.example.com/image2.png' ]),
-        createInsertText('c', '')
+        createInsertText('a'),
+        createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image2.png' ]),
+        createInsertText('c')
     ], [
-        createInsertText('a', ''),
-        createInsertEmbed('\uE000IMG', '', [ 'src', 'http://www.example.com/image.png' ]),
-        createInsertText('c', '')
+        createInsertText('a'),
+        createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image.png' ]),
+        createInsertText('c')
     ])
 
     testDiff([
-        createInsertText('a', ''),
-        createInsertEmbed('\uE000BR', ''),
-        createInsertText('c', '')
+        createInsertText('a'),
+        createInsertEmbed('\uE000BR'),
+        createInsertText('c')
     ], [
-        createInsertText('a', ''),
-        createInsertEmbed('\uE000IMG', ''),
-        createInsertText('c', '')
+        createInsertText('a'),
+        createInsertEmbed('\uE000IMG'),
+        createInsertText('c')
     ])
 
     testDiff([
-        createInsertText('aef sefef ', ''),
-        createInsertEmbed('\uE000BR', ''),
-        createInsertText('c', '')
+        createInsertText('aef sefef '),
+        createInsertEmbed('\uE000BR'),
+        createInsertText('c')
     ], [
-        createInsertText('aef', ''),
-        createInsertEmbed('\uE000IMG', ''),
-        createInsertText('c', '')
+        createInsertText('aef'),
+        createInsertEmbed('\uE000IMG'),
+        createInsertText('c')
     ])
 
     testDiff([
-        createInsertText('aef sefef ', ''),
-        createInsertEmbed('\uE000IMG', '', [ 'src', 'http://www.example.com/image.png' ]),
-        createInsertText('c', '')
+        createInsertText('aef sefef '),
+        createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image.png' ]),
+        createInsertText('c')
     ], [
-        createInsertText('aef', ''),
-        createInsertEmbed('\uE000IMG', '', [ 'src', 'http://www.example.com/image2.png', 'zzz', '' ]),
-        createInsertText('c', '')
+        createInsertText('aef'),
+        createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image2.png', 'zzz', '' ]),
+        createInsertText('c')
     ])
 
     testDiff([
-        createInsertText('abc ', ''),
-        createInsertEmbed('\uE000IMG', '', [ 'src', 'http://www.example.com/image.png' ]),
-        createInsertText('c', '')
+        createInsertText('abc '),
+        createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image.png' ]),
+        createInsertText('c')
     ], [
-        createInsertText('abc ', ''),
-        createInsertEmbed('\uE000IMG', '', [ 'src', 'http://www.example.com/image.png' ]),
-        createInsertText('c', '')
+        createInsertText('abc '),
+        createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image.png' ]),
+        createInsertText('c')
     ])
 
     testDiff([
-        createInsertText('abc ', ''),
-        createInsertEmbed('\uE000IMG', '', [ 'src', 'http://www.example.com/image.png' ]),
-        createInsertText('c', ''),
-        createInsertEmbed('\uE000BR', '')
+        createInsertText('abc '),
+        createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image.png' ]),
+        createInsertText('c'),
+        createInsertEmbed('\uE000BR')
     ], [
-        createInsertText('abc ', ''),
-        createInsertEmbed('\uE000IMG', '', [ 'src', 'http://www.example.com/image.png' ]),
-        createInsertText('c', ''),
-        createInsertEmbed('\uE000HR', '')
+        createInsertText('abc '),
+        createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image.png' ]),
+        createInsertText('c'),
+        createInsertEmbed('\uE000HR')
     ])
 
     testDiff([
-        createInsertText('abc ', ''),
-        createInsertEmbed('\uE000IMG', '', [ 'src', 'http://www.example.com/image.png' ]),
-        createInsertText('c', ''),
-        createInsertEmbed('\uE000BR', '', [ 'hello', 'world' ])
+        createInsertText('abc '),
+        createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image.png' ]),
+        createInsertText('c'),
+        createInsertEmbed('\uE000BR', [ 'hello', 'world' ])
     ], [
-        createInsertText('abc ', ''),
-        createInsertEmbed('\uE000IMG', '', [ 'src', 'http://www.example.com/image.png' ]),
-        createInsertText('c', ''),
-        createInsertEmbed('\uE000BR', '', [ 'hello', 'world!!!' ])
+        createInsertText('abc '),
+        createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image.png' ]),
+        createInsertText('c'),
+        createInsertEmbed('\uE000BR', [ 'hello', 'world!!!' ])
     ])
 
     t.end()

@@ -14,7 +14,7 @@
     "preversion": "npm test",
     "postversion": "git push && git push origin v${npm_package_version}"
   },
-  "author": "",
+  "author": "Greg Kubisa <gkubisa@gmail.com>",
   "license": "UNLICENSED",
   "repository": {
     "type": "git",

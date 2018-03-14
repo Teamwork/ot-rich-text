@@ -27,28 +27,26 @@ An insert Operation is an instruction to add certain text or node at the current
 
 - `0 (ACTION)`: 1 - the code for the insert text Operation
 - `1 (CONTENT)`: a non-empty string - the text to insert
-- `2 (AUTHOR)`: a string - the ID of the user who inserts the text
-- `3 (ATTRIBUTE_0_NAME)`: a string - the name of attribute 0
-- `4 (ATTRIBUTE_0_VALUE)`: a string - the value of attribute 0
-- `5 (ATTRIBUTE_1_NAME)`: a string - the name of attribute 1
-- `6 (ATTRIBUTE_1_VALUE)`: a string - the value of attribute 1
+- `2 (ATTRIBUTE_0_NAME)`: a string - the name of attribute 0
+- `3 (ATTRIBUTE_0_VALUE)`: a string - the value of attribute 0
+- `4 (ATTRIBUTE_1_NAME)`: a string - the name of attribute 1
+- `5 (ATTRIBUTE_1_VALUE)`: a string - the value of attribute 1
 - ...
-- `3 + (N * 2) (ATTRIBUTE_N_NAME)`: a string - the name of attribute N
-- `4 + (N * 2) (ATTRIBUTE_N_VALUE)`: a string - the value of attribute N
+- `2 + (N * 2) (ATTRIBUTE_N_NAME)`: a string - the name of attribute N
+- `3 + (N * 2) (ATTRIBUTE_N_VALUE)`: a string - the value of attribute N
 
 
 #### Insert Open Node / Close Node / Embed Node Operation
 
 - `0 (ACTION)`: 2, 3, 4 - the code for the insert open node, close node and embed node Operations respectively
 - `1 (CONTENT)`: a string - a node ID and name. The first characters is the node ID, the rest are node name. Node ID must be a single character in the Private Use Area in the Unicode Basic Multilingual Plane.
-- `2 (AUTHOR)`: a string - the ID of the user who inserts the node
-- `3 (ATTRIBUTE_0_NAME)`: a string - the name of attribute 0
-- `4 (ATTRIBUTE_0_VALUE)`: a string - the value of attribute 0
-- `5 (ATTRIBUTE_1_NAME)`: a string - the name of attribute 1
-- `6 (ATTRIBUTE_1_VALUE)`: a string - the value of attribute 1
+- `2 (ATTRIBUTE_0_NAME)`: a string - the name of attribute 0
+- `3 (ATTRIBUTE_0_VALUE)`: a string - the value of attribute 0
+- `4 (ATTRIBUTE_1_NAME)`: a string - the name of attribute 1
+- `5 (ATTRIBUTE_1_VALUE)`: a string - the value of attribute 1
 - ...
-- `3 + (N * 2) (ATTRIBUTE_N_NAME)`: a string - the name of attribute N
-- `4 + (N * 2) (ATTRIBUTE_N_VALUE)`: a string - the value of attribute N
+- `2 + (N * 2) (ATTRIBUTE_N_NAME)`: a string - the name of attribute N
+- `3 + (N * 2) (ATTRIBUTE_N_VALUE)`: a string - the value of attribute N
 
 
 ### Delete Operation
