@@ -50,14 +50,14 @@ const getSnapshotLength = snapshot => {
     let length = 0
 
     for (let i = 0, l = snapshot.length; i < l; ++i) {
-        const operation = snapshot[i]
+        const action = snapshot[i]
 
-        if (!isInsert(operation)) {
+        if (!isInsert(action)) {
             console.error(snapshot)
             throw new Error('snapshot should only have inserts')
         }
 
-        length += getLength(operation)
+        length += getLength(action)
     }
 
     return length
@@ -66,51 +66,51 @@ const getSnapshotLength = snapshot => {
 const appendFromIterator = (snapshot, iterator) => (count, attributes) => {
     while (count > 0) {
         const { action, offset } = iterator
-        const operationLength = getLength(action)
-        const remaining = operationLength - offset
+        const actionLength = getLength(action)
+        const remaining = actionLength - offset
         const length = Math.min(remaining, count)
-        let newOperation = slice(action, offset, length, operationLength)
+        let newAction = slice(action, offset, length, actionLength)
 
         if (attributes && attributes.length > 0) {
             // copy the action without attributes
-            newOperation = copyOperation(newOperation, true)
+            newAction = copyOperation(newAction, true)
 
             let i1 = getAttributesIndex(action) // `action` attributes index
             let i2 = 0 // `attributes` index
-            let i3 = newOperation.length // `newOperation` attributes index
+            let i3 = newAction.length // `newAction` attributes index
             const l1 = action.length
             const l2 = attributes.length
 
             while (i1 < l1 || i2 < l2) {
                 if (i1 >= l1) {
                     if (attributes[i2 + 1] != null) {
-                        newOperation[i3++] = attributes[i2++]
-                        newOperation[i3++] = attributes[i2++]
+                        newAction[i3++] = attributes[i2++]
+                        newAction[i3++] = attributes[i2++]
                     } else {
                         i2 += 2
                     }
 
                 } else if (i2 >= l2) {
-                    newOperation[i3++] = action[i1++]
-                    newOperation[i3++] = action[i1++]
+                    newAction[i3++] = action[i1++]
+                    newAction[i3++] = action[i1++]
 
                 } else if (action[i1] === attributes[i2]) {
                     if (attributes[i2 + 1] != null) {
-                        newOperation[i3++] = attributes[i2++]
-                        newOperation[i3++] = attributes[i2++]
+                        newAction[i3++] = attributes[i2++]
+                        newAction[i3++] = attributes[i2++]
                     } else {
                         i2 += 2
                     }
                     i1 += 2
 
                 } else if (action[i1] < attributes[i2]) {
-                    newOperation[i3++] = action[i1++]
-                    newOperation[i3++] = action[i1++]
+                    newAction[i3++] = action[i1++]
+                    newAction[i3++] = action[i1++]
 
                 } else {
                     if (attributes[i2 + 1] != null) {
-                        newOperation[i3++] = attributes[i2++]
-                        newOperation[i3++] = attributes[i2++]
+                        newAction[i3++] = attributes[i2++]
+                        newAction[i3++] = attributes[i2++]
                     } else {
                         i2 += 2
                     }
@@ -118,7 +118,7 @@ const appendFromIterator = (snapshot, iterator) => (count, attributes) => {
             }
         }
 
-        append(snapshot, newOperation)
+        append(snapshot, newAction)
         iterator.next(length)
         count -= length
     }
@@ -127,13 +127,13 @@ const appendFromIterator = (snapshot, iterator) => (count, attributes) => {
 const generateRandomOperation = snapshot => {
     const length = getSnapshotLength(snapshot)
     const snapshotIterator = new Iterator(snapshot)
-    const delta = []
+    const operation = []
     const newSnapshot = []
-    const addToDelta = operation => append(delta, operation)
-    const addToSnapshot = operation => append(newSnapshot, operation)
-    const addToDeltaAndSnapshot = operation => {
-        addToDelta(operation)
-        addToSnapshot(operation)
+    const addToOperation = action => append(operation, action)
+    const addToSnapshot = action => append(newSnapshot, action)
+    const addToOperationAndSnapshot = action => {
+        addToOperation(action)
+        addToSnapshot(action)
     }
     const keepInSnapshot = appendFromIterator(newSnapshot, snapshotIterator)
     let remaining = length
@@ -141,25 +141,25 @@ const generateRandomOperation = snapshot => {
     do {
         const offset = fuzzer.randomInt(Math.min(remaining, 5) + 1)
 
-        addToDelta(createRetain(offset))
+        addToOperation(createRetain(offset))
         keepInSnapshot(offset)
         remaining -= offset
 
         switch (fuzzer.randomInt(7 + Math.floor(length / 100))) {
             case 0: // insert text
-                addToDeltaAndSnapshot(randomInsertText())
+                addToOperationAndSnapshot(randomInsertText())
                 break
 
             case 1: // insert open
-                addToDeltaAndSnapshot(randomInsertOpen())
+                addToOperationAndSnapshot(randomInsertOpen())
                 break
 
             case 2: // insert close
-                addToDeltaAndSnapshot(randomInsertClose())
+                addToOperationAndSnapshot(randomInsertClose())
                 break
 
             case 3: // insert embed
-                addToDeltaAndSnapshot(randomInsertEmbed())
+                addToOperationAndSnapshot(randomInsertEmbed())
                 break
 
             case 4: // retain
@@ -167,7 +167,7 @@ const generateRandomOperation = snapshot => {
                 const retainCount = Math.min(remaining, fuzzer.randomInt(4) + 1)
                 const attributes = randomAttributes(true)
 
-                addToDelta(createRetain(retainCount, attributes))
+                addToOperation(createRetain(retainCount, attributes))
                 keepInSnapshot(retainCount, attributes)
                 remaining -= retainCount
                 break
@@ -175,7 +175,7 @@ const generateRandomOperation = snapshot => {
             default: // delete
                 const deleteCount = Math.min(remaining, fuzzer.randomInt(4) + 1)
 
-                addToDelta(createDelete(deleteCount))
+                addToOperation(createDelete(deleteCount))
                 snapshotIterator.next(deleteCount)
                 remaining -= deleteCount
                 break
@@ -185,7 +185,7 @@ const generateRandomOperation = snapshot => {
 
     keepInSnapshot(remaining)
 
-    return [ delta, newSnapshot ]
+    return [ operation, newSnapshot ]
 }
 
 tap.test('fuzzer', t => {
