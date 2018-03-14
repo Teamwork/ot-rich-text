@@ -2,7 +2,7 @@ const tap = require('tap')
 const Delta = require('../lib/Delta')
 const {
     createInsertText, createInsertOpen, createInsertClose, createInsertEmbed, createRetain, createDelete
-} = require('../lib/Operation')
+} = require('../lib/Action')
 
 tap.test('create', t => {
     const snapshot = []

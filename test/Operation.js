@@ -5,7 +5,7 @@ const {
     getCount, getText, getNodeIdAndName, getNodeId, getNodeName, getAttributes, getLength, copyOperation,
     validate, areOperationsEqual, areActionsEqual, areAttributesEqual, getAttributesIndex, hasAttributes,
     slice, merge, composeIterators, transformIterators, setAttribute
-} = require('../lib/Operation')
+} = require('../lib/Action')
 const Iterator = require('../lib/Iterator')
 
 tap.test('basic tests', t => {

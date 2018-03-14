@@ -7,7 +7,7 @@ const {
     createInsertText, createInsertOpen, createInsertClose, createInsertEmbed, createRetain, createDelete,
     isInsert, getLength, getAttributesIndex,
     slice, copyOperation
-} = require('../lib/Operation')
+} = require('../lib/Action')
 
 const randomItemFactory = list => () => list[fuzzer.randomInt(list.length)]
 

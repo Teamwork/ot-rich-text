@@ -2,7 +2,7 @@ const tap = require('tap')
 const Iterator = require('../lib/Iterator')
 const {
     createInsertText, createInsertEmbed, createRetain, createDelete
-} = require('../lib/Operation')
+} = require('../lib/Action')
 
 tap.test('no operations', t => {
     const operations = []
