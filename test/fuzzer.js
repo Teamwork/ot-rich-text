@@ -2,7 +2,7 @@ const tap = require('tap')
 const fuzzer = require('ot-fuzzer')
 const type = require('../lib/type')
 const Iterator = require('../lib/Iterator')
-const { append } = require('../lib/Delta')
+const { append } = require('../lib/Operation')
 const {
     createInsertText, createInsertOpen, createInsertClose, createInsertEmbed, createRetain, createDelete,
     isInsert, getLength, getAttributesIndex,
