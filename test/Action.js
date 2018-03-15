@@ -2,8 +2,8 @@ const tap = require('tap')
 const {
     createInsertText, createInsertOpen, createInsertClose, createInsertEmbed, createRetain, createDelete,
     isInsert, isInsertText, isInsertOpen, isInsertClose, isInsertEmbed, isRetain, isDelete,
-    getCount, getText, getNodeIdAndName, getNodeId, getNodeName, getAttributes, getLength, copyAction,
-    validate, areOperationsEqual, areActionsEqual, areAttributesEqual, getAttributesIndex, hasAttributes,
+    getCount, getText, getNodeIdAndName, getNodeId, getNodeName, getAttributes, getLength, clone,
+    validate, areEqual, areTypesEqual, areAttributesEqual, getAttributesIndex, hasAttributes,
     slice, merge, composeIterators, transformIterators, setAttribute
 } = require('../lib/Action')
 const Iterator = require('../lib/Iterator')
@@ -156,46 +156,46 @@ tap.test('basic tests', t => {
     t.end()
 })
 
-tap.test('copyAction', t => {
+tap.test('clone', t => {
     t.test('with attributes', t => {
-        t.strictSame(copyAction(
+        t.strictSame(clone(
             createInsertText('hello', ['key', 'value']), false),
             createInsertText('hello', ['key', 'value']))
-        t.strictSame(copyAction(
+        t.strictSame(clone(
             createInsertOpen('\uE000DIV', ['key', 'value']), false),
             createInsertOpen('\uE000DIV', ['key', 'value']))
-        t.strictSame(copyAction(
+        t.strictSame(clone(
             createInsertClose('\uE000DIV', ['key', 'value']), false),
             createInsertClose('\uE000DIV', ['key', 'value']))
-        t.strictSame(copyAction(
+        t.strictSame(clone(
             createInsertEmbed('\uE000DIV', ['key', 'value']), false),
             createInsertEmbed('\uE000DIV', ['key', 'value']))
-        t.strictSame(copyAction(
+        t.strictSame(clone(
             createRetain(5, ['key', 'value']), false),
             createRetain(5, ['key', 'value']))
-        t.strictSame(copyAction(
+        t.strictSame(clone(
             createDelete(6), false),
             createDelete(6))
         t.end()
     })
 
     t.test('without attributes', t => {
-        t.strictSame(copyAction(
+        t.strictSame(clone(
             createInsertText('hello', ['key', 'value']), true),
             createInsertText('hello'))
-        t.strictSame(copyAction(
+        t.strictSame(clone(
             createInsertOpen('\uE000DIV', ['key', 'value']), true),
             createInsertOpen('\uE000DIV'))
-        t.strictSame(copyAction(
+        t.strictSame(clone(
             createInsertClose('\uE000DIV', ['key', 'value']), true),
             createInsertClose('\uE000DIV'))
-        t.strictSame(copyAction(
+        t.strictSame(clone(
             createInsertEmbed('\uE000DIV', ['key', 'value']), true),
             createInsertEmbed('\uE000DIV'))
-        t.strictSame(copyAction(
+        t.strictSame(clone(
             createRetain(5, ['key', 'value']), true),
             createRetain(5))
-        t.strictSame(copyAction(
+        t.strictSame(clone(
             createDelete(6), true),
             createDelete(6))
         t.end()
@@ -372,88 +372,88 @@ tap.test('validate', t => {
     t.end()
 })
 
-tap.test('areOperationsEqual', t => {
-    t.equal(areOperationsEqual(
+tap.test('areEqual', t => {
+    t.equal(areEqual(
         createInsertText('a', [ 'key1', 'value1', 'key2', 'value2' ] ),
         createInsertText('a', [ 'key1', 'value1', 'key2', 'value2' ] )
     ), true)
-    t.equal(areOperationsEqual(
+    t.equal(areEqual(
         createInsertOpen('\uE000P', [ 'key1', 'value1', 'key2', 'value2' ] ),
         createInsertOpen('\uE000P', [ 'key1', 'value1', 'key2', 'value2' ] )
     ), true)
-    t.equal(areOperationsEqual(
+    t.equal(areEqual(
         createInsertClose('\uE000P', [ 'key1', 'value1', 'key2', 'value2' ] ),
         createInsertClose('\uE000P', [ 'key1', 'value1', 'key2', 'value2' ] )
     ), true)
-    t.equal(areOperationsEqual(
+    t.equal(areEqual(
         createInsertEmbed('\uE000P', [ 'key1', 'value1', 'key2', 'value2' ] ),
         createInsertEmbed('\uE000P', [ 'key1', 'value1', 'key2', 'value2' ] )
     ), true)
-    t.equal(areOperationsEqual(
+    t.equal(areEqual(
         createRetain(5, [ 'key1', 'value1', 'key2', 'value2' ] ),
         createRetain(5, [ 'key1', 'value1', 'key2', 'value2' ] )
     ), true)
-    t.equal(areOperationsEqual(
+    t.equal(areEqual(
         createDelete(5),
         createDelete(5)
     ), true)
-    t.equal(areOperationsEqual(
+    t.equal(areEqual(
         createDelete(5),
         createRetain(5)
     ), false)
-    t.equal(areOperationsEqual(
+    t.equal(areEqual(
         createDelete(5),
         createDelete(6)
     ), false)
-    t.equal(areOperationsEqual(
+    t.equal(areEqual(
         createRetain(5, [ 'key1', 'value1' ] ),
         createRetain(5, [ 'key1', 'value1', 'key2', 'value2' ] )
     ), false)
-    t.equal(areOperationsEqual(
+    t.equal(areEqual(
         createInsertOpen('\uE000P', [ 'key1', 'value1', 'key2', 'value2' ] ),
         createInsertOpen('\uE000DIV', [ 'key1', 'value1', 'key2', 'value2' ] )
     ), false)
-    t.equal(areOperationsEqual(
+    t.equal(areEqual(
         createInsertOpen('\uE000P', [ 'key1', 'value1', 'key2', 'value2' ] ),
         createInsertOpen('\uE000P', [ 'key1', 'value1', 'key2', 'value3' ] )
     ), false)
     t.end()
 })
 
-tap.test('areActionsEqual', t => {
-    t.equal(areActionsEqual(
+tap.test('areTypesEqual', t => {
+    t.equal(areTypesEqual(
         createInsertText('abc', ['a', 'b']),
         createInsertText('xyz', ['c', 'd'])
     ), true)
-    t.equal(areActionsEqual(
+    t.equal(areTypesEqual(
         createInsertOpen('\uE000P', ['a', 'b']),
         createInsertOpen('\uE000DIV', ['c', 'd'])
     ), true)
-    t.equal(areActionsEqual(
+    t.equal(areTypesEqual(
         createInsertClose('\uE000P', ['a', 'b']),
         createInsertClose('\uE000DIV', ['c', 'd'])
     ), true)
-    t.equal(areActionsEqual(
+    t.equal(areTypesEqual(
         createInsertEmbed('\uE000BR', ['a', 'b']),
         createInsertEmbed('\uE000HR', ['c', 'd'])
     ), true)
-    t.equal(areActionsEqual(
+    t.equal(areTypesEqual(
         createRetain(4, ['a', 'b']),
         createRetain(5, ['c', 'd'])
     ), true)
-    t.equal(areActionsEqual(
+    t.equal(areTypesEqual(
         createDelete(4),
         createDelete(5)
     ), true)
-    t.equal(areActionsEqual(
+    t.equal(areTypesEqual(
         createRetain(4),
         createDelete(5)
     ), false)
-    t.equal(areActionsEqual(
+    t.equal(areTypesEqual(
         createRetain(4),
         createDelete(4)
     ), false)
-    t.equal(areActionsEqual(
+    t.equal(areTypesEqual(
         createInsertOpen('\uE000P', ['a', 'b']),
         createInsertClose('\uE000DIV', ['c', 'd'])
     ), false)
