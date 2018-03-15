@@ -1,5 +1,7 @@
 const tap = require('tap')
-const Delta = require('../lib/Operation')
+const {
+    create, validate, append, normalize, diffX, compose, transform, transformCursor, apply, chop
+} = require('../lib/Operation')
 const {
     createInsertText, createInsertOpen, createInsertClose, createInsertEmbed, createRetain, createDelete
 } = require('../lib/Action')
@@ -7,105 +9,105 @@ const {
 tap.test('create', t => {
     const snapshot = []
 
-    t.equal(Delta.create(snapshot), snapshot)
-    t.type(Delta.create(), Array)
+    t.equal(create(snapshot), snapshot)
+    t.type(create(), Array)
     t.end()
 })
 
 tap.test('validate', t => {
-    t.type(Delta.validate({ length: 0 }), Error, 'not an array')
-    t.type(Delta.validate(null), Error, 'not an array')
-    t.type(Delta.validate(undefined), Error, 'not an array')
-    t.type(Delta.validate('insert'), Error, 'not an array')
-    t.type(Delta.validate([ createRetain(0) ]), Error, 'invalid operation at 0')
-    t.type(Delta.validate([ createRetain(1), createDelete(1), createInsertText('') ]), Error, 'invalid operation at 2')
-    t.equal(Delta.validate([]), null)
-    t.equal(Delta.validate([ createRetain(1), createDelete(1), createInsertText('a') ]), null)
+    t.type(validate({ length: 0 }), Error, 'not an array')
+    t.type(validate(null), Error, 'not an array')
+    t.type(validate(undefined), Error, 'not an array')
+    t.type(validate('insert'), Error, 'not an array')
+    t.type(validate([ createRetain(0) ]), Error, 'invalid action at 0')
+    t.type(validate([ createRetain(1), createDelete(1), createInsertText('') ]), Error, 'invalid action at 2')
+    t.equal(validate([]), null)
+    t.equal(validate([ createRetain(1), createDelete(1), createInsertText('a') ]), null)
     t.end()
 })
 
 tap.test('normalize', t => {
-    t.throws(() => Delta.normalize({ length: 0 }), Error, 'not an array')
-    t.throws(() => Delta.normalize(null), Error, 'not an array')
-    t.throws(() => Delta.normalize(undefined), Error, 'not an array')
-    t.throws(() => Delta.normalize('insert'), Error, 'not an array')
-    t.throws(() => Delta.normalize([ createRetain(0) ]), Error, 'invalid operation at 0')
-    t.throws(() => Delta.normalize([ createRetain(1), createDelete(1), createInsertText('') ]), Error, 'invalid operation at 2')
-    Delta.normalize([])
-    Delta.normalize([ createRetain(1), createDelete(1), createInsertText('a') ])
+    t.throws(() => normalize({ length: 0 }), Error, 'not an array')
+    t.throws(() => normalize(null), Error, 'not an array')
+    t.throws(() => normalize(undefined), Error, 'not an array')
+    t.throws(() => normalize('insert'), Error, 'not an array')
+    t.throws(() => normalize([ createRetain(0) ]), Error, 'invalid action at 0')
+    t.throws(() => normalize([ createRetain(1), createDelete(1), createInsertText('') ]), Error, 'invalid action at 2')
+    normalize([])
+    normalize([ createRetain(1), createDelete(1), createInsertText('a') ])
     t.end()
 })
 
 tap.test('append', t => {
     t.test('left empty, right insert (text)', t => {
-        const operations = []
-        t.equal(Delta.append(operations, createInsertText('hello')), operations)
-        t.strictSame(operations, [ createInsertText('hello') ])
+        const operation = []
+        t.equal(append(operation, createInsertText('hello')), operation)
+        t.strictSame(operation, [ createInsertText('hello') ])
         t.end()
     })
     t.test('left empty, right insert (open)', t => {
-        const operations = []
-        t.equal(Delta.append(operations, createInsertOpen('\uE000DIV')), operations)
-        t.strictSame(operations, [ createInsertOpen('\uE000DIV') ])
+        const operation = []
+        t.equal(append(operation, createInsertOpen('\uE000DIV')), operation)
+        t.strictSame(operation, [ createInsertOpen('\uE000DIV') ])
         t.end()
     })
     t.test('left empty, right insert (close)', t => {
-        const operations = []
-        t.equal(Delta.append(operations, createInsertClose('\uE000DIV')), operations)
-        t.strictSame(operations, [ createInsertClose('\uE000DIV') ])
+        const operation = []
+        t.equal(append(operation, createInsertClose('\uE000DIV')), operation)
+        t.strictSame(operation, [ createInsertClose('\uE000DIV') ])
         t.end()
     })
     t.test('left empty, right insert (embed)', t => {
-        const operations = []
-        t.equal(Delta.append(operations, createInsertEmbed('\uE000DIV')), operations)
-        t.strictSame(operations, [ createInsertEmbed('\uE000DIV') ])
+        const operation = []
+        t.equal(append(operation, createInsertEmbed('\uE000DIV')), operation)
+        t.strictSame(operation, [ createInsertEmbed('\uE000DIV') ])
         t.end()
     })
     t.test('left empty, right retain', t => {
-        const operations = []
-        t.equal(Delta.append(operations, createRetain(5)), operations)
-        t.strictSame(operations, [ createRetain(5) ])
+        const operation = []
+        t.equal(append(operation, createRetain(5)), operation)
+        t.strictSame(operation, [ createRetain(5) ])
         t.end()
     })
     t.test('left empty, right delete', t => {
-        const operations = []
-        t.equal(Delta.append(operations, createDelete(5)), operations)
-        t.strictSame(operations, [ createDelete(5) ])
+        const operation = []
+        t.equal(append(operation, createDelete(5)), operation)
+        t.strictSame(operation, [ createDelete(5) ])
         t.end()
     })
 
     t.test('left empty, right insert (empty)', t => {
-        const operations = []
-        t.equal(Delta.append(operations, createInsertText('')), operations)
-        t.strictSame(operations, [])
+        const operation = []
+        t.equal(append(operation, createInsertText('')), operation)
+        t.strictSame(operation, [])
         t.end()
     })
 
     t.test('left retain, right retain', t => {
-        const operations = [ createRetain(5) ]
-        t.equal(Delta.append(operations, createRetain(7)), operations)
-        t.strictSame(operations, [ createRetain(12) ])
+        const operation = [ createRetain(5) ]
+        t.equal(append(operation, createRetain(7)), operation)
+        t.strictSame(operation, [ createRetain(12) ])
         t.end()
     })
 
     t.test('left delete, right delete', t => {
-        const operations = [ createDelete(5) ]
-        t.equal(Delta.append(operations, createDelete(7)), operations)
-        t.strictSame(operations, [ createDelete(12) ])
+        const operation = [ createDelete(5) ]
+        t.equal(append(operation, createDelete(7)), operation)
+        t.strictSame(operation, [ createDelete(12) ])
         t.end()
     })
 
     t.test('left insert text, right insert text', t => {
-        const operations = [ createInsertText('Hello', ['key', 'value']) ]
-        t.equal(Delta.append(operations, createInsertText(' World', ['key', 'value'])), operations)
-        t.strictSame(operations, [ createInsertText('Hello World', ['key', 'value']) ])
+        const operation = [ createInsertText('Hello', ['key', 'value']) ]
+        t.equal(append(operation, createInsertText(' World', ['key', 'value'])), operation)
+        t.strictSame(operation, [ createInsertText('Hello World', ['key', 'value']) ])
         t.end()
     })
 
     t.test('left insert embed, right insert embed', t => {
-        const operations = [ createInsertEmbed('\uE000DIV', ['key', 'value']) ]
-        t.equal(Delta.append(operations, createInsertEmbed('\uE000DIV', ['key', 'value'])), operations)
-        t.strictSame(operations, [
+        const operation = [ createInsertEmbed('\uE000DIV', ['key', 'value']) ]
+        t.equal(append(operation, createInsertEmbed('\uE000DIV', ['key', 'value'])), operation)
+        t.strictSame(operation, [
             createInsertEmbed('\uE000DIV', ['key', 'value']),
             createInsertEmbed('\uE000DIV', ['key', 'value'])
         ])
@@ -113,9 +115,9 @@ tap.test('append', t => {
     })
 
     t.test('left delete, right insert text', t => {
-        const operations = [ createDelete(5) ]
-        t.equal(Delta.append(operations, createInsertText('hello', ['key', 'value'])), operations)
-        t.strictSame(operations, [
+        const operation = [ createDelete(5) ]
+        t.equal(append(operation, createInsertText('hello', ['key', 'value'])), operation)
+        t.strictSame(operation, [
             createInsertText('hello', ['key', 'value']),
             createDelete(5)
         ])
@@ -123,9 +125,9 @@ tap.test('append', t => {
     })
 
     t.test('left insert text and delete, right insert text', t => {
-        const operations = [ createInsertText('hello', ['key', 'value']), createDelete(5) ]
-        t.equal(Delta.append(operations, createInsertText(' world', ['key', 'value'])), operations)
-        t.strictSame(operations, [
+        const operation = [ createInsertText('hello', ['key', 'value']), createDelete(5) ]
+        t.equal(append(operation, createInsertText(' world', ['key', 'value'])), operation)
+        t.strictSame(operation, [
             createInsertText('hello world', ['key', 'value']),
             createDelete(5)
         ])
@@ -133,9 +135,9 @@ tap.test('append', t => {
     })
 
     t.test('left insert text and delete, right insert embed', t => {
-        const operations = [ createInsertText('hello', ['key', 'value']), createDelete(5) ]
-        t.equal(Delta.append(operations, createInsertEmbed('\uE000DIV', ['key', 'value'])), operations)
-        t.strictSame(operations, [
+        const operation = [ createInsertText('hello', ['key', 'value']), createDelete(5) ]
+        t.equal(append(operation, createInsertEmbed('\uE000DIV', ['key', 'value'])), operation)
+        t.strictSame(operation, [
             createInsertText('hello', ['key', 'value']),
             createInsertEmbed('\uE000DIV', ['key', 'value']),
             createDelete(5)
@@ -144,15 +146,15 @@ tap.test('append', t => {
     })
 
     t.test('many', t => {
-        const operations = []
-        t.equal(Delta.append(operations, createInsertEmbed('\uE000DIV', ['key', 'value'])), operations)
-        t.equal(Delta.append(operations, createInsertText('Hello', ['key', 'value'])), operations)
-        t.equal(Delta.append(operations, createInsertText(' World', ['key', 'value'])), operations)
-        t.equal(Delta.append(operations, createInsertText('!!!', ['key', 'value2'])), operations)
-        t.equal(Delta.append(operations, createRetain(5)), operations)
-        t.equal(Delta.append(operations, createDelete(3)), operations)
-        t.equal(Delta.append(operations, createDelete(4)), operations)
-        t.strictSame(operations, [
+        const operation = []
+        t.equal(append(operation, createInsertEmbed('\uE000DIV', ['key', 'value'])), operation)
+        t.equal(append(operation, createInsertText('Hello', ['key', 'value'])), operation)
+        t.equal(append(operation, createInsertText(' World', ['key', 'value'])), operation)
+        t.equal(append(operation, createInsertText('!!!', ['key', 'value2'])), operation)
+        t.equal(append(operation, createRetain(5)), operation)
+        t.equal(append(operation, createDelete(3)), operation)
+        t.equal(append(operation, createDelete(4)), operation)
+        t.strictSame(operation, [
             createInsertEmbed('\uE000DIV', ['key', 'value']),
             createInsertText('Hello World', ['key', 'value']),
             createInsertText('!!!', ['key', 'value2']),
@@ -166,22 +168,22 @@ tap.test('append', t => {
 })
 
 tap.test('chop', t => {
-    t.strictSame(Delta.chop(
+    t.strictSame(chop(
         [ createInsertText('hello') ]),
         [ createInsertText('hello') ])
-    t.strictSame(Delta.chop(
+    t.strictSame(chop(
         [ createInsertText('hello'), createInsertText('hello') ]),
         [ createInsertText('hello'), createInsertText('hello') ])
-    t.strictSame(Delta.chop(
+    t.strictSame(chop(
         [ createInsertText('hello'), createRetain(5) ]),
         [ createInsertText('hello') ])
-    t.strictSame(Delta.chop(
+    t.strictSame(chop(
         [ createRetain(5) ]),
         [])
-    t.strictSame(Delta.chop(
+    t.strictSame(chop(
         [ createRetain(5), createInsertText('hello') ]),
         [ createRetain(5), createInsertText('hello') ])
-    t.strictSame(Delta.chop(
+    t.strictSame(chop(
         [ createRetain(5, ['key', 'value']) ]),
         [ createRetain(5, ['key', 'value']) ])
 
@@ -202,36 +204,36 @@ tap.test('compose', t => {
     const delete2 = createDelete(3)
     const delete3 = createDelete(9)
 
-    t.strictSame(Delta.compose([], []), [])
+    t.strictSame(compose([], []), [])
 
-    t.strictSame(Delta.compose(
+    t.strictSame(compose(
         [],
         [ insertText1, insertEmbed1, insertText2, insertEmbed2 ]),
         [ insertText1, insertEmbed1, insertText2, insertEmbed2 ])
 
-    t.strictSame(Delta.compose(
+    t.strictSame(compose(
         [ delete1, delete2 ],
         [ insertText1, insertText2 ]),
         [ insertText3, delete3 ])
 
-    t.strictSame(Delta.compose(
+    t.strictSame(compose(
         [ insertText2, retain1, insertEmbed1 ],
         [ insertText1, retain2, insertEmbed2 ]),
         [ insertText3, retain3, insertEmbed2, retain4, insertEmbed1 ])
 
-    t.strictSame(Delta.compose(
+    t.strictSame(compose(
         [ createRetain(5) ],
         [ createRetain(5) ]),
         [],
         'Should remove trailing retain')
 
-    t.strictSame(Delta.compose(
+    t.strictSame(compose(
         [ createRetain(5, ['key', 'value']) ],
         [ createRetain(5) ]),
         [ createRetain(5, ['key', 'value']) ],
         'Should keep trailing retain with attributes')
 
-    t.strictSame(Delta.compose(
+    t.strictSame(compose(
         [ createRetain(5, ['key', 'value']) ],
         [ createRetain(5), createDelete(6) ]),
         [ createRetain(5, ['key', 'value']), createDelete(6) ],
@@ -251,29 +253,29 @@ tap.test('apply', t => {
     const delete1 = createDelete(6)
     const delete2 = createDelete(8)
 
-    t.strictSame(Delta.apply([], []), [])
+    t.strictSame(apply([], []), [])
 
-    t.strictSame(Delta.apply(
+    t.strictSame(apply(
         [],
         [ insertText1, insertEmbed1, insertText2, insertEmbed2 ]),
         [ insertText1, insertEmbed1, insertText2, insertEmbed2 ])
 
-    t.strictSame(Delta.apply(
+    t.strictSame(apply(
         [ insertText2, insertEmbed1 ],
         [ insertText1, retain1, insertEmbed2 ]),
         [ insertText3, insertEmbed2, insertEmbed1 ])
 
-    t.strictSame(Delta.apply(
+    t.strictSame(apply(
         [ insertText2, insertEmbed1 ],
         [ insertText1, delete1, insertEmbed2 ]),
         [ insertText1, insertEmbed2, insertEmbed1 ])
 
-    t.strictSame(Delta.apply(
+    t.strictSame(apply(
         [ insertText2, insertEmbed1 ],
         [ insertText1, retain2, insertEmbed2 ]),
         [ insertText3, insertEmbed1 ])
 
-    t.strictSame(Delta.apply(
+    t.strictSame(apply(
         [ insertText2, insertEmbed1 ],
         [ insertText1, delete2, insertEmbed2 ]),
         [ insertText1 ])
@@ -294,10 +296,10 @@ tap.test('transform', t => {
     const delete1 = createDelete(6)
     const delete2 = createDelete(3)
 
-    t.strictSame(Delta.transform([], [], 'left'), [])
-    t.strictSame(Delta.transform([], [], 'right'), [])
+    t.strictSame(transform([], [], 'left'), [])
+    t.strictSame(transform([], [], 'right'), [])
 
-    t.strictSame(Delta.transform(
+    t.strictSame(transform(
         [ insertText1, retain1, delete1, insertEmbed1 ],
         [ insertText2, retain2, insertEmbed2 ],
         'left'),
@@ -310,7 +312,7 @@ tap.test('transform', t => {
             delete2 // delete1 (remaining 3 characters)
         ])
 
-    t.strictSame(Delta.transform(
+    t.strictSame(transform(
         [ insertText1, retain1, delete1, insertEmbed1 ],
         [ insertText2, retain2, insertEmbed2 ],
         'right'),
@@ -324,21 +326,21 @@ tap.test('transform', t => {
             delete2 // delete1 (remaining 3 characters)
         ])
 
-    t.strictSame(Delta.transform(
+    t.strictSame(transform(
         [ createRetain(5) ],
         [ createRetain(5) ],
         'left'),
         [],
         'Should remove trailing retain')
 
-    t.strictSame(Delta.transform(
+    t.strictSame(transform(
         [ createRetain(5) ],
         [ createRetain(5) ],
         'right'),
         [],
         'Should remove trailing retain')
 
-    t.strictSame(Delta.transform(
+    t.strictSame(transform(
         [ createRetain(5, ['key', 'value']) ],
         [ createRetain(5) ],
         'left'),
@@ -349,53 +351,53 @@ tap.test('transform', t => {
 })
 
 tap.test('transformCursor', t => {
-    t.equal(Delta.transformCursor(0, [], true), 0)
-    t.equal(Delta.transformCursor(0, [], false), 0)
-    t.equal(Delta.transformCursor(0, [ createInsertText('ab') ], true), 2)
-    t.equal(Delta.transformCursor(0, [ createInsertText('ab') ], false), 0)
-    t.equal(Delta.transformCursor(0, [ createDelete(2) ], true), 0)
-    t.equal(Delta.transformCursor(0, [ createDelete(2) ], false), 0)
-    t.equal(Delta.transformCursor(0, [ createRetain(2) ], true), 0)
-    t.equal(Delta.transformCursor(0, [ createRetain(2) ], false), 0)
+    t.equal(transformCursor(0, [], true), 0)
+    t.equal(transformCursor(0, [], false), 0)
+    t.equal(transformCursor(0, [ createInsertText('ab') ], true), 2)
+    t.equal(transformCursor(0, [ createInsertText('ab') ], false), 0)
+    t.equal(transformCursor(0, [ createDelete(2) ], true), 0)
+    t.equal(transformCursor(0, [ createDelete(2) ], false), 0)
+    t.equal(transformCursor(0, [ createRetain(2) ], true), 0)
+    t.equal(transformCursor(0, [ createRetain(2) ], false), 0)
 
-    t.equal(Delta.transformCursor(5, [], true), 5)
-    t.equal(Delta.transformCursor(5, [], false), 5)
-    t.equal(Delta.transformCursor(5, [ createInsertText('ab') ], true), 7)
-    t.equal(Delta.transformCursor(5, [ createInsertText('ab') ], false), 7)
-    t.equal(Delta.transformCursor(5, [ createDelete(2) ], true), 3)
-    t.equal(Delta.transformCursor(5, [ createDelete(2) ], false), 3)
-    t.equal(Delta.transformCursor(5, [ createRetain(2) ], true), 5)
-    t.equal(Delta.transformCursor(5, [ createRetain(2) ], false), 5)
+    t.equal(transformCursor(5, [], true), 5)
+    t.equal(transformCursor(5, [], false), 5)
+    t.equal(transformCursor(5, [ createInsertText('ab') ], true), 7)
+    t.equal(transformCursor(5, [ createInsertText('ab') ], false), 7)
+    t.equal(transformCursor(5, [ createDelete(2) ], true), 3)
+    t.equal(transformCursor(5, [ createDelete(2) ], false), 3)
+    t.equal(transformCursor(5, [ createRetain(2) ], true), 5)
+    t.equal(transformCursor(5, [ createRetain(2) ], false), 5)
 
-    t.equal(Delta.transformCursor(5, [
+    t.equal(transformCursor(5, [
         createRetain(5), createInsertText('abc'), createInsertText('def')
     ], true), 11)
-    t.equal(Delta.transformCursor(5, [
+    t.equal(transformCursor(5, [
         createRetain(5), createInsertText('abc'), createInsertText('def')
     ], false), 5)
-    t.equal(Delta.transformCursor(5, [
+    t.equal(transformCursor(5, [
         createRetain(5), createInsertText('abc'), createRetain(1), createInsertText('def')
     ], true), 8)
-    t.equal(Delta.transformCursor(5, [
+    t.equal(transformCursor(5, [
         createRetain(5), createInsertText('abc'), createRetain(1), createInsertText('def')
     ], false), 5)
 
-    t.equal(Delta.transformCursor(5, [
+    t.equal(transformCursor(5, [
         createRetain(3), createDelete(1), createRetain(3)
     ], true), 4)
-    t.equal(Delta.transformCursor(5, [
+    t.equal(transformCursor(5, [
         createRetain(3), createDelete(1), createRetain(3)
     ], false), 4)
-    t.equal(Delta.transformCursor(5, [
+    t.equal(transformCursor(5, [
         createRetain(3), createDelete(2), createRetain(3)
     ], true), 3)
-    t.equal(Delta.transformCursor(5, [
+    t.equal(transformCursor(5, [
         createRetain(3), createDelete(2), createRetain(3)
     ], false), 3)
-    t.equal(Delta.transformCursor(5, [
+    t.equal(transformCursor(5, [
         createRetain(3), createDelete(3), createRetain(3)
     ], true), 3)
-    t.equal(Delta.transformCursor(5, [
+    t.equal(transformCursor(5, [
         createRetain(3), createDelete(3), createRetain(3)
     ], false), 3)
 
@@ -403,71 +405,71 @@ tap.test('transformCursor', t => {
 })
 
 tap.test('diffX', t => {
-    t.throws(() => Delta.diffX(
+    t.throws(() => diffX(
         [ createRetain(1) ],
         []
     ), Error)
-    t.throws(() => Delta.diffX(
+    t.throws(() => diffX(
         [ createDelete(1) ],
         []
     ), Error)
-    t.throws(() => Delta.diffX(
+    t.throws(() => diffX(
         [],
         [ createRetain(1) ]
     ), Error)
-    t.throws(() => Delta.diffX(
+    t.throws(() => diffX(
         [],
         [ createDelete(1) ]
     ), Error)
 
-    t.throws(() => Delta.diffX(
+    t.throws(() => diffX(
         [ createRetain(1) ],
         [ createInsertText('a') ]
     ), Error)
-    t.throws(() => Delta.diffX(
+    t.throws(() => diffX(
         [ createDelete(1) ],
         [ createInsertText('a') ]
     ), Error)
-    t.throws(() => Delta.diffX(
+    t.throws(() => diffX(
         [ createInsertText('a') ],
         [ createRetain(1) ]
     ), Error)
-    t.throws(() => Delta.diffX(
+    t.throws(() => diffX(
         [ createInsertText('a') ],
         [ createDelete(1) ]
     ), Error)
 
-    t.throws(() => Delta.diffX(
+    t.throws(() => diffX(
         [ createInsertText('a'), createRetain(1) ],
         [ createInsertText('b'), createInsertText('a') ]
     ), Error)
-    t.throws(() => Delta.diffX(
+    t.throws(() => diffX(
         [ createInsertText('a'), createDelete(1) ],
         [ createInsertText('b'), createInsertText('a') ]
     ), Error)
-    t.throws(() => Delta.diffX(
+    t.throws(() => diffX(
         [ createInsertText('a'), createInsertText('a') ],
         [ createInsertText('b'), createRetain(1) ]
     ), Error)
-    t.throws(() => Delta.diffX(
+    t.throws(() => diffX(
         [ createInsertText('a'), createInsertText('a') ],
         [ createInsertText('b'), createDelete(1) ]
     ), Error)
 
-    const testDiffImpl = (delta1, delta2) => {
-        const [ result1, result2 ] = Delta.diffX(delta1, delta2)
+    const testDiffImpl = (operation1, operation2) => {
+        const [ result1, result2 ] = diffX(operation1, operation2)
 
-        t.strictSame(Delta.apply(delta1, result2), delta2)
-        t.strictSame(Delta.apply(delta2, result1), delta1)
+        t.strictSame(apply(operation1, result2), operation2)
+        t.strictSame(apply(operation2, result1), operation1)
     }
 
-    const testDiff = (delta1, delta2) => {
-        testDiffImpl(delta1, delta2)
-        testDiffImpl(delta2, delta1)
+    const testDiff = (operation1, operation2) => {
+        testDiffImpl(operation1, operation2)
+        testDiffImpl(operation2, operation1)
     }
 
-    const delta = []
-    testDiff(delta, delta)
+    const operation = []
+    testDiff(operation, operation)
     testDiff([], [])
 
     testDiff([
