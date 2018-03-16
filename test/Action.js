@@ -2,7 +2,7 @@ const tap = require('tap')
 const {
     createInsertText, createInsertOpen, createInsertClose, createInsertEmbed, createRetain, createDelete,
     isInsert, isInsertText, isInsertOpen, isInsertClose, isInsertEmbed, isRetain, isDelete,
-    getCount, getText, getNodeIdAndName, getNodeId, getNodeName, getAttributes, getLength, clone,
+    getCount, getText, getNodeIdAndName, getNodeId, getNodeName, getAttributes, getAttribute, getLength, clone,
     validate, areEqual, areTypesEqual, areAttributesEqual, getAttributesIndex, hasAttributes,
     slice, merge, composeIterators, transformIterators, setAttribute
 } = require('../lib/Action')
@@ -77,6 +77,31 @@ tap.test('basic tests', t => {
         ),
         [ 'nullValue', null, 'yet another', 'one' ]
     )
+
+    t.strictSame(getAttribute(retain, 'key'), undefined)
+    t.strictSame(getAttribute(del, 'key'), undefined)
+    t.strictSame(getAttribute(insertText, 'key'), undefined)
+    t.strictSame(getAttribute(insertOpen, 'key'), undefined)
+    t.strictSame(getAttribute(insertClose, 'key'), undefined)
+    t.strictSame(getAttribute(insertEmbed, 'key'), undefined)
+
+    t.strictSame(getAttribute(retainWithAttributes, 'key'), 'value')
+    t.strictSame(getAttribute(insertTextWithAttributes, 'key'), 'value')
+    t.strictSame(getAttribute(insertOpenWithAttributes, 'key'), 'value')
+    t.strictSame(getAttribute(insertCloseWithAttributes, 'key'), 'value')
+    t.strictSame(getAttribute(insertEmbedWithAttributes, 'key'), 'value')
+
+    t.strictSame(getAttribute(createRetain(4), 'key'), undefined)
+    t.strictSame(getAttribute(createRetain(4, [ 'key', null ]), 'key'), null)
+    t.strictSame(getAttribute(createRetain(4, [ 'b', 'c', 'key', 'value', 'y', 'z' ]), 'a'), undefined)
+    t.strictSame(getAttribute(createRetain(4, [ 'b', 'c', 'key', 'value', 'y', 'z' ]), 'b'), 'c')
+    t.strictSame(getAttribute(createRetain(4, [ 'b', 'c', 'key', 'value', 'y', 'z' ]), 'c'), undefined)
+    t.strictSame(getAttribute(createRetain(4, [ 'b', 'c', 'key', 'value', 'y', 'z' ]), 'k'), undefined)
+    t.strictSame(getAttribute(createRetain(4, [ 'b', 'c', 'key', 'value', 'y', 'z' ]), 'key'), 'value')
+    t.strictSame(getAttribute(createRetain(4, [ 'b', 'c', 'key', 'value', 'y', 'z' ]), 'keys'), undefined)
+    t.strictSame(getAttribute(createRetain(4, [ 'b', 'c', 'key', 'value', 'y', 'z' ]), 'x'), undefined)
+    t.strictSame(getAttribute(createRetain(4, [ 'b', 'c', 'key', 'value', 'y', 'z' ]), 'y'), 'z')
+    t.strictSame(getAttribute(createRetain(4, [ 'b', 'c', 'key', 'value', 'y', 'z' ]), 'z'), undefined)
 
     t.equal(isRetain(retain), true)
     t.equal(isRetain(del), false)
