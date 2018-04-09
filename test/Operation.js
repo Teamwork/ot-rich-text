@@ -1,6 +1,7 @@
 const tap = require('tap')
 const {
-    create, validate, append, normalize, diffX, compose, transform, transformCursor, apply, chop
+    create, validate, append, normalize, diffX, compose, transform, transformCursor, apply, chop,
+    createPresence, transformPresence
 } = require('../lib/Operation')
 const {
     createInsertText, createInsertOpen, createInsertClose, createInsertEmbed, createRetain, createDelete
@@ -582,6 +583,111 @@ tap.test('diffX', t => {
         createInsertText('c'),
         createInsertEmbed('\uE000BR', [ 'hello', 'world!!!' ])
     ])
+
+    t.end()
+})
+
+tap.test('createPresence', t => {
+    t.strictSame(createPresence(), {
+        u: '',
+        s: 0,
+        e: 0
+    })
+    t.strictSame(createPresence(null), {
+        u: '',
+        s: 0,
+        e: 0
+    })
+    t.strictSame(createPresence(true), {
+        u: 'undefined',
+        s: 0,
+        e: 0
+    })
+    t.strictSame(createPresence({
+        u: 5,
+        s: '6',
+        e: '7'
+    }), {
+        u: '5',
+        s: 6,
+        e: 7
+    })
+    t.end()
+})
+
+tap.test('transformPresence', t => {
+    t.strictSame(transformPresence({
+        u: 'user',
+        s: 5,
+        e: 7
+    }, [], true), {
+        u: 'user',
+        s: 5,
+        e: 7
+    })
+    t.strictSame(transformPresence({
+        u: 'user',
+        s: 5,
+        e: 7
+    }, [], false), {
+        u: 'user',
+        s: 5,
+        e: 7
+    })
+
+    t.strictSame(transformPresence({
+        u: 'user',
+        s: 5,
+        e: 7
+    }, [
+        createRetain(3),
+        createDelete(2),
+        createInsertText('a')
+    ], true), {
+        u: 'user',
+        s: 4,
+        e: 6
+    })
+    t.strictSame(transformPresence({
+        u: 'user',
+        s: 5,
+        e: 7
+    }, [
+        createRetain(3),
+        createDelete(2),
+        createInsertText('a')
+    ], false), {
+        u: 'user',
+        s: 3,
+        e: 6
+    })
+
+    t.strictSame(transformPresence({
+        u: 'user',
+        s: 5,
+        e: 7
+    }, [
+        createRetain(5),
+        createDelete(2),
+        createInsertText('a')
+    ], true), {
+        u: 'user',
+        s: 6,
+        e: 6
+    })
+    t.strictSame(transformPresence({
+        u: 'user',
+        s: 5,
+        e: 7
+    }, [
+        createRetain(5),
+        createDelete(2),
+        createInsertText('a')
+    ], false), {
+        u: 'user',
+        s: 5,
+        e: 5
+    })
 
     t.end()
 })
