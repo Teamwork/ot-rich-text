@@ -1,7 +1,7 @@
 const tap = require('tap')
 const {
     create, validate, append, normalize, diffX, compose, transform, transformCursor, apply, chop,
-    createPresence, transformPresence
+    createPresence, transformPresence, comparePresence
 } = require('../lib/Operation')
 const {
     createInsertText, createInsertOpen, createInsertClose, createInsertEmbed, createRetain, createDelete
@@ -689,5 +689,25 @@ tap.test('transformPresence', t => {
         e: 5
     })
 
+    t.end()
+})
+
+tap.test('comparePresence', t => {
+    t.equal(comparePresence(), true)
+    t.equal(comparePresence(undefined, undefined), true)
+    t.equal(comparePresence(null, null), true)
+    t.equal(comparePresence(null, undefined), false)
+    t.equal(comparePresence(undefined, null), false)
+    t.equal(comparePresence(undefined, {}), false)
+    t.equal(comparePresence(null, {}), false)
+    t.equal(comparePresence({}, undefined), false)
+    t.equal(comparePresence({}, null), false)
+    t.equal(comparePresence({}, {}), true)
+    t.equal(comparePresence({ u: 'user', s: 1, e: 2 }, { u: 'user', s: 1, e: 2 }), true)
+    t.equal(comparePresence({ u: 'user', s: 1, e: 2, unknownProperty: 5 }, { u: 'user', s: 1, e: 2 }), true)
+    t.equal(comparePresence({ u: 'user', s: 1, e: 2 }, { u: 'user', s: 1, e: 2, unknownProperty: 5 }), true)
+    t.equal(comparePresence({ u: 'user', s: 1, e: 2 }, { u: 'userX', s: 1, e: 2 }), false)
+    t.equal(comparePresence({ u: 'user', s: 1, e: 2 }, { u: 'user', s: 2, e: 2 }), false)
+    t.equal(comparePresence({ u: 'user', s: 1, e: 2 }, { u: 'user', s: 1, e: 3 }), false)
     t.end()
 })

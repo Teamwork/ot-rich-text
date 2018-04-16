@@ -1,7 +1,8 @@
 const tap = require('tap')
 const type = require('../lib/type')
 const {
-    create, compose, apply, transform, normalize, transformCursor, diffX, createPresence, transformPresence
+    create, compose, apply, transform, normalize, transformCursor, diffX,
+    createPresence, transformPresence, comparePresence
 } = require('../lib/Operation')
 
 tap.equal(type.name, 'ot-rich-text')
@@ -15,3 +16,4 @@ tap.equal(type.transformCursor, transformCursor)
 tap.equal(type.diffX, diffX)
 tap.equal(type.createPresence, createPresence)
 tap.equal(type.transformPresence, transformPresence)
+tap.equal(type.comparePresence, comparePresence)
