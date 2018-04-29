@@ -732,6 +732,10 @@ tap.test('comparePresence', t => {
         { u: 'user', s: [ [ 9, 8 ], [ 1, 2 ] ] },
         { u: 'user', s: [ [ 9, 8 ], [ 1, 3 ] ] }
     ), false)
+    t.equal(comparePresence(
+        { u: 'user', s: [ [ 9, 8 ], [ 1, 2 ] ] },
+        { u: 'user', s: [ [ 9, 8 ] ] }
+    ), false)
     t.end()
 })
 
