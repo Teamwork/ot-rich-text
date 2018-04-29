@@ -109,3 +109,19 @@ A retain Action is an instruction to keep a specified number of characters. The 
 // retain 2 characters and remove an attribute
 [ 0, 2, 'EM', null ]
 ```
+
+
+## Presence
+
+Presence consists of a user ID and a list of 0 or more selections. Each selection is a 2-element array containing the selection start index and the selection end index. For example:
+
+```
+{
+    u: '123', // user ID
+    s: [ // list of selections
+        [ 1, 1 ], // collapsed selection
+        [ 5, 7 ], // forward selection
+        [ 9, 4 ] // backward selection
+    ]
+}
+```
