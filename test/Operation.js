@@ -588,14 +588,15 @@ tap.test('diffX', t => {
 })
 
 tap.test('createPresence', t => {
-    const defaultPresence = { u: '', s: [] }
-    const presence = { u: '5', s: [ [ 1, 2 ], [ 9, 5 ] ] }
+    const defaultPresence = { u: '', c: 0, s: [] }
+    const presence = { u: '5', c: 8, s: [ [ 1, 2 ], [ 9, 5 ] ] }
 
     t.strictSame(createPresence(), defaultPresence)
     t.strictSame(createPresence(null), defaultPresence)
     t.strictSame(createPresence(true), defaultPresence)
-    t.strictSame(createPresence({ u: 5, s: [ 1, 2 ] }), defaultPresence)
-    t.strictSame(createPresence({ u: '5', s: [ 1.5, 2 ] }), defaultPresence)
+    t.strictSame(createPresence({ u: 5, c: 8, s: [ 1, 2 ] }), defaultPresence)
+    t.strictSame(createPresence({ u: '5', c: '8', s: [ 1, 2 ] }), defaultPresence)
+    t.strictSame(createPresence({ u: '5', c: 8, s: [ 1.5, 2 ] }), defaultPresence)
     t.equal(createPresence(presence), presence)
     t.end()
 })
@@ -603,21 +604,26 @@ tap.test('createPresence', t => {
 tap.test('transformPresence', t => {
     t.strictSame(transformPresence({
         u: 'user',
+        c: 8,
         s: [ [ 5, 7 ] ]
     }, [], true), {
         u: 'user',
+        c: 8,
         s: [ [ 5, 7 ] ]
     })
     t.strictSame(transformPresence({
         u: 'user',
+        c: 8,
         s: [ [ 5, 7 ] ]
     }, [], false), {
         u: 'user',
+        c: 8,
         s: [ [ 5, 7 ] ]
     })
 
     t.strictSame(transformPresence({
         u: 'user',
+        c: 8,
         s: [ [ 5, 7 ] ]
     }, [
         createRetain(3),
@@ -625,10 +631,12 @@ tap.test('transformPresence', t => {
         createInsertText('a')
     ], true), {
         u: 'user',
+        c: 8,
         s: [ [ 4, 6 ] ]
     })
     t.strictSame(transformPresence({
         u: 'user',
+        c: 8,
         s: [ [ 5, 7 ] ]
     }, [
         createRetain(3),
@@ -636,11 +644,13 @@ tap.test('transformPresence', t => {
         createInsertText('a')
     ], false), {
         u: 'user',
+        c: 8,
         s: [ [ 3, 6 ] ]
     })
 
     t.strictSame(transformPresence({
         u: 'user',
+        c: 8,
         s: [ [ 5, 7 ] ]
     }, [
         createRetain(5),
@@ -648,10 +658,12 @@ tap.test('transformPresence', t => {
         createInsertText('a')
     ], true), {
         u: 'user',
+        c: 8,
         s: [ [ 6, 6 ] ]
     })
     t.strictSame(transformPresence({
         u: 'user',
+        c: 8,
         s: [ [ 5, 7 ] ]
     }, [
         createRetain(5),
@@ -659,26 +671,31 @@ tap.test('transformPresence', t => {
         createInsertText('a')
     ], false), {
         u: 'user',
+        c: 8,
         s: [ [ 5, 5 ] ]
     })
 
     t.strictSame(transformPresence({
         u: 'user',
+        c: 8,
         s: [ [ 5, 7 ], [ 8, 2 ] ]
     }, [
         createInsertText('a')
     ], false), {
         u: 'user',
+        c: 8,
         s: [ [ 6, 8 ], [ 9, 3 ] ]
     })
 
     t.strictSame(transformPresence({
         u: 'user',
+        c: 8,
         s: [ [ 1, 1 ], [ 2, 2 ] ]
     }, [
         createInsertText('a')
     ], false), {
         u: 'user',
+        c: 8,
         s: [ [ 2, 2 ], [ 3, 3 ] ]
     })
 
@@ -691,50 +708,54 @@ tap.test('comparePresence', t => {
     t.equal(comparePresence(null, null), true)
     t.equal(comparePresence(null, undefined), false)
     t.equal(comparePresence(undefined, null), false)
-    t.equal(comparePresence(undefined, { u: '', s: [] }), false)
-    t.equal(comparePresence(null, { u: '', s: [] }), false)
-    t.equal(comparePresence({ u: '', s: [] }, undefined), false)
-    t.equal(comparePresence({ u: '', s: [] }, null), false)
+    t.equal(comparePresence(undefined, { u: '', c: 0, s: [] }), false)
+    t.equal(comparePresence(null, { u: '', c: 0, s: [] }), false)
+    t.equal(comparePresence({ u: '', c: 0, s: [] }, undefined), false)
+    t.equal(comparePresence({ u: '', c: 0, s: [] }, null), false)
 
     t.equal(comparePresence(
-        { u: 'user', s: [ [ 1, 2 ] ] },
-        { u: 'user', s: [ [ 1, 2 ] ] }
+        { u: 'user', c: 8, s: [ [ 1, 2 ] ] },
+        { u: 'user', c: 8, s: [ [ 1, 2 ] ] }
     ), true)
     t.equal(comparePresence(
-        { u: 'user', s: [ [ 1, 2 ], [ 4, 6 ] ] },
-        { u: 'user', s: [ [ 1, 2 ], [ 4, 6 ] ] }
+        { u: 'user', c: 8, s: [ [ 1, 2 ], [ 4, 6 ] ] },
+        { u: 'user', c: 8, s: [ [ 1, 2 ], [ 4, 6 ] ] }
     ), true)
     t.equal(comparePresence(
-        { u: 'user', s: [ [ 1, 2 ] ], unknownProperty: 5 },
-        { u: 'user', s: [ [ 1, 2 ] ] }
+        { u: 'user', c: 8, s: [ [ 1, 2 ] ], unknownProperty: 5 },
+        { u: 'user', c: 8, s: [ [ 1, 2 ] ] }
     ), true)
     t.equal(comparePresence(
-        { u: 'user', s: [ [ 1, 2 ] ] },
-        { u: 'user', s: [ [ 1, 2 ] ], unknownProperty: 5 }
+        { u: 'user', c: 8, s: [ [ 1, 2 ] ] },
+        { u: 'user', c: 8, s: [ [ 1, 2 ] ], unknownProperty: 5 }
     ), true)
     t.equal(comparePresence(
-        { u: 'user', s: [ [ 1, 2 ] ] },
-        { u: 'userX', s: [ [ 1, 2 ] ] }
+        { u: 'user', c: 8, s: [ [ 1, 2 ] ] },
+        { u: 'userX', c: 8, s: [ [ 1, 2 ] ] }
     ), false)
     t.equal(comparePresence(
-        { u: 'user', s: [ [ 1, 2 ] ] },
-        { u: 'user', s: [ [ 3, 2] ] }
+        { u: 'user', c: 8, s: [ [ 1, 2 ] ] },
+        { u: 'user', c: 9, s: [ [ 1, 2 ] ] }
     ), false)
     t.equal(comparePresence(
-        { u: 'user', s: [ [ 1, 2 ] ] },
-        { u: 'user', s: [ [ 1, 3 ] ] }
+        { u: 'user', c: 8, s: [ [ 1, 2 ] ] },
+        { u: 'user', c: 8, s: [ [ 3, 2] ] }
     ), false)
     t.equal(comparePresence(
-        { u: 'user', s: [ [ 9, 8 ], [ 1, 2 ] ] },
-        { u: 'user', s: [ [ 9, 8 ], [ 3, 2] ] }
+        { u: 'user', c: 8, s: [ [ 1, 2 ] ] },
+        { u: 'user', c: 8, s: [ [ 1, 3 ] ] }
     ), false)
     t.equal(comparePresence(
-        { u: 'user', s: [ [ 9, 8 ], [ 1, 2 ] ] },
-        { u: 'user', s: [ [ 9, 8 ], [ 1, 3 ] ] }
+        { u: 'user', c: 8, s: [ [ 9, 8 ], [ 1, 2 ] ] },
+        { u: 'user', c: 8, s: [ [ 9, 8 ], [ 3, 2] ] }
     ), false)
     t.equal(comparePresence(
-        { u: 'user', s: [ [ 9, 8 ], [ 1, 2 ] ] },
-        { u: 'user', s: [ [ 9, 8 ] ] }
+        { u: 'user', c: 8, s: [ [ 9, 8 ], [ 1, 2 ] ] },
+        { u: 'user', c: 8, s: [ [ 9, 8 ], [ 1, 3 ] ] }
+    ), false)
+    t.equal(comparePresence(
+        { u: 'user', c: 8, s: [ [ 9, 8 ], [ 1, 2 ] ] },
+        { u: 'user', c: 8, s: [ [ 9, 8 ] ] }
     ), false)
     t.end()
 })
@@ -744,23 +765,27 @@ tap.test('isValidPresence', t => {
     t.equal(isValidPresence(null), false)
     t.equal(isValidPresence([]), false)
     t.equal(isValidPresence({}), false)
-    t.equal(isValidPresence({ u: 5, s: [] }), false)
-    t.equal(isValidPresence({ u: '5', s: {} }), false)
-    t.equal(isValidPresence({ u: '5', s: [] }), true)
-    t.equal(isValidPresence({ u: '5', s: [ [] ] }), false)
-    t.equal(isValidPresence({ u: '5', s: [ [ 1 ] ] }), false)
-    t.equal(isValidPresence({ u: '5', s: [ [ 1, 2 ] ] }), true)
-    t.equal(isValidPresence({ u: '5', s: [ [ 1, 2, 3 ] ] }), false)
-    t.equal(isValidPresence({ u: '5', s: [ [ 1, 2 ], [] ] }), false)
-    t.equal(isValidPresence({ u: '5', s: [ [ 1, 2 ], [ 3, 6 ] ] }), true)
-    t.equal(isValidPresence({ u: '5', s: [ [ 1, 2 ], [ 3, '6' ] ] }), false)
-    t.equal(isValidPresence({ u: '5', s: [ [ 1, 2 ], [ 3, 6.1 ] ] }), false)
-    t.equal(isValidPresence({ u: '5', s: [ [ 1, 2 ], [ 3, Infinity ] ] }), false)
-    t.equal(isValidPresence({ u: '5', s: [ [ 1, 2 ], [ 3, NaN ] ] }), false)
-    t.equal(isValidPresence({ u: '5', s: [ [ 1, 2 ], [ 3, -0 ] ] }), true)
-    t.equal(isValidPresence({ u: '5', s: [ [ 1, 2 ], [ 3, -1 ] ] }), true)
-    t.equal(isValidPresence({ u: '5', s: [ [ 1, 2 ], [ '3', 0 ] ] }), false)
-    t.equal(isValidPresence({ u: '5', s: [ [ 1, '2' ], [ 4, 0 ] ] }), false)
-    t.equal(isValidPresence({ u: '5', s: [ [ '1', 2 ], [ 4, 0 ] ] }), false)
+    t.equal(isValidPresence({ u: 5, c: 8, s: [] }), false)
+    t.equal(isValidPresence({ u: '5', c: '8', s: [] }), false)
+    t.equal(isValidPresence({ u: '5', c: 8.5, s: [] }), false)
+    t.equal(isValidPresence({ u: '5', c: Infinity, s: [] }), false)
+    t.equal(isValidPresence({ u: '5', c: NaN, s: [] }), false)
+    t.equal(isValidPresence({ u: '5', c: 8, s: {} }), false)
+    t.equal(isValidPresence({ u: '5', c: 8, s: [] }), true)
+    t.equal(isValidPresence({ u: '5', c: 8, s: [ [] ] }), false)
+    t.equal(isValidPresence({ u: '5', c: 8, s: [ [ 1 ] ] }), false)
+    t.equal(isValidPresence({ u: '5', c: 8, s: [ [ 1, 2 ] ] }), true)
+    t.equal(isValidPresence({ u: '5', c: 8, s: [ [ 1, 2, 3 ] ] }), false)
+    t.equal(isValidPresence({ u: '5', c: 8, s: [ [ 1, 2 ], [] ] }), false)
+    t.equal(isValidPresence({ u: '5', c: 8, s: [ [ 1, 2 ], [ 3, 6 ] ] }), true)
+    t.equal(isValidPresence({ u: '5', c: 8, s: [ [ 1, 2 ], [ 3, '6' ] ] }), false)
+    t.equal(isValidPresence({ u: '5', c: 8, s: [ [ 1, 2 ], [ 3, 6.1 ] ] }), false)
+    t.equal(isValidPresence({ u: '5', c: 8, s: [ [ 1, 2 ], [ 3, Infinity ] ] }), false)
+    t.equal(isValidPresence({ u: '5', c: 8, s: [ [ 1, 2 ], [ 3, NaN ] ] }), false)
+    t.equal(isValidPresence({ u: '5', c: 8, s: [ [ 1, 2 ], [ 3, -0 ] ] }), true)
+    t.equal(isValidPresence({ u: '5', c: 8, s: [ [ 1, 2 ], [ 3, -1 ] ] }), true)
+    t.equal(isValidPresence({ u: '5', c: 8, s: [ [ 1, 2 ], [ '3', 0 ] ] }), false)
+    t.equal(isValidPresence({ u: '5', c: 8, s: [ [ 1, '2' ], [ 4, 0 ] ] }), false)
+    t.equal(isValidPresence({ u: '5', c: 8, s: [ [ '1', 2 ], [ 4, 0 ] ] }), false)
     t.end()
 })
