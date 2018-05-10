@@ -584,6 +584,297 @@ tap.test('diffX', t => {
         createInsertEmbed('\uE000BR', [ 'hello', 'world!!!' ])
     ])
 
+    t.strictSame(
+        diffX([
+            createInsertText('aaa')
+        ], [
+            createInsertText('aaaa')
+        ], -1),
+        [ [
+            createRetain(3),
+            createDelete(1)
+        ], [
+            createRetain(3),
+            createInsertText('a')
+        ] ]
+    )
+    t.strictSame(
+        diffX([
+            createInsertText('aaa')
+        ], [
+            createInsertText('aaaa')
+        ], 0),
+        [ [
+            createDelete(1)
+        ], [
+            createInsertText('a')
+        ] ]
+    )
+    t.strictSame(
+        diffX([
+            createInsertText('aaa')
+        ], [
+            createInsertText('aaaa')
+        ], 1),
+        [ [
+            createRetain(1),
+            createDelete(1)
+        ], [
+            createRetain(1),
+            createInsertText('a')
+        ] ]
+    )
+    t.strictSame(
+        diffX([
+            createInsertText('aaa')
+        ], [
+            createInsertText('aaaa')
+        ], 2),
+        [ [
+            createRetain(2),
+            createDelete(1)
+        ], [
+            createRetain(2),
+            createInsertText('a')
+        ] ]
+    )
+    t.strictSame(
+        diffX([
+            createInsertText('aaa')
+        ], [
+            createInsertText('aaaa')
+        ], 3),
+        [ [
+            createRetain(3),
+            createDelete(1)
+        ], [
+            createRetain(3),
+            createInsertText('a')
+        ] ]
+    )
+    t.strictSame(
+        diffX([
+            createInsertText('aaa')
+        ], [
+            createInsertText('aaaa')
+        ], 4),
+        [ [
+            createRetain(3),
+            createDelete(1)
+        ], [
+            createRetain(3),
+            createInsertText('a')
+        ] ]
+    )
+    t.strictSame(
+        diffX([
+            createInsertText('aaa')
+        ], [
+            createInsertText('aaaa')
+        ], 5),
+        [ [
+            createRetain(3),
+            createDelete(1)
+        ], [
+            createRetain(3),
+            createInsertText('a')
+        ] ]
+    )
+    t.strictSame(
+        diffX([
+            createInsertText('aaaa')
+        ], [
+            createInsertText('aaa')
+        ], -1),
+        [ [
+            createRetain(3),
+            createInsertText('a')
+        ], [
+            createRetain(3),
+            createDelete(1)
+        ] ]
+    )
+    t.strictSame(
+        diffX([
+            createInsertText('aaaa')
+        ], [
+            createInsertText('aaa')
+        ], 0),
+        [ [
+            createInsertText('a')
+        ], [
+            createDelete(1)
+        ] ]
+    )
+    t.strictSame(
+        diffX([
+            createInsertText('aaaa')
+        ], [
+            createInsertText('aaa')
+        ], 1),
+        [ [
+            createRetain(1),
+            createInsertText('a')
+        ], [
+            createRetain(1),
+            createDelete(1)
+        ] ]
+    )
+    t.strictSame(
+        diffX([
+            createInsertText('aaaa')
+        ], [
+            createInsertText('aaa')
+        ], 2),
+        [ [
+            createRetain(2),
+            createInsertText('a')
+        ], [
+            createRetain(2),
+            createDelete(1)
+        ] ]
+    )
+    t.strictSame(
+        diffX([
+            createInsertText('aaaa')
+        ], [
+            createInsertText('aaa')
+        ], 3),
+        [ [
+            createRetain(3),
+            createInsertText('a')
+        ], [
+            createRetain(3),
+            createDelete(1)
+        ] ]
+    )
+    t.strictSame(
+        diffX([
+            createInsertText('aaaa')
+        ], [
+            createInsertText('aaa')
+        ], 4),
+        [ [
+            createRetain(3),
+            createInsertText('a')
+        ], [
+            createRetain(3),
+            createDelete(1)
+        ] ]
+    )
+    t.strictSame(
+        diffX([
+            createInsertText('aaaa')
+        ], [
+            createInsertText('aaa')
+        ], 5),
+        [ [
+            createRetain(3),
+            createInsertText('a')
+        ], [
+            createRetain(3),
+            createDelete(1)
+        ] ]
+    )
+    t.strictSame(
+        diffX([
+            createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image.png' ]),
+            createInsertText('aaa'),
+            createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image.png' ])
+        ], [
+            createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image.png' ]),
+            createInsertText('aaaa'),
+            createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image.png' ])
+        ], 2),
+        [ [
+            createRetain(2),
+            createDelete(1)
+        ], [
+            createRetain(2),
+            createInsertText('a')
+        ] ]
+    )
+    // In this case the editLocation param is ignored because the algorithm detects that the
+    // actual edit location is 0.
+    t.strictSame(
+        diffX([
+            createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image.png' ]),
+            createInsertText('aaa')
+        ], [
+            createInsertEmbed('\uE001IMG', [ 'src', 'http://www.example.com/image.png' ]),
+            createInsertText('aaaa')
+        ], 2),
+        [ [
+            createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image.png' ]),
+            createDelete(2)
+        ], [
+            createInsertEmbed('\uE001IMG', [ 'src', 'http://www.example.com/image.png' ]),
+            createInsertText('a'),
+            createDelete(1)
+        ] ]
+    )
+    // In this case the editLocation param is ignored because the algorithm detects that the
+    // actual edit location is 3.
+    t.strictSame(
+        diffX([
+            createInsertText('aaa'),
+            createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image.png' ])
+        ], [
+            createInsertText('aaaa'),
+            createInsertEmbed('\uE001IMG', [ 'src', 'http://www.example.com/image.png' ])
+        ], 2),
+        [ [
+            createRetain(3),
+            createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image.png' ]),
+            createDelete(2)
+        ], [
+            createRetain(3),
+            createInsertText('a'),
+            createInsertEmbed('\uE001IMG', [ 'src', 'http://www.example.com/image.png' ]),
+            createDelete(1)
+        ] ]
+    )
+    // In this case the editLocation param is used because the algorithm does not recognize
+    // changing attributes as editing.
+    t.strictSame(
+        diffX([
+            createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image0.png' ]),
+            createInsertText('aaa')
+        ], [
+            createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image1.png' ]),
+            createInsertText('aaaa')
+        ], 2),
+        [ [
+            createRetain(1, [ 'src', 'http://www.example.com/image0.png' ]),
+            createRetain(1),
+            createDelete(1)
+        ], [
+            createRetain(1, [ 'src', 'http://www.example.com/image1.png' ]),
+            createRetain(1),
+            createInsertText('a')
+        ] ]
+    )
+    // In this case the editLocation param is used because the algorithm does not recognize
+    // changing attributes as editing.
+    t.strictSame(
+        diffX([
+            createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image0.png' ]),
+            createInsertText('aaaa')
+        ], [
+            createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image1.png' ]),
+            createInsertText('aaa')
+        ], 2),
+        [ [
+            createRetain(1, [ 'src', 'http://www.example.com/image0.png' ]),
+            createRetain(1),
+            createInsertText('a')
+        ], [
+            createRetain(1, [ 'src', 'http://www.example.com/image1.png' ]),
+            createRetain(1),
+            createDelete(1)
+        ] ]
+    )
+
     t.end()
 })
 
