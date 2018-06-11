@@ -117,7 +117,7 @@ A retain Action is an instruction to keep a specified number of characters. The 
 
 ## Presence
 
-Presence consists of a user ID (`u`), a number changes performed by the user (`u`) and a list of 0 or more selections (`s`). Each selection is a 2-element array containing the selection start index and the selection end index. For example:
+Presence consists of a user ID (`u`), a number changes performed by the user (`c`) and a list of 0 or more selections (`s`). Each selection is a 2-element array containing the selection start index and the selection end index. For example:
 
 ```
 {
@@ -131,4 +131,4 @@ Presence consists of a user ID (`u`), a number changes performed by the user (`u
 }
 ```
 
-When presence is transformed against an operation, the `u` and `c` properties are preserved and all selections are adjusted, if needed. For example, if an operation is inserted before a selection, the selection is incremented by 1.
+When presence is transformed against an operation, the `u` and `c` properties are preserved and all selections are adjusted, if needed. For example, if a character is inserted before a selection, the selection is incremented by 1.
