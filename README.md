@@ -1,6 +1,6 @@
 # ot-rich-text
 
-[![npm module](https://img.shields.io/npm/v/@teamwork/ot-rich-text.svg)](https://www.npmjs.com/package/@teamwork/ot-rich-text)
+[![npm version](https://badge.fury.io/js/%40teamwork%2Fot-rich-text.svg)](https://badge.fury.io/js/%40teamwork%2Fot-rich-text)
 [![Build Status](https://travis-ci.com/Teamwork/ot-rich-text.svg?branch=master)](https://travis-ci.com/Teamwork/ot-rich-text)
 [![Coverage Status](https://coveralls.io/repos/github/Teamwork/ot-rich-text/badge.svg?branch=master)](https://coveralls.io/github/Teamwork/ot-rich-text?branch=master)
 
