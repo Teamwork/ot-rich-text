@@ -1,5 +1,9 @@
 # ot-rich-text
 
+[![npm module](https://img.shields.io/npm/v/@teamwork/ot-rich-text.svg)](https://www.npmjs.com/package/@teamwork/ot-rich-text)
+[![Build Status](https://travis-ci.com/Teamwork/ot-rich-text.svg?branch=master)](https://travis-ci.com/Teamwork/ot-rich-text)
+[![Coverage Status](https://coveralls.io/repos/github/Teamwork/ot-rich-text/badge.svg?branch=master)](https://coveralls.io/github/Teamwork/ot-rich-text?branch=master)
+
 A format for representing rich-text document Snapshots and Operations for use with [ShareDB](https://github.com/share/sharedb). This library implements the [ot type spec](https://github.com/ottypes/docs). It has been heavily inspired by [rich-text](https://github.com/ottypes/rich-text) and [quill-delta](https://github.com/quilljs/delta).
 
 OT Rich Text does not implement the optional `invert` function, because it does not keep track of the deleted content - it only knows how many characters to remove from a specific position. For implementing undo/redo you can use the `diffX` function, which generates 2 Operations, which allow moving back and forth between 2 Snapshots.
