@@ -4,3 +4,6 @@ node_js:
 cache:
     directories:
         - "node_modules"
+script: "npm run test-coverage"
+# Send coverage data to Coveralls
+after_script: "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"

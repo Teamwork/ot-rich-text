@@ -25,6 +25,7 @@
     "lib/"
   ],
   "devDependencies": {
+    "coveralls": "^3.0.1",
     "nodemon": "^1.12.0",
     "ot-fuzzer": "^1.1.0",
     "tap": "^10.7.2"
