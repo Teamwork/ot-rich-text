@@ -1,6 +1,7 @@
 const tap = require('tap')
 const {
-    create, validate, append, normalize, diffX, compose, transform, transformCursor, apply, chop,
+    create, isNoop, validate, append, normalize, diffX, compose, transform,
+    transformCursor, apply, applyAndInvert, chop,
     createPresence, transformPresence, comparePresence, isValidPresence
 } = require('../lib/Operation')
 const {
@@ -12,6 +13,12 @@ tap.test('create', t => {
 
     t.equal(create(snapshot), snapshot)
     t.type(create(), Array)
+    t.end()
+})
+
+tap.test('isNoop', t => {
+    t.equal(isNoop([]), true)
+    t.equal(isNoop([ createInsertText('a') ]), false)
     t.end()
 })
 
@@ -243,7 +250,7 @@ tap.test('compose', t => {
     t.end()
 })
 
-tap.test('apply', t => {
+const createTestDataForApply = () => {
     const insertText1 = createInsertText('hello', ['key', 'value'])
     const insertText2 = createInsertText(' world', ['key', 'value'])
     const insertText3 = createInsertText('hello world', ['key', 'value'])
@@ -254,33 +261,58 @@ tap.test('apply', t => {
     const delete1 = createDelete(6)
     const delete2 = createDelete(8)
 
-    t.strictSame(apply([], []), [])
+    return [
+        {
+            snapshot: [],
+            operation: [],
+            newSnapshot: []
+        },
+        {
+            snapshot: [],
+            operation: [ insertText1, insertEmbed1, insertText2, insertEmbed2 ],
+            newSnapshot: [ insertText1, insertEmbed1, insertText2, insertEmbed2 ]
+        },
+        {
+            snapshot: [ insertText2, insertEmbed1 ],
+            operation: [ insertText1, retain1, insertEmbed2 ],
+            newSnapshot: [ insertText3, insertEmbed2, insertEmbed1 ]
+        },
+        {
+            snapshot: [ insertText2, insertEmbed1 ],
+            operation: [ insertText1, delete1, insertEmbed2 ],
+            newSnapshot: [ insertText1, insertEmbed2, insertEmbed1 ]
+        },
+        {
+            snapshot: [ insertText2, insertEmbed1 ],
+            operation: [ insertText1, retain2, insertEmbed2 ],
+            newSnapshot: [ insertText3, insertEmbed1 ]
+        },
+        {
+            snapshot: [ insertText2, insertEmbed1 ],
+            operation: [ insertText1, delete2, insertEmbed2 ],
+            newSnapshot: [ insertText1 ]
+        }
+    ]
+}
 
-    t.strictSame(apply(
-        [],
-        [ insertText1, insertEmbed1, insertText2, insertEmbed2 ]),
-        [ insertText1, insertEmbed1, insertText2, insertEmbed2 ])
+tap.test('apply', t => {
+    createTestDataForApply().forEach(data => {
+        t.strictSame(apply(data.snapshot, data.operation), data.newSnapshot)
+    })
+    t.end()
+})
 
-    t.strictSame(apply(
-        [ insertText2, insertEmbed1 ],
-        [ insertText1, retain1, insertEmbed2 ]),
-        [ insertText3, insertEmbed2, insertEmbed1 ])
+tap.test('applyAndInvert', t => {
+    createTestDataForApply().forEach(data => {
+        const result1 = applyAndInvert(data.snapshot, data.operation)
+        t.strictSame(result1[0], data.newSnapshot)
 
-    t.strictSame(apply(
-        [ insertText2, insertEmbed1 ],
-        [ insertText1, delete1, insertEmbed2 ]),
-        [ insertText1, insertEmbed2, insertEmbed1 ])
+        const result2 = applyAndInvert(result1[0], result1[1])
+        t.strictSame(result2[0], data.snapshot)
 
-    t.strictSame(apply(
-        [ insertText2, insertEmbed1 ],
-        [ insertText1, retain2, insertEmbed2 ]),
-        [ insertText3, insertEmbed1 ])
-
-    t.strictSame(apply(
-        [ insertText2, insertEmbed1 ],
-        [ insertText1, delete2, insertEmbed2 ]),
-        [ insertText1 ])
-
+        const result3 = applyAndInvert(result2[0], result2[1])
+        t.strictSame(result3[0], data.newSnapshot)
+    })
     t.end()
 })
 
