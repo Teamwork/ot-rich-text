@@ -1,8 +1,9 @@
 const assert = require('chai').assert
 const type = require('../lib/type')
 const {
-    create, isNoop, compose, apply, applyAndInvert, transform, normalize,
-    transformCursor, diffX, createPresence, transformPresence, comparePresence
+    create, isNoop, compose, composeSimilar, apply, applyAndInvert, transform,
+    normalize, transformCursor, diffX, createPresence, transformPresence,
+    comparePresence
 } = require('../lib/Operation')
 
 describe('type', function() {
@@ -12,6 +13,7 @@ describe('type', function() {
         assert.strictEqual(type.create, create)
         assert.strictEqual(type.isNoop, isNoop)
         assert.strictEqual(type.compose, compose)
+        assert.strictEqual(type.composeSimilar, composeSimilar)
         assert.strictEqual(type.apply, apply)
         assert.strictEqual(type.applyAndInvert, applyAndInvert)
         assert.strictEqual(type.transform, transform)

@@ -1,7 +1,7 @@
 const assert = require('chai').assert
 const {
     create, isNoop, validate, append, normalize, diffX, compose, transform,
-    transformCursor, apply, applyAndInvert, chop,
+    transformCursor, apply, applyAndInvert, chop, composeSimilar,
     createPresence, transformPresence, comparePresence, isValidPresence
 } = require('../lib/Operation')
 const {
@@ -186,55 +186,93 @@ describe('Operation', function () {
         })
     })
 
+    const createTestDataForCompose = () => {
+        const insertText1 = createInsertText('hello', ['key', 'value'])
+        const insertText2 = createInsertText(' world', ['key', 'value'])
+        const insertText3 = createInsertText('hello world', ['key', 'value'])
+        const insertEmbed1 = createInsertEmbed('\uE000DIV')
+        const insertEmbed2 = createInsertEmbed('\uE000DIV')
+        const retain1 = createRetain(5)
+        const retain2 = createRetain(8)
+        const retain3 = createRetain(2)
+        const retain4 = createRetain(3)
+        const delete1 = createDelete(6)
+        const delete2 = createDelete(3)
+        const delete3 = createDelete(9)
+
+        return [ {
+            operation1: [],
+            operation2: [],
+            newOperation: [],
+            isSimilar: true
+        }, {
+            operation1: [],
+            operation2: [ insertText1, insertEmbed1, insertText2, insertEmbed2 ],
+            newOperation: [ insertText1, insertEmbed1, insertText2, insertEmbed2 ],
+            isSimilar: false
+        }, {
+            operation1: [ delete1, delete2 ],
+            operation2: [ insertText1, insertText2 ],
+            newOperation: [ insertText3, delete3 ],
+            isSimilar: false
+        }, {
+            operation1: [ insertText2, retain1, insertEmbed1 ],
+            operation2: [ insertText1, retain2, insertEmbed2 ],
+            newOperation: [ insertText3, retain3, insertEmbed2, retain4, insertEmbed1 ],
+            isSimilar: false
+        }, {
+            operation1: [ createRetain(5) ],
+            operation2: [ createRetain(5) ],
+            newOperation: [],
+            isSimilar: false
+        }, {
+            operation1: [ createRetain(5, ['key', 'value']) ],
+            operation2: [ createRetain(5) ],
+            newOperation: [ createRetain(5, ['key', 'value']) ],
+            isSimilar: true
+        }, {
+            operation1: [ createRetain(5, ['key', 'value']) ],
+            operation2: [ createRetain(5), createDelete(6) ],
+            newOperation: [ createRetain(5, ['key', 'value']), createDelete(6) ],
+            isSimilar: false
+        }, {
+            operation1: [ insertText2 ],
+            operation2: [ insertText1 ],
+            newOperation: [ insertText3 ],
+            isSimilar: true
+        }, {
+            operation1: [ retain1, insertText2 ],
+            operation2: [ retain1, insertText1 ],
+            newOperation: [ retain1, insertText3 ],
+            isSimilar: true
+        }, {
+            operation1: [ delete1 ],
+            operation2: [ delete2 ],
+            newOperation: [ delete3 ],
+            isSimilar: true
+        }, {
+            operation1: [ retain1, delete1 ],
+            operation2: [ retain1, delete2 ],
+            newOperation: [ retain1, delete3 ],
+            isSimilar: true
+        } ]
+    }
+
     describe('compose', function () {
         it('basic tests', function () {
-            const insertText1 = createInsertText('hello', ['key', 'value'])
-            const insertText2 = createInsertText(' world', ['key', 'value'])
-            const insertText3 = createInsertText('hello world', ['key', 'value'])
-            const insertEmbed1 = createInsertEmbed('\uE000DIV')
-            const insertEmbed2 = createInsertEmbed('\uE000DIV')
-            const retain1 = createRetain(5)
-            const retain2 = createRetain(8)
-            const retain3 = createRetain(2)
-            const retain4 = createRetain(3)
-            const delete1 = createDelete(6)
-            const delete2 = createDelete(3)
-            const delete3 = createDelete(9)
+            createTestDataForCompose().forEach(data => {
+                const newOperation = compose(data.operation1, data.operation2)
+                assert.deepEqual(newOperation, data.newOperation)
+            })
+        })
+    })
 
-            assert.deepEqual(compose([], []), [])
-
-            assert.deepEqual(compose(
-                [],
-                [ insertText1, insertEmbed1, insertText2, insertEmbed2 ]),
-                [ insertText1, insertEmbed1, insertText2, insertEmbed2 ])
-
-            assert.deepEqual(compose(
-                [ delete1, delete2 ],
-                [ insertText1, insertText2 ]),
-                [ insertText3, delete3 ])
-
-            assert.deepEqual(compose(
-                [ insertText2, retain1, insertEmbed1 ],
-                [ insertText1, retain2, insertEmbed2 ]),
-                [ insertText3, retain3, insertEmbed2, retain4, insertEmbed1 ])
-
-            assert.deepEqual(compose(
-                [ createRetain(5) ],
-                [ createRetain(5) ]),
-                [],
-                'Should remove trailing retain')
-
-            assert.deepEqual(compose(
-                [ createRetain(5, ['key', 'value']) ],
-                [ createRetain(5) ]),
-                [ createRetain(5, ['key', 'value']) ],
-                'Should keep trailing retain with attributes')
-
-            assert.deepEqual(compose(
-                [ createRetain(5, ['key', 'value']) ],
-                [ createRetain(5), createDelete(6) ]),
-                [ createRetain(5, ['key', 'value']), createDelete(6) ],
-                'Should keep trailing delete')
+    describe('composeSimilar', function () {
+        it('basic tests', function () {
+            createTestDataForCompose().forEach(data => {
+                const newOperation = composeSimilar(data.operation1, data.operation2)
+                assert.deepEqual(newOperation, data.isSimilar ? data.newOperation : null)
+            })
         })
     })
 
