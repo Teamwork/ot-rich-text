@@ -1,21 +1,25 @@
-const tap = require('tap')
+const assert = require('chai').assert
 const type = require('../lib/type')
 const {
     create, isNoop, compose, apply, applyAndInvert, transform, normalize,
     transformCursor, diffX, createPresence, transformPresence, comparePresence
 } = require('../lib/Operation')
 
-tap.equal(type.name, 'ot-rich-text')
-tap.equal(type.uri, 'https://github.com/Teamwork/ot-rich-text')
-tap.equal(type.create, create)
-tap.equal(type.isNoop, isNoop)
-tap.equal(type.compose, compose)
-tap.equal(type.apply, apply)
-tap.equal(type.applyAndInvert, applyAndInvert)
-tap.equal(type.transform, transform)
-tap.equal(type.normalize, normalize)
-tap.equal(type.transformCursor, transformCursor)
-tap.equal(type.diffX, diffX)
-tap.equal(type.createPresence, createPresence)
-tap.equal(type.transformPresence, transformPresence)
-tap.equal(type.comparePresence, comparePresence)
+describe('type', function() {
+    it('exports properties', function() {
+        assert.strictEqual(type.name, 'ot-rich-text')
+        assert.strictEqual(type.uri, 'https://github.com/Teamwork/ot-rich-text')
+        assert.strictEqual(type.create, create)
+        assert.strictEqual(type.isNoop, isNoop)
+        assert.strictEqual(type.compose, compose)
+        assert.strictEqual(type.apply, apply)
+        assert.strictEqual(type.applyAndInvert, applyAndInvert)
+        assert.strictEqual(type.transform, transform)
+        assert.strictEqual(type.normalize, normalize)
+        assert.strictEqual(type.transformCursor, transformCursor)
+        assert.strictEqual(type.diffX, diffX)
+        assert.strictEqual(type.createPresence, createPresence)
+        assert.strictEqual(type.transformPresence, transformPresence)
+        assert.strictEqual(type.comparePresence, comparePresence)
+    })
+})

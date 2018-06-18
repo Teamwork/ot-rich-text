@@ -1,4 +1,4 @@
-const tap = require('tap')
+const assert = require('chai').assert
 const fuzzer = require('ot-fuzzer')
 const type = require('../lib/type')
 const Iterator = require('../lib/Iterator')
@@ -188,7 +188,9 @@ const generateRandomOperation = snapshot => {
     return [ operation, newSnapshot ]
 }
 
-tap.test('fuzzer', t => {
-    fuzzer(type, generateRandomOperation, 100)
-    t.end()
+describe('fuzzer', function () {
+    it('passes fuzz tests', function () {
+        this.timeout(0)
+        fuzzer(type, generateRandomOperation, 100)
+    })
 })

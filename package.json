@@ -4,13 +4,9 @@
   "description": "Format for representing rich-text documents and changes.",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon",
-    "test": "tap test/**/*.js",
-    "tdd": "nodemon ./node_modules/.bin/tap test/*.js",
-    "test-coverage": "npm test -- --cov --coverage-report=lcov",
-    "tdd-coverage": "nodemon ./node_modules/.bin/tap --cov --coverage-report=lcov --no-browser test/*.js",
-    "tap": "tap",
-    "tap-watch": "nodemon ./node_modules/.bin/tap",
+    "test": "mocha",
+    "test:watch": "mocha -w",
+    "test:cover": "istanbul cover _mocha",
     "preversion": "npm test",
     "postversion": "git push && git push origin v${npm_package_version}"
   },
@@ -25,10 +21,11 @@
     "lib/"
   ],
   "devDependencies": {
+    "chai": "^4.1.2",
     "coveralls": "^3.0.1",
-    "nodemon": "^1.12.0",
-    "ot-fuzzer": "^1.1.0",
-    "tap": "^10.7.2"
+    "istanbul": "^0.4.5",
+    "mocha": "^5.2.0",
+    "ot-fuzzer": "^1.1.0"
   },
   "dependencies": {
     "fast-diff": "^1.1.2"
