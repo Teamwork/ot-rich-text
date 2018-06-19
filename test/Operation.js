@@ -342,6 +342,22 @@ describe('Operation', function () {
                 assert.deepEqual(result3[0], data.newSnapshot)
             })
         })
+
+        it('takes editing position into the account when inverting a delete operation', function () {
+            const snapshot = [ createInsertText('aaaaa') ]
+            const operation = [ createRetain(3), createDelete(1) ]
+            const result = applyAndInvert(snapshot, operation)
+            assert.deepEqual(result[0], [ createInsertText('aaaa') ])
+            assert.deepEqual(result[1], [ createRetain(3), createInsertText('a') ])
+        })
+
+        it('takes editing position into the account when inverting an insert operation', function () {
+            const snapshot = [ createInsertText('aaaaa') ]
+            const operation = [ createRetain(3), createInsertText('a') ]
+            const result = applyAndInvert(snapshot, operation)
+            assert.deepEqual(result[0], [ createInsertText('aaaaaa') ])
+            assert.deepEqual(result[1], [ createRetain(3), createDelete(1) ])
+        })
     })
 
     describe('transform', function () {
