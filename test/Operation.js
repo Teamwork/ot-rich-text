@@ -358,6 +358,30 @@ describe('Operation', function () {
             assert.deepEqual(result[0], [ createInsertText('aaaaaa') ])
             assert.deepEqual(result[1], [ createRetain(3), createDelete(1) ])
         })
+
+        it('takes editing position into the account when inverting an operation (no leading retain)', function () {
+            const snapshot = [ createInsertText('aaaaa') ]
+            const operation = [ createInsertText('a') ]
+            const result = applyAndInvert(snapshot, operation)
+            assert.deepEqual(result[0], [ createInsertText('aaaaaa') ])
+            assert.deepEqual(result[1], [ createDelete(1) ])
+        })
+
+        it('takes editing position into the account when inverting an operation (leading retain with attributes)', function () {
+            const snapshot = [ createInsertText('aaaaa') ]
+            const operation = [ createRetain(3, [ 'key', 'value' ]), createInsertText('a') ]
+            const result = applyAndInvert(snapshot, operation)
+            assert.deepEqual(result[0], [ createInsertText('aaa', [ 'key', 'value' ]), createInsertText('aaa') ])
+            assert.deepEqual(result[1], [ createRetain(3, [ 'key', null ]), createDelete(1) ])
+        })
+
+        it('takes editing position into the account when inverting an operation (no-op)', function () {
+            const snapshot = [ createInsertText('aaaaa') ]
+            const operation = []
+            const result = applyAndInvert(snapshot, operation)
+            assert.deepEqual(result[0], [ createInsertText('aaaaa') ])
+            assert.deepEqual(result[1], [])
+        })
     })
 
     describe('transform', function () {
