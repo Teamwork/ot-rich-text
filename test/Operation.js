@@ -196,6 +196,7 @@ describe('Operation', function () {
         const retain2 = createRetain(8)
         const retain3 = createRetain(2)
         const retain4 = createRetain(3)
+        const retain5 = createRetain(3, [ 'key', 'value' ])
         const delete1 = createDelete(6)
         const delete2 = createDelete(3)
         const delete3 = createDelete(9)
@@ -224,7 +225,7 @@ describe('Operation', function () {
             operation1: [ createRetain(5) ],
             operation2: [ createRetain(5) ],
             newOperation: [],
-            isSimilar: false
+            isSimilar: true
         }, {
             operation1: [ createRetain(5, ['key', 'value']) ],
             operation2: [ createRetain(5) ],
@@ -255,23 +256,28 @@ describe('Operation', function () {
             operation2: [ retain1, delete2 ],
             newOperation: [ retain1, delete3 ],
             isSimilar: true
+        }, {
+            operation1: [ retain1, delete1 ],
+            operation2: [ retain3, retain5, delete2 ],
+            newOperation: [ retain3, retain5, delete3 ],
+            isSimilar: true
         } ]
     }
 
     describe('compose', function () {
         it('basic tests', function () {
-            createTestDataForCompose().forEach(data => {
+            createTestDataForCompose().forEach((data, index) => {
                 const newOperation = compose(data.operation1, data.operation2)
-                assert.deepEqual(newOperation, data.newOperation)
+                assert.deepEqual(newOperation, data.newOperation, `data index is ${index}`)
             })
         })
     })
 
     describe('composeSimilar', function () {
         it('basic tests', function () {
-            createTestDataForCompose().forEach(data => {
+            createTestDataForCompose().forEach((data, index) => {
                 const newOperation = composeSimilar(data.operation1, data.operation2)
-                assert.deepEqual(newOperation, data.isSimilar ? data.newOperation : null)
+                assert.deepEqual(newOperation, data.isSimilar ? data.newOperation : null, `data index is ${index}`)
             })
         })
     })
