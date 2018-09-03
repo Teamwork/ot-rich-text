@@ -3,10 +3,10 @@ const {
     create, isNoop, validate, append, normalize, diffX, compose, transform,
     transformCursor, apply, applyAndInvert, chop, composeSimilar,
     createPresence, transformPresence, comparePresence, isValidPresence
-} = require('../lib/Operation')
+} = require('../src/Operation')
 const {
     createInsertText, createInsertOpen, createInsertClose, createInsertEmbed, createRetain, createDelete
-} = require('../lib/Action')
+} = require('../src/Action')
 
 describe('Operation', function () {
     describe('create', function () {

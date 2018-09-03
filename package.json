@@ -2,12 +2,13 @@
   "name": "@teamwork/ot-rich-text",
   "version": "6.3.3",
   "description": "Format for representing rich-text documents and changes.",
-  "main": "index.js",
+  "main": "./lib/index.js",
   "scripts": {
+    "build": "rm -rf lib && babel src --out-dir lib",
     "test": "mocha",
     "test:watch": "mocha -w",
     "test:cover": "istanbul cover _mocha",
-    "preversion": "npm test",
+    "preversion": "npm run build && npm test",
     "postversion": "git push && git push origin v${npm_package_version}"
   },
   "author": "Greg Kubisa <gkubisa@gmail.com>",
@@ -21,6 +22,9 @@
     "lib/"
   ],
   "devDependencies": {
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
     "chai": "^4.1.2",
     "coveralls": "^3.0.1",
     "istanbul": "^0.4.5",

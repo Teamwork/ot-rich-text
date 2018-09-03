@@ -5,8 +5,8 @@ const {
     getCount, getText, getNodeIdAndName, getNodeId, getNodeName, getAttributes, getAttribute, getLength, clone,
     validate, areEqual, areTypesEqual, areAttributesEqual, getAttributesIndex, hasAttributes,
     slice, merge, composeIterators, transformIterators, setAttribute
-} = require('../lib/Action')
-const Iterator = require('../lib/Iterator')
+} = require('../src/Action')
+const Iterator = require('../src/Iterator')
 
 const retain = createRetain(1)
 const del = createDelete(2)

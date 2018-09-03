@@ -1,9 +1,9 @@
 const assert = require('chai').assert
-const index = require('../index')
-const type = require('../lib/type')
-const Action = require('../lib/Action')
-const Iterator = require('../lib/Iterator')
-const Operation = require('../lib/Operation')
+const index = require('../src/index')
+const type = require('../src/type')
+const Action = require('../src/Action')
+const Iterator = require('../src/Iterator')
+const Operation = require('../src/Operation')
 
 describe('index', function () {
     it('exports properties', function () {

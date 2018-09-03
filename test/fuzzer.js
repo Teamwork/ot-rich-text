@@ -1,13 +1,13 @@
 const assert = require('chai').assert
 const fuzzer = require('ot-fuzzer')
-const type = require('../lib/type')
-const Iterator = require('../lib/Iterator')
-const { append } = require('../lib/Operation')
+const type = require('../src/type')
+const Iterator = require('../src/Iterator')
+const { append } = require('../src/Operation')
 const {
     createInsertText, createInsertOpen, createInsertClose, createInsertEmbed, createRetain, createDelete,
     isInsert, getLength, getAttributesIndex,
     slice, clone
-} = require('../lib/Action')
+} = require('../src/Action')
 
 const randomItemFactory = list => () => list[fuzzer.randomInt(list.length)]
 

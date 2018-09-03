@@ -1,10 +1,10 @@
 const assert = require('chai').assert
-const type = require('../lib/type')
+const type = require('../src/type')
 const {
     create, isNoop, compose, composeSimilar, apply, applyAndInvert, transform,
     normalize, transformCursor, diffX, createPresence, transformPresence,
     comparePresence
-} = require('../lib/Operation')
+} = require('../src/Operation')
 
 describe('type', function() {
     it('exports properties', function() {

@@ -1,8 +1,8 @@
 const assert = require('chai').assert
-const Iterator = require('../lib/Iterator')
+const Iterator = require('../src/Iterator')
 const {
     createInsertText, createInsertEmbed, createRetain, createDelete
-} = require('../lib/Action')
+} = require('../src/Action')
 
 describe('Iterator', function () {
     it('no actions', function () {
