@@ -112,6 +112,37 @@ describe('Action', function () {
                 [ 'nullValue', null, 'yet another', 'one' ]
             )
         })
+        describe('flexibleMatch', function () {
+            it('with valid pattern but no flexibleMatch', function () {
+                assert.deepEqual(
+                    getAttributes(
+                        createRetain(1, [ 'a', '1', 'exact:', '2', 'pattern:abc', '3', 'pattern:xyz', '4', 'z', '5' ]),
+                        [ 'exact:', 'pattern:' ]
+                    ),
+                    [ 'exact:', '2' ]
+                )
+            })
+            it('with valid pattern and flexibleMatch', function () {
+                assert.deepEqual(
+                    getAttributes(
+                        createRetain(1, [ 'a', '1', 'exact:', '2', 'pattern:abc', '3', 'pattern:xyz', '4', 'z', '5' ]),
+                        [ 'exact:', 'pattern:' ],
+                        true
+                    ),
+                    [ 'exact:', '2', 'pattern:abc', '3', 'pattern:xyz', '4', ]
+                )
+            })
+            it('with invalid pattern and flexibleMatch', function () {
+                assert.deepEqual(
+                    getAttributes(
+                        createRetain(1, [ 'a', '1', 'prefix:abc', '2', 'z', '5' ]),
+                        [ 'prefix' ],
+                        true
+                    ),
+                    []
+                )
+            })
+        })
     })
 
     describe('getAttribute', function () {

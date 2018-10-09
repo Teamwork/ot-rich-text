@@ -237,7 +237,7 @@ const getNodeIdAndName = action => action[CONTENT] // for insert node
 const getNodeId = action => action[CONTENT][0] // for insert node
 const getNodeName = action => action[CONTENT].substring(1) // for insert node
 const setContent = (action, content) => { action[CONTENT] = content; return action } // for retain, delete and insert text
-const getAttributes = (action, attributeNames) => { // for insert and retain
+const getAttributes = (action, attributeNames, flexibleMatch = false) => { // for insert and retain
     if (attributeNames) {
         let i1 = ATTRIBUTES // index for action
         let i2 = 0 // index for attributeNames
@@ -245,15 +245,31 @@ const getAttributes = (action, attributeNames) => { // for insert and retain
         const l1 = action.length
         const l2 = attributeNames.length
         const attributes = []
+        let attributeNameLength
 
         while (i1 < l1 && i2 < l2) {
-            if (action[i1] === attributeNames[i2]) {
+            const actionAttributeName = action[i1]
+            const attributeName = attributeNames[i2]
+
+            if (actionAttributeName < attributeName) {
+                i1 += 2 // redundant attribute in action
+
+            } else if (
+                flexibleMatch &&
+                (attributeNameLength = attributeName.length) > 0 &&
+                attributeName[attributeNameLength - 1] === ':' &&
+                actionAttributeName.substring(0, attributeNameLength) === attributeName
+            ) {
+                // Matched an attribute by prefix.
+                attributes[i3++] = action[i1++]
+                attributes[i3++] = action[i1++]
+
+            } else if (actionAttributeName === attributeName) {
+                // Found an exact match.
                 attributes[i3++] = action[i1++]
                 attributes[i3++] = action[i1++]
                 ++i2
 
-            } else if (action[i1] < attributeNames[i2]) {
-                i1 += 2 // redundant attribute in action
             } else {
                 ++i2 // missing attribute in action
             }
