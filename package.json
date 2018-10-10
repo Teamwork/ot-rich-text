@@ -8,7 +8,7 @@
     "test": "mocha",
     "test:watch": "mocha -w",
     "test:cover": "istanbul cover _mocha",
-    "preversion": "npm run build && npm test",
+    "preversion": "npm run build && npm test && git add lib",
     "postversion": "git push && git push origin v${npm_package_version}"
   },
   "author": "Greg Kubisa <gkubisa@gmail.com>",
