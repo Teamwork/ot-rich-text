@@ -112,36 +112,50 @@ describe('Action', function () {
                 [ 'nullValue', null, 'yet another', 'one' ]
             )
         })
-        describe('flexibleMatch', function () {
-            it('with valid pattern but no flexibleMatch', function () {
-                assert.deepEqual(
-                    getAttributes(
-                        createRetain(1, [ 'a', '1', 'exact:', '2', 'pattern:abc', '3', 'pattern:xyz', '4', 'z', '5' ]),
-                        [ 'exact:', 'pattern:' ]
-                    ),
-                    [ 'exact:', '2' ]
-                )
-            })
-            it('with valid pattern and flexibleMatch', function () {
-                assert.deepEqual(
-                    getAttributes(
-                        createRetain(1, [ 'a', '1', 'exact:', '2', 'pattern:abc', '3', 'pattern:xyz', '4', 'z', '5' ]),
-                        [ 'exact:', 'pattern:' ],
-                        true
-                    ),
-                    [ 'exact:', '2', 'pattern:abc', '3', 'pattern:xyz', '4', ]
-                )
-            })
-            it('with invalid pattern and flexibleMatch', function () {
-                assert.deepEqual(
-                    getAttributes(
-                        createRetain(1, [ 'a', '1', 'prefix:abc', '2', 'z', '5' ]),
-                        [ 'prefix' ],
-                        true
-                    ),
-                    []
-                )
-            })
+        it('with a wildcard filter', function () {
+            assert.deepEqual(
+                getAttributes(
+                    createRetain(1, [ 'a', '1', 'b', 'b', 'prefix-', '2', 'prefix-123', '3', 'prefix-xyz', '4', 'x', 'x', 'z', '5' ]),
+                    [ 'a', 'prefix-*', 'z' ]
+                ),
+                [ 'a', '1', 'prefix-', '2', 'prefix-123', '3', 'prefix-xyz', '4', 'z', '5' ]
+            )
+        })
+        it('with an unmatched wildcard filter', function () {
+            assert.deepEqual(
+                getAttributes(
+                    createRetain(1, [ 'd', '1', 'e', '2', 'f', '3' ]),
+                    [ 'a*', 'z*' ]
+                ),
+                []
+            )
+        })
+        it('with a wildcard and exact filter matching the same attribute', function () {
+            assert.deepEqual(
+                getAttributes(
+                    createRetain(1, [ 'a', '1', 'b', '2', 'c', '3', 'd', '4' ]),
+                    [ 'b', 'b*' ]
+                ),
+                [ 'b', '2' ]
+            )
+        })
+        it('with multiple wildcards matching the same attribute', function () {
+            assert.deepEqual(
+                getAttributes(
+                    createRetain(1, [ 'abc', '1', 'abcd', '2' ]),
+                    [ 'a*', 'ab*', 'abc*' ]
+                ),
+                [ 'abc', '1', 'abcd', '2' ]
+            )
+        })
+        it('without a wildcard filter', function () {
+            assert.deepEqual(
+                getAttributes(
+                    createRetain(1, [ 'abc', '1', 'abcd', '2' ]),
+                    [ 'a' ]
+                ),
+                []
+            )
         })
     })
 
