@@ -112,43 +112,34 @@ describe('Action', function () {
                 [ 'nullValue', null, 'yet another', 'one' ]
             )
         })
-        it('with a wildcard filter', function () {
+        it('with a prefix filter', function () {
             assert.deepEqual(
                 getAttributes(
-                    createRetain(1, [ 'a', '1', 'b', 'b', 'prefix-', '2', 'prefix-123', '3', 'prefix-xyz', '4', 'x', 'x', 'z', '5' ]),
-                    [ 'a', 'prefix-*', 'z' ]
+                    createRetain(1, [ 'a', '1', 'b', 'b', 'prefix=', '2', 'prefix=123', '3', 'prefix=xyz', '4', 'x', 'x', 'z', '5' ]),
+                    [ 'a', 'prefix=', 'z' ]
                 ),
-                [ 'a', '1', 'prefix-', '2', 'prefix-123', '3', 'prefix-xyz', '4', 'z', '5' ]
+                [ 'a', '1', 'prefix=', '2', 'prefix=123', '3', 'prefix=xyz', '4', 'z', '5' ]
             )
         })
-        it('with an unmatched wildcard filter', function () {
+        it('with an unmatched prefix filter', function () {
             assert.deepEqual(
                 getAttributes(
-                    createRetain(1, [ 'd', '1', 'e', '2', 'f', '3' ]),
-                    [ 'a*', 'z*' ]
+                    createRetain(1, [ 'a', '0', 'ab', '01', 'ab=', '01', 'ab=xyz', '01', 'd', '1', 'z', '4' ]),
+                    [ 'a=', 'z=' ]
                 ),
                 []
             )
         })
-        it('with a wildcard and exact filter matching the same attribute', function () {
+        it('with multiple prefix filters', function () {
             assert.deepEqual(
                 getAttributes(
-                    createRetain(1, [ 'a', '1', 'b', '2', 'c', '3', 'd', '4' ]),
-                    [ 'b', 'b*' ]
+                    createRetain(1, [ 'abc=123', '1', 'abcd=456', '2', 'abcd=789', '3', 'z', 'not-matched' ]),
+                    [ 'abc=', 'abcd=' ]
                 ),
-                [ 'b', '2' ]
+                [ 'abc=123', '1', 'abcd=456', '2', 'abcd=789', '3' ]
             )
         })
-        it('with multiple wildcards matching the same attribute', function () {
-            assert.deepEqual(
-                getAttributes(
-                    createRetain(1, [ 'abc', '1', 'abcd', '2' ]),
-                    [ 'a*', 'ab*', 'abc*' ]
-                ),
-                [ 'abc', '1', 'abcd', '2' ]
-            )
-        })
-        it('without a wildcard filter', function () {
+        it('without a prefix filter', function () {
             assert.deepEqual(
                 getAttributes(
                     createRetain(1, [ 'abc', '1', 'abcd', '2' ]),

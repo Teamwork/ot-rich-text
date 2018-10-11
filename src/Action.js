@@ -248,15 +248,14 @@ const getAttributes = (action, attributeNames) => { // for insert and retain
 
         while (i1 < l1 && i2 < l2) {
             const actionAttributeName = action[i1]
-            const rawAttributeName = attributeNames[i2]
-            const lastCharacterIndex = rawAttributeName.length - 1
-            const wildcard = lastCharacterIndex >= 0 && rawAttributeName[lastCharacterIndex] === '*'
-            const attributeName = wildcard ? rawAttributeName.substring(0, lastCharacterIndex) : rawAttributeName
+            const attributeName = attributeNames[i2]
+            const attributeNameLength = attributeName.length
+            const prefixMatch = attributeNameLength >= 0 && attributeName[attributeNameLength - 1] === '='
 
             if (actionAttributeName < attributeName) {
                 i1 += 2 // redundant attribute in action
 
-            } else if (wildcard && actionAttributeName.substring(0, lastCharacterIndex) === attributeName) {
+            } else if (prefixMatch && actionAttributeName.substring(0, attributeNameLength) === attributeName) {
                 // Matched an attribute by prefix.
                 attributes[i3++] = action[i1++]
                 attributes[i3++] = action[i1++]
