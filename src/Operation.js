@@ -91,7 +91,10 @@ function applyAndInvert(snapshot, operation) {
     const editingPosition = !isNoop(operation) && isRetain(operation[0]) ?
             getLength(operation[0]) : 0
     const newSnapshot = apply(snapshot, operation)
-    const diffs = diffX(snapshot, newSnapshot, editingPosition)
+    const diffs = diffX(snapshot, newSnapshot, {
+        oldRange: { index: editingPosition, length: 0 },
+        newRange: { index: editingPosition, length: 0 }
+    })
     const invertedOperation = diffs[0]
 
     return [ newSnapshot, invertedOperation ]
