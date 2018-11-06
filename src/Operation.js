@@ -257,7 +257,26 @@ function normalize(operation) {
 // The first operation converts `snapshot2` to `snapshot1`, when applied.
 // The second operation converts `snapshot1` to `snapshot2`, when applied.
 function diffX(snapshot1, snapshot2, editLocation) {
-    editLocation = editLocation | 0
+    let oldRange = null
+    let newRange = null
+
+    if (typeof editLocation === 'number') {
+        oldRange = { index: editLocation | 0, length: 0 }
+        editLocation = { oldRange, newRange }
+    } else if (
+        editLocation &&
+        (oldRange = editLocation.oldRange || null)
+    ) {
+        oldRange = { index: oldRange.index | 0, length: oldRange.length | 0 }
+        if (
+            (newRange = editLocation.newRange || null)
+        ) {
+            newRange = { index: newRange.index | 0, length: newRange.length | 0 }
+        }
+        editLocation = { oldRange, newRange }
+    } else {
+        editLocation = null
+    }
 
     const result1 = []
     const result2 = []
@@ -286,12 +305,9 @@ function diffX(snapshot1, snapshot2, editLocation) {
             break
         }
 
-        const length = getLength(action1)
-
+        commonPrefixLength += getLength(action1)
         ++startIndex1
         ++startIndex2
-        commonPrefixLength += length
-        editLocation -= length
     }
 
     // skip common suffix
@@ -341,6 +357,44 @@ function diffX(snapshot1, snapshot2, editLocation) {
         }
 
         differingContent2 += isInsertText(action) ? getText(action) : getNodeId(action)
+    }
+
+    if (oldRange) {
+        if (commonPrefixLength > 0) {
+            oldRange.index -= commonPrefixLength
+        }
+        if (oldRange.index < 0) {
+            oldRange.length += oldRange.index
+            oldRange.index = 0
+        }
+        if (oldRange.length < 0) {
+            oldRange.length = 0
+        }
+        if (oldRange.index > differingContent1.length) {
+            oldRange.index = differingContent1.length
+        }
+        if (oldRange.index + oldRange.length > differingContent1.length) {
+            oldRange.length = differingContent1.length - oldRange.index
+        }
+    }
+
+    if (newRange) {
+        if (commonPrefixLength > 0) {
+            newRange.index -= commonPrefixLength
+        }
+        if (newRange.index < 0) {
+            newRange.length += newRange.index
+            newRange.index = 0
+        }
+        if (newRange.length < 0) {
+            newRange.length = 0
+        }
+        if (newRange.index > differingContent2.length) {
+            newRange.index = differingContent2.length
+        }
+        if (newRange.index + newRange.length > differingContent2.length) {
+            newRange.length = differingContent2.length - newRange.index
+        }
     }
 
     const stringDiff = fastDiff(differingContent1, differingContent2, editLocation)

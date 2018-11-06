@@ -698,10 +698,8 @@ describe('Operation', function () {
                     createInsertText('aaaa')
                 ], -1),
                 [ [
-                    createRetain(3),
                     createDelete(1)
                 ], [
-                    createRetain(3),
                     createInsertText('a')
                 ] ]
             )
@@ -794,10 +792,8 @@ describe('Operation', function () {
                     createInsertText('aaa')
                 ], -1),
                 [ [
-                    createRetain(3),
                     createInsertText('a')
                 ], [
-                    createRetain(3),
                     createDelete(1)
                 ] ]
             )
@@ -820,10 +816,8 @@ describe('Operation', function () {
                     createInsertText('aaa')
                 ], 1),
                 [ [
-                    createRetain(1),
                     createInsertText('a')
                 ], [
-                    createRetain(1),
                     createDelete(1)
                 ] ]
             )
@@ -834,10 +828,10 @@ describe('Operation', function () {
                     createInsertText('aaa')
                 ], 2),
                 [ [
-                    createRetain(2),
+                    createRetain(1),
                     createInsertText('a')
                 ], [
-                    createRetain(2),
+                    createRetain(1),
                     createDelete(1)
                 ] ]
             )
@@ -848,10 +842,10 @@ describe('Operation', function () {
                     createInsertText('aaa')
                 ], 3),
                 [ [
-                    createRetain(3),
+                    createRetain(2),
                     createInsertText('a')
                 ], [
-                    createRetain(3),
+                    createRetain(2),
                     createDelete(1)
                 ] ]
             )
@@ -970,7 +964,7 @@ describe('Operation', function () {
                 ], [
                     createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image1.png' ]),
                     createInsertText('aaa')
-                ], 2),
+                ], 3),
                 [ [
                     createRetain(1, [ 'src', 'http://www.example.com/image0.png' ]),
                     createRetain(1),
@@ -978,6 +972,309 @@ describe('Operation', function () {
                 ], [
                     createRetain(1, [ 'src', 'http://www.example.com/image1.png' ]),
                     createRetain(1),
+                    createDelete(1)
+                ] ]
+            )
+        })
+
+        it('works with full diff hint', function () {
+            assert.deepEqual(
+                diffX([
+                    createInsertText('aaaa')
+                ], [
+                    createInsertText('aaa')
+                ], {}),
+                [ [
+                    createRetain(3),
+                    createInsertText('a')
+                ], [
+                    createRetain(3),
+                    createDelete(1)
+                ] ]
+            )
+            assert.deepEqual(
+                diffX([
+                    createInsertText('aaaa')
+                ], [
+                    createInsertText('aaa')
+                ], {
+                    newRange: { index: 0, length: 0 }
+                }),
+                [ [
+                    createRetain(3),
+                    createInsertText('a')
+                ], [
+                    createRetain(3),
+                    createDelete(1)
+                ] ]
+            )
+            assert.deepEqual(
+                diffX([
+                    createInsertText('aaaa')
+                ], [
+                    createInsertText('aaa')
+                ], {
+                    oldRange: { index: 0, length: 0 }
+                }),
+                [ [
+                    createInsertText('a')
+                ], [
+                    createDelete(1)
+                ] ]
+            )
+            assert.deepEqual(
+                diffX([
+                    createInsertText('aaaa')
+                ], [
+                    createInsertText('aaa')
+                ], {
+                    oldRange: { index: 0, length: 0 },
+                    newRange: { index: 0, length: 0 }
+                }),
+                [ [
+                    createInsertText('a')
+                ], [
+                    createDelete(1)
+                ] ]
+            )
+            assert.deepEqual(
+                diffX([
+                    createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image0.png' ]),
+                    createInsertText('aaaa')
+                ], [
+                    createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image1.png' ]),
+                    createInsertText('aaa')
+                ], {
+                    oldRange: { index: 2, length: 0 },
+                    newRange: { index: 2, length: 0 }
+                }),
+                [ [
+                    createRetain(1, [ 'src', 'http://www.example.com/image0.png' ]),
+                    createRetain(1),
+                    createInsertText('a')
+                ], [
+                    createRetain(1, [ 'src', 'http://www.example.com/image1.png' ]),
+                    createRetain(1),
+                    createDelete(1)
+                ] ]
+            )
+            assert.deepEqual(
+                diffX([
+                    createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image0.png' ]),
+                    createInsertText('aaaa')
+                ], [
+                    createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image0.png' ]),
+                    createInsertText('aaa')
+                ], {
+                    oldRange: { index: 2, length: 0 },
+                    newRange: { index: 2, length: 0 }
+                }),
+                [ [
+                    createRetain(2),
+                    createInsertText('a')
+                ], [
+                    createRetain(2),
+                    createDelete(1)
+                ] ]
+            )
+            assert.deepEqual(
+                diffX([
+                    createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image0.png' ]),
+                    createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image0.png' ]),
+                    createInsertText('aaaa')
+                ], [
+                    createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image0.png' ]),
+                    createInsertEmbed('\uE000IMG', [ 'src', 'http://www.example.com/image0.png' ]),
+                    createInsertText('aaa')
+                ], {
+                    oldRange: { index: 1, length: 0 },
+                    newRange: { index: 1, length: 0 }
+                }),
+                [ [
+                    createRetain(2),
+                    createInsertText('a')
+                ], [
+                    createRetain(2),
+                    createDelete(1)
+                ] ]
+            )
+            assert.deepEqual(
+                diffX([
+                    createInsertText('aaaa')
+                ], [
+                    createInsertText('aaa')
+                ], {
+                    oldRange: { index: 5, length: 1 },
+                    newRange: { index: 5, length: 1 }
+                }),
+                [ [
+                    createRetain(3),
+                    createInsertText('a')
+                ], [
+                    createRetain(3),
+                    createDelete(1)
+                ] ]
+            )
+            assert.deepEqual(
+                diffX([
+                    createInsertText('aaaa')
+                ], [
+                    createInsertText('aaa')
+                ], {
+                    oldRange: { index: 2, length: 0 },
+                    newRange: { index: 2, length: 0 }
+                }),
+                [ [
+                    createRetain(2),
+                    createInsertText('a')
+                ], [
+                    createRetain(2),
+                    createDelete(1)
+                ] ]
+            )
+            assert.deepEqual(
+                diffX([
+                    createInsertText('aaaa')
+                ], [
+                    createInsertText('aaa')
+                ], {
+                    oldRange: { index: 2, length: 0 },
+                    newRange: { index: 1, length: 0 }
+                }),
+                [ [
+                    createRetain(1),
+                    createInsertText('a')
+                ], [
+                    createRetain(1),
+                    createDelete(1)
+                ] ]
+            )
+            assert.deepEqual(
+                diffX([
+                    createInsertText('aaa')
+                ], [
+                    createInsertText('aaaa')
+                ], {
+                    oldRange: { index: 2, length: 0 },
+                    newRange: { index: 2, length: 0 }
+                }),
+                [ [
+                    createRetain(2),
+                    createDelete(1)
+                ], [
+                    createRetain(2),
+                    createInsertText('a')
+                ] ]
+            )
+            assert.deepEqual(
+                diffX([
+                    createInsertText('aaa')
+                ], [
+                    createInsertText('aaaa')
+                ], {
+                    oldRange: { index: 2, length: 0 },
+                    newRange: { index: 3, length: 0 }
+                }),
+                [ [
+                    createRetain(2),
+                    createDelete(1)
+                ], [
+                    createRetain(2),
+                    createInsertText('a')
+                ] ]
+            )
+            assert.deepEqual(
+                diffX([
+                    createInsertText('aaaa')
+                ], [
+                    createInsertText('aaa')
+                ], {
+                    oldRange: { index: 1, length: 2 },
+                    newRange: { index: 1, length: 0 }
+                }),
+                [ [
+                    createRetain(1),
+                    createInsertText('aa'),
+                    createDelete(1)
+                ], [
+                    createRetain(1),
+                    createInsertText('a'),
+                    createDelete(2)
+                ] ]
+            )
+            assert.deepEqual(
+                diffX([
+                    createInsertText('aaaa')
+                ], [
+                    createInsertText('aaa')
+                ], {
+                    oldRange: { index: 1, length: 2 },
+                    newRange: { index: 2, length: 0 }
+                }),
+                [ [
+                    createRetain(1),
+                    createInsertText('aa'),
+                    createDelete(1)
+                ], [
+                    createRetain(1),
+                    createInsertText('a'),
+                    createDelete(2)
+                ] ]
+            )
+            assert.deepEqual(
+                diffX([
+                    createInsertText('aaa')
+                ], [
+                    createInsertText('aaaa')
+                ], {
+                    oldRange: { index: 1, length: 1 },
+                    newRange: { index: 1, length: 0 }
+                }),
+                [ [
+                    createRetain(1),
+                    createInsertText('a'),
+                    createDelete(2)
+                ], [
+                    createRetain(1),
+                    createInsertText('aa'),
+                    createDelete(1)
+                ] ]
+            )
+            assert.deepEqual(
+                diffX([
+                    createInsertText('aaa')
+                ], [
+                    createInsertText('aaaa')
+                ], {
+                    oldRange: { index: 1, length: 1 },
+                    newRange: { index: 2, length: 0 }
+                }),
+                [ [
+                    createRetain(1),
+                    createInsertText('a'),
+                    createDelete(2)
+                ], [
+                    createRetain(1),
+                    createInsertText('aa'),
+                    createDelete(1)
+                ] ]
+            )
+            assert.deepEqual(
+                diffX([
+                    createInsertText('aaa')
+                ], [
+                    createInsertText('aaaa')
+                ], {
+                    oldRange: { index: 1, length: 1 },
+                    newRange: { index: 3, length: 0 }
+                }),
+                [ [
+                    createRetain(1),
+                    createInsertText('a'),
+                    createDelete(2)
+                ], [
+                    createRetain(1),
+                    createInsertText('aa'),
                     createDelete(1)
                 ] ]
             )
